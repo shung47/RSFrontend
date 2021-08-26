@@ -10,8 +10,10 @@ function App() {
   return (
     <Router>
     <div className="App">
+      <div>
         <NevBar/>
-      <div className ="content">
+      </div>        
+      <div className ="Content">
         <Switch>
           <Route exact path="/Login">
             <Login/>
