@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TicketsTable from '../components/TicketsTable';
+import Button from '@material-ui/core/Button';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,9 +61,9 @@ export default function SimpleTabs() {
     <div className={classes.root}>
       <AppBar position="relative" >
         <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-          <Tab label="My Tickets" {...a11yProps(0)} />
-          <Tab label="Active Tickets" {...a11yProps(1)} />
-          <Tab label="Completed Tickets" {...a11yProps(2)} />
+          <Tab label="RPA" {...a11yProps(0)} />
+          <Tab label="Projects" {...a11yProps(1)} />
+          <Tab label="SR" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -74,6 +75,9 @@ export default function SimpleTabs() {
       <TabPanel value={value} index={2}>
         Completed Tickets
       </TabPanel>
+      <div>
+        <Button variant="contained" color="primary" href='Tickets/Create'>Create</Button>
+    </div>
     </div>
   );
 }

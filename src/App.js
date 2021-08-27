@@ -5,12 +5,13 @@ import SignUp from './components/SignUp';
 import NevBar from './components/NevBar';
 import Tickets from './components/Tickets';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import CreateTicket from './components/CreateTicket';
 
 function App() {
   return (
     <Router>
     <div className="App">
-      <div>
+      <div className="Navbar">
         <NevBar/>
       </div>        
       <div className ="Content">
@@ -25,6 +26,9 @@ function App() {
             <div className ="Ticket-content">
               <Tickets/>
             </div>
+          </Route>
+          <Route exact path="/Tickets/Create">
+            <CreateTicket/>
           </Route>
         </Switch>
       </div>

@@ -1,50 +1,77 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
+import Button from '@material-ui/core/Button';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
+  { field: 'id', headerName: 'ID', width: 100 },
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'title',
+    headerName: 'Title',
     width: 150,
     editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 150,
+    field: 'description',
+    headerName: 'Description',
+    width: 250,
     editable: true,
   },
   {
-    field: 'age',
-    headerName: 'Age',
+    field: 'type',
+    headerName: 'Type',
     type: 'number',
     width: 110,
     editable: true,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
+    field: 'creater',
+    headerName: 'Creater',
+    sortable: true,
+    width: 150,
+    editable: false,
+  },
+  {
+    field: 'createdDatetime',
+    headerName: 'Created Datetime',
+    sortable: true,
+    width: 200,
+    editable: false,
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    sortable: true,
+    width: 120,
+    editable: false,
+  },
+  {
+    field: 'edit',
+    headerName: ' ',
     sortable: false,
     width: 160,
-    valueGetter: (params) =>
-      `${params.getValue(params.id, 'firstName') || ''} ${
-        params.getValue(params.id, 'lastName') || ''
-      }`,
+    renderCell: (cellValues) => {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+           
+          }}
+        >
+          View
+        </Button>
+      );
+    }
   },
 ];
 
 const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+  { id: 1, description: 'Snow', title: 'Jon', type: 35 },
+  { id: 2, description: 'Lannister', title: 'Cersei', type: 42 },
+  { id: 3, description: 'Lannister', title: 'Jaime', type: 45 },
+  { id: 4, description: 'Stark', title: 'Arya', type: 16 },
+  { id: 5, description: 'Targaryen', title: 'Daenerys', type: null },
+  { id: 6, description: 'Melisandre', title: null, type: 150 },
 ];
 
 export default function DataTable() {
@@ -54,8 +81,7 @@ export default function DataTable() {
         rows={rows}
         columns={columns}
         pageSize={5}
-        checkboxSelection
-        disableSelectionOnClick
+        
       />
     </div>
   );
