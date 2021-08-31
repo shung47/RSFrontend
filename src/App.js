@@ -6,6 +6,8 @@ import NevBar from './components/NevBar';
 import Tickets from './components/Tickets';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import CreateTicket from './components/CreateTicket';
+import Dashboard  from './components/Dashboard';
+import Ticket from './components/Ticket';
 
 function App() {
   return (
@@ -29,6 +31,12 @@ function App() {
           </Route>
           <Route exact path="/Tickets/Create">
             <CreateTicket/>
+          </Route>
+          <Route exact path="/Dashboard">
+            <Dashboard/>
+          </Route>
+          <Route path="/Tickets/Edit/:id">
+            <Ticket/>
           </Route>
         </Switch>
       </div>

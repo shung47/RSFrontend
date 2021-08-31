@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { SettingsOutlined } from '@material-ui/icons';
+import { useState } from 'react';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -33,13 +36,40 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+
+
+
 function CreateTicket(){
     const classes = useStyles();
+    const[title,  setTitle] = useState('');
+    const[type,  setType] = useState('');
+    const[description,  setDescription] = useState('');
+    const[isPending, setIsPending] = useState(false);
+    const history =useHistory();
+
+    const handleSubmit =(e) => {
+        e.preventDefault();
+        const ticket = {title, type, description,"status":"Unassign" };
+
+        setIsPending(true);
+        fetch('https://localhost:5001/api/Tickets', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(ticket)
+        }).then(() => {
+            setIsPending(false);
+            console.log('new ticket created');
+            history.push('/tickets');
+        })
+    }
+
     return(
         <Container component="main" maxWidth="sm">
         <div className = "Create">
-            <h2>Create a ticket</h2>
-            <form>
+            <h1>Create a ticket</h1>
+            <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                 <Grid item xs={10} sm={6}>
                 <TextField
@@ -51,12 +81,14 @@ function CreateTicket(){
                     id="ticketTitle"
                     label="Title"
                     autoFocus
+                    value ={title}
+                    onChange = {(e) => setTitle(e.target.value)}
                 />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                 <TextField
                     variant="outlined"
-                    select
+                    //select
                     required
                     fullWidth
                     
@@ -64,6 +96,8 @@ function CreateTicket(){
                     label="Type"
                     name="type"
                     autoComplete="Type"
+                    value ={type}
+                    onChange = {(e) => setType(e.target.value)}
                 />
                 </Grid>
                 <Grid item xs={12}>
@@ -76,6 +110,8 @@ function CreateTicket(){
                     label="Description"
                     name="description"
                     autoComplete="Description"
+                    value ={description}
+                    onChange = {(e) => setDescription(e.target.value)}
                 />
                 </Grid>
                 <Grid item xs={12}>
@@ -83,36 +119,45 @@ function CreateTicket(){
                     variant="outlined"
                     required
                     fullWidth
-                    name="Details"
-                    label="Details"
-                    type="Details"
-                    id="details"
-                    autoComplete="Details"
+                    name="reviewers"
+                    label="Reviewers"
+                    type="Reviewers"
+                    id="reviewers"
+                    autoComplete="Reviewers"
+                    //select
                 />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                 <FormControlLabel
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="SA leader approval required"
                 />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                 <FormControlLabel
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="CY approval required"
                 />
                 </Grid>
             </Grid>
-            <Button
+            {!isPending && <Button
                 type="submit"               
                 variant="contained"
                 color="primary"
                 className={classes.submit}
             >
                 Create
-            </Button>
+            </Button>}
+            {isPending && <Button
+                disabled
+                type="submit"               
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+            >
+                Creating ticket...
+            </Button>}
             </form>
-            
         </div>
         </Container>
     );
