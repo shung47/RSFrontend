@@ -13,7 +13,7 @@ import Container from '@material-ui/core/Container';
 import { useHistory, useParams } from 'react-router-dom'
 import { useEffect } from 'react';
 
-const states = [
+const approval = [
   {
     value: 'reviewing',
     label: 'Reviewing'
@@ -25,6 +25,25 @@ const states = [
   {
     value: 'reject',
     label: 'Reject'
+  }
+];
+
+const types = [
+  {
+    value: 'RPA',
+    label: 'RPA'
+  },
+  {
+    value: 'project',
+    label: 'Project'
+  },
+  {
+    value: 'SR',
+    label: 'SR'
+  },
+  {
+    value: 'SSR',
+    label: 'SSR'
   }
 ];
 
@@ -106,11 +125,20 @@ const TicketDetails = (props) => {
                 fullWidth
                 label="Type"
                 name="type"
+                select               
                 onChange={handleChange}
                 required
                 value={ticket[0].type}
+                SelectProps={{ native: true }}
                 variant="outlined"
-              />
+              >{types.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}</TextField>
             </Grid>
             <Grid
               item
@@ -173,7 +201,7 @@ const TicketDetails = (props) => {
                 //value={values.state}
                 variant="outlined"
               >
-                {states.map((option) => (
+                {approval.map((option) => (
                   <option
                     key={option.value}
                     value={option.value}

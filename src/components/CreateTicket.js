@@ -36,7 +36,24 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-
+  const types = [
+    {
+      value: 'RPA',
+      label: 'RPA'
+    },
+    {
+      value: 'project',
+      label: 'Project'
+    },
+    {
+      value: 'SR',
+      label: 'SR'
+    },
+    {
+      value: 'SSR',
+      label: 'SSR'
+    }
+  ];
 
 
 function CreateTicket(){
@@ -88,17 +105,25 @@ function CreateTicket(){
                 <Grid item xs={12} sm={6}>
                 <TextField
                     variant="outlined"
-                    //select
+                    select
                     required
-                    fullWidth
-                    
+                    fullWidth                  
                     id="TicketType"
                     label="Type"
                     name="type"
-                    autoComplete="Type"
+                    SelectProps={{ native: true }}
                     value ={type}
                     onChange = {(e) => setType(e.target.value)}
-                />
+                >
+                {types.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+                </TextField>
                 </Grid>
                 <Grid item xs={12}>
                 <TextField
@@ -136,7 +161,19 @@ function CreateTicket(){
                 <Grid item xs={6}>
                 <FormControlLabel
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
+                    label="BA leader required"
+                />
+                </Grid>
+                <Grid item xs={6}>
+                <FormControlLabel
+                    control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="CY approval required"
+                />
+                </Grid>
+                <Grid item xs={6}>
+                <FormControlLabel
+                    control={<Checkbox value="allowExtraEmails" color="primary" />}
+                    label="RPA required"
                 />
                 </Grid>
             </Grid>
