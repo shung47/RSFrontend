@@ -10,8 +10,9 @@ import {
   TextField
 } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+
 
 const approval = [
   {
@@ -58,6 +59,21 @@ const TicketDetails = (props) => {
   };
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
+  const history =useHistory();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+        fetch('https://localhost:5001/api/Tickets/'+ id, {
+            method:'PUT',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(ticket)
+        }).then(() => {
+            console.log('Ticket updated');
+            history.push('/tickets');
+        })
+  }
 
   useEffect(() => {
     fetch('https://localhost:5001/api/Tickets/'+ id,{
@@ -76,7 +92,7 @@ const TicketDetails = (props) => {
         })
         .then(data =>{
             console.log(data);
-            setTicket(data);
+            setTicket(data[0]);
         })
         .catch(err => {
             console.log(err.message);
@@ -85,7 +101,7 @@ const TicketDetails = (props) => {
 
   return (
     <Container component="main" maxWidth="md">
-    <form
+    <form onSubmit={handleSubmit}
       autoComplete="off"
       noValidate
       {...props}
@@ -112,8 +128,8 @@ const TicketDetails = (props) => {
                 name="title"
                 onChange={handleChange}
                 required
-                value={ticket[0].title}
-                variant="outlined"
+                value={ticket.title}
+                variant="standard"
               />
             </Grid>
             <Grid
@@ -128,7 +144,7 @@ const TicketDetails = (props) => {
                 select               
                 onChange={handleChange}
                 required
-                value={ticket[0].type}
+                value={ticket.type}
                 SelectProps={{ native: true }}
                 variant="outlined"
               >{types.map((option) => (
@@ -151,7 +167,7 @@ const TicketDetails = (props) => {
                 name="description"
                 onChange={handleChange}
                 required
-                value={ticket[0].description}
+                value={ticket.description}
                 variant="outlined"
               />
             </Grid>
@@ -166,7 +182,7 @@ const TicketDetails = (props) => {
                 name="status"
                 disabled
                 onChange={handleChange}
-                value={ticket[0].status}
+                value={ticket.status}
                 variant="outlined"
               />
             </Grid>
@@ -224,18 +240,7 @@ const TicketDetails = (props) => {
           <Button
             color="primary"
             variant="contained"
-          >
-            Approve
-          </Button>
-          <Button
-            color="secondary"
-            variant="contained"
-          >
-            Reject
-          </Button>
-          <Button
-            color="default"
-            variant="contained"
+            type="submit"               
           >
             Save
           </Button>
