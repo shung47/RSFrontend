@@ -40,6 +40,9 @@
   z-index: 0;
 }
 
+.CheckBox{
+  text-align: left;
+}
 /*
 .Create {
   padding-left: 15%;

@@ -61,19 +61,15 @@ export default function SimpleTabs() {
     <div className={classes.root}>
       <AppBar position="relative" >
         <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-          <Tab label="RPA" {...a11yProps(0)} />
-          <Tab label="Projects" {...a11yProps(1)} />
-          <Tab label="SR" {...a11yProps(2)} />
+          <Tab label="Active Tickets" {...a11yProps(0)} />
+          <Tab label="Completed Tickets" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <TicketsTable/>
+        <TicketsTable status='Active'/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Active Tickets
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        Completed Tickets
+        <TicketsTable status='Completed'/>
       </TabPanel>
       <div>
         <Button variant="contained" color="primary" href='Tickets/Create'>Create</Button>

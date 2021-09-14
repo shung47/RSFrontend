@@ -152,26 +152,26 @@ function CreateTicket(){
                     //select
                 />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} className="CheckBox">
                 <FormControlLabel
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="SA leader approval required"
                 />
                 </Grid>
-                <Grid item xs={6}>
-                <FormControlLabel
+                <Grid item xs={6} className="CheckBox">
+                <FormControlLabel 
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
-                    label="BA leader required"
+                    label="BA leader approval required"
                 />
                 </Grid>
-                <Grid item xs={6}>
-                <FormControlLabel
+                <Grid item xs={6} className="CheckBox">
+                <FormControlLabel 
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="CY approval required"
                 />
                 </Grid>
-                <Grid item xs={6}>
-                <FormControlLabel
+                <Grid item xs={6} className="CheckBox">
+                <FormControlLabel 
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
                     label="RPA required"
                 />

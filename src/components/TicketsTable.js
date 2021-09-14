@@ -15,10 +15,9 @@ import { useState } from 'react';
 //   { id: 6, description: 'Melisandre', title: null, type: 150 },
 // ];
 
-export default function DataTable() {
+export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
-    
 
     useEffect(() => {
     fetch('https://localhost:5001/api/Tickets',{
@@ -34,7 +33,12 @@ export default function DataTable() {
         })
         .then(data =>{
             console.log(data);
-            setTickets(data);
+            if(props.status=='Completed')
+            {
+              setTickets(data.filter(e=>e.status==='Completed'));
+            }else{
+              setTickets(data.filter(e=>e.status!='Completed'));
+            }
             setIsPending(false);
         })
         .catch(err => {
@@ -90,10 +94,13 @@ const columns = [
       }
     },
   ];
+
+
   return (
     <div style={{ height: 400, width: '100%' }}>
         {isPending && <div>Loading...</div>}
         {tickets && <DataGrid
+
         rows={tickets}
         columns={columns}
         pageSize={5}
