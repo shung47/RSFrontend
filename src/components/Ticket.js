@@ -129,7 +129,7 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 required
                 value={ticket.title}
-                variant="standard"
+                variant="outlined"
               />
             </Grid>
             <Grid

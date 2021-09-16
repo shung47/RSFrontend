@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useHistory } from 'react-router';
 
 function Copyright() {
   return (
@@ -47,8 +50,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+async function loginUser( email, password) {
+  return fetch('https://localhost:5001/api/login/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(email, password)
+  })
+    .then(data => data.json())
+ }
+
+export default function Login({setToken}) {
   const classes = useStyles();
+  const[email,  setEmail] = useState('');
+  const[password,  setPassword] = useState('');
+  const history =useHistory();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+        const token = await loginUser({
+          email, password
+        });
+        setToken(token); 
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -60,7 +86,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -71,6 +97,8 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={email}
+            onChange = {(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -82,6 +110,8 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange = {(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -112,4 +142,8 @@ export default function SignIn() {
       </div>
     </Container>
   );
+}
+
+Login.propTypes = {
+  setToken: PropTypes.func.isRequired
 }

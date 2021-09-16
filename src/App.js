@@ -8,8 +8,18 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import CreateTicket from './components/CreateTicket';
 import Dashboard  from './components/Dashboard';
 import Ticket from './components/Ticket';
+import { useState } from 'react';
+import useToken from './components/useToken';
+
 
 function App() {
+
+  const { token, setToken } = useToken();
+
+  if(!token){
+    return <Login setToken={setToken}/>
+  }
+
   return (
     <Router>
     <div className="App">
