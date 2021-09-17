@@ -12,6 +12,7 @@ import {
 import Container from '@material-ui/core/Container';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import useToken from './useToken';
 
 
 const approval = [
@@ -50,7 +51,7 @@ const types = [
 
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
-
+  const { token, setToken } = useToken();
   const handleChange = (event) => {
     setTicket({
       ...ticket,
@@ -67,6 +68,7 @@ const TicketDetails = (props) => {
             method:'PUT',
             headers:{
                 'Content-Type':'application/json',
+                'Authorization':'bearer '+ token,
             },
             body: JSON.stringify(ticket)
         }).then(() => {
@@ -80,6 +82,7 @@ const TicketDetails = (props) => {
         method: 'GET',
         headers:{
             'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
         },
 
     })

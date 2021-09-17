@@ -91,6 +91,13 @@ export default function PersistentDrawerLeft() {
     setOpen(false);
   };
 
+  const handleClick = () => {
+    localStorage.clear();
+    window.location.replace("/login");
+  };
+
+
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -154,6 +161,10 @@ export default function PersistentDrawerLeft() {
             <ListItem button component={Link} to="/Tickets/Edit/1">
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Edit"/>
+            </ListItem>
+            <ListItem button onClick ={handleClick}>
+              <ListItemIcon><InboxIcon /></ListItemIcon>
+              <ListItemText primary="Log Out"/>
             </ListItem>
         </List>
       </Drawer>

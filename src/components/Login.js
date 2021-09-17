@@ -50,21 +50,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-async function loginUser( email, password) {
+async function loginUser(credentials) {
   return fetch('https://localhost:5001/api/login/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(email, password)
-  })
-    .then(data => data.json())
+    body: JSON.stringify(credentials)
+  }).then(data => data.json());
+
  }
 
-export default function Login({setToken}) {
+export default function Login() {
   const classes = useStyles();
-  const[email,  setEmail] = useState('');
-  const[password,  setPassword] = useState('');
+  const[email,  setEmail] = useState();
+  const[password,  setPassword] = useState();
   const history =useHistory();
 
   const handleSubmit = async (e) => {
@@ -73,7 +73,12 @@ export default function Login({setToken}) {
         const token = await loginUser({
           email, password
         });
-        setToken(token); 
+        setToken(token);
+        window.location.replace('/Tickets');
+  }
+
+  function setToken(userToken) {
+    localStorage.setItem('token', JSON.stringify(userToken));
   }
 
   return (
@@ -133,7 +138,7 @@ export default function Login({setToken}) {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/SignUp" variant="body2">
                 Dont have an account? Sign Up
               </Link>
             </Grid>

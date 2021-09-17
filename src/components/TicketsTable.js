@@ -3,6 +3,7 @@ import { DataGrid } from '@material-ui/data-grid';
 import Button from '@material-ui/core/Button';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import useToken from './useToken';
 
 
 
@@ -18,10 +19,15 @@ import { useState } from 'react';
 export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
+    const { token, setToken } = useToken();
 
     useEffect(() => {
     fetch('https://localhost:5001/api/Tickets',{
         method: 'GET',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'bearer '+ token,
+      },
 
     })
         .then(res =>{

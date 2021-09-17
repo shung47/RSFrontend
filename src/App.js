@@ -16,15 +16,12 @@ function App() {
 
   const { token, setToken } = useToken();
 
-  if(!token){
-    return <Login setToken={setToken}/>
-  }
 
   return (
     <Router>
     <div className="App">
       <div className="Navbar">
-        <NevBar/>
+        {token && <NevBar/>}
       </div>        
       <div className ="Content">
         <Switch>
