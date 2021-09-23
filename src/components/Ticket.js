@@ -73,7 +73,7 @@ const TicketDetails = (props) => {
             body: JSON.stringify(ticket)
         }).then(() => {
             console.log('Ticket updated');
-            history.push('/tickets');
+            history.push('/tickets/updated');
         })
   }
 

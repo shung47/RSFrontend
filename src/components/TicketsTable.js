@@ -57,20 +57,20 @@ const columns = [
       field: 'title',
       headerName: 'Title',
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: 'description',
       headerName: 'Description',
       width: 250,
-      editable: true,
+      editable: false,
     },
     {
       field: 'type',
       headerName: 'Type',
       type: 'number',
       width: 110,
-      editable: true,
+      editable: false,
     },
     {
       field: 'status',

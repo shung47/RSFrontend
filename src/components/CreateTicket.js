@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import { SettingsOutlined } from '@material-ui/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
+import useToken from './useToken';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -63,22 +64,25 @@ function CreateTicket(){
     const[description,  setDescription] = useState('');
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
-
+    const { token, setToken } = useToken();
+    
     const handleSubmit =(e) => {
         e.preventDefault();
         const ticket = {title, type, description,"status":"Unassign" };
+       
 
         setIsPending(true);
         fetch('https://localhost:5001/api/Tickets', {
             method:'POST',
             headers:{
-                'Content-Type':'application/json',
-            },
+              'Content-Type':'application/json',
+              'Authorization':'bearer '+ token,
+          },
             body: JSON.stringify(ticket)
         }).then(() => {
             setIsPending(false);
             console.log('new ticket created');
-            history.push('/tickets');
+            history.push('/tickets/updated');
         })
     }
 

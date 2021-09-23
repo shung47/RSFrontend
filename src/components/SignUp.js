@@ -15,19 +15,6 @@ import Container from '@material-ui/core/Container';
 import { useHistory } from "react-router-dom";
 import { useState } from 'react';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -48,6 +35,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const roles = [
+  {
+    value: 'Admin',
+    label: 'Admin'
+  },
+  {
+    value: 'Director',
+    label: 'Director'
+  },
+  {
+    value: 'BALeader',
+    label: 'BA Leader'
+  },
+  {
+    value: 'SALeader',
+    label: 'SALeader'
+  },
+  {
+    value: 'BA',
+    label: 'BA'
+  },
+  {
+    value: 'SA',
+    label: 'SA'
+  }
+];
+
 
 export default function SignUp() {
   const classes = useStyles();
@@ -56,19 +70,14 @@ export default function SignUp() {
   const[lastName,  setLastName] = useState('');
   const[email,  setEmail] = useState('');
   const[password, setPassword] =useState('');
-  
-  const [user, setUser] = useState();
+  const[role, setRole] = useState('');
 
-  const handleChange = (event) => {
-    setUser({
-      ...user,
-      [event.target.name]: event.target.value
-    });
-  };
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = {firstName, lastName, email, password};
+    const user = {firstName, lastName, email, password, role};
 
         fetch('https://localhost:5001/api/Users/', {
             method:'POST',
@@ -77,11 +86,12 @@ export default function SignUp() {
             },
             body: JSON.stringify(user)
         }).then(() => {
-            history.push('/Login');
+            history.push('/SignUpCompleted');
         })
   }
 
   return (
+    
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
@@ -148,6 +158,30 @@ export default function SignUp() {
               />
             </Grid>
             <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="role"
+                label="Role"
+                id="role"
+                select
+                value={role}
+                SelectProps={{ native: true }}
+                onChange={(e) => setRole(e.target.value)}
+                >
+                  {roles.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+                </TextField>
+              
+            </Grid>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I am a CDBA team member"
@@ -173,8 +207,8 @@ export default function SignUp() {
         </form>
       </div>
       <Box mt={5}>
-        <Copyright />
       </Box>
     </Container>
+    
   );
 }

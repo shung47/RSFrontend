@@ -10,6 +10,8 @@ import Dashboard  from './components/Dashboard';
 import Ticket from './components/Ticket';
 import { useState } from 'react';
 import useToken from './components/useToken';
+import SignUpCompleted from './components/SignUpCompleted';
+import TicketUpdated from './components/TicketUpdated';
 
 
 function App() {
@@ -39,11 +41,20 @@ function App() {
           <Route exact path="/Tickets/Create">
             <CreateTicket/>
           </Route>
+          <Route exact path="/Tickets/Updated">
+            <TicketUpdated/>
+          </Route>
           <Route exact path="/Dashboard">
             <Dashboard/>
           </Route>
           <Route path="/Tickets/Edit/:id">
             <Ticket/>
+          </Route>
+          <Route exact path="/SignUpCompleted">
+            <SignUpCompleted/>
+          </Route>
+          <Route path="">
+            <Login/>
           </Route>
         </Switch>
       </div>
