@@ -12,6 +12,7 @@ import { useState } from 'react';
 import useToken from './components/useToken';
 import SignUpCompleted from './components/SignUpCompleted';
 import TicketUpdated from './components/TicketUpdated';
+import  NotFound  from './components/NotFound';
 
 
 function App() {
@@ -53,8 +54,11 @@ function App() {
           <Route exact path="/SignUpCompleted">
             <SignUpCompleted/>
           </Route>
-          <Route path="">
+          <Route exact path="/">
             <Login/>
+          </Route>
+          <Route path="*">
+            <NotFound/>
           </Route>
         </Switch>
       </div>

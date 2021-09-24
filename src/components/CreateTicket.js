@@ -65,6 +65,7 @@ function CreateTicket(){
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
     const { token, setToken } = useToken();
+    const[errorMsg, setErrorMsg] = useState(null);
     
     const handleSubmit =(e) => {
         e.preventDefault();
@@ -79,11 +80,17 @@ function CreateTicket(){
               'Authorization':'bearer '+ token,
           },
             body: JSON.stringify(ticket)
-        }).then(() => {
+        }).then(res => {
+          if(!res.ok)
+          {
+            throw Error('Woops! Something goes wrong.');
+          }else{
             setIsPending(false);
-            console.log('new ticket created');
             history.push('/tickets/updated');
-        })
+          }
+        }).catch(err => {
+          setErrorMsg(err.message);
+      })
     }
 
     return(
@@ -198,6 +205,7 @@ function CreateTicket(){
             >
                 Creating ticket...
             </Button>}
+            <div className="Warning-text">{errorMsg}</div>
             </form>
         </div>
         </Container>

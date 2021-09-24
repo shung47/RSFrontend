@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
 
 const roles = [
   {
-    value: 'Admin',
-    label: 'Admin'
+    value: 'BA',
+    label: 'BA'
   },
   {
-    value: 'Director',
-    label: 'Director'
+    value: 'SA',
+    label: 'SA'
   },
   {
     value: 'BALeader',
@@ -53,13 +53,14 @@ const roles = [
     label: 'SALeader'
   },
   {
-    value: 'BA',
-    label: 'BA'
+    value: 'Director',
+    label: 'Director'
   },
   {
-    value: 'SA',
-    label: 'SA'
+    value: 'Admin',
+    label: 'Admin'
   }
+
 ];
 
 
@@ -71,6 +72,7 @@ export default function SignUp() {
   const[email,  setEmail] = useState('');
   const[password, setPassword] =useState('');
   const[role, setRole] = useState('');
+  const[errorMsg, setErrorMsg] = useState(null);
 
 
   
@@ -85,8 +87,16 @@ export default function SignUp() {
                 'Content-Type':'application/json',
             },
             body: JSON.stringify(user)
-        }).then(() => {
-            history.push('/SignUpCompleted');
+        }).then(res => {
+            if(!res.ok)
+            {
+              throw new Error("Failed to created a new account. Make sure your email hasn't been registered.")
+            }else{
+              history.push('/SignUpCompleted');
+            }
+            
+        }).catch(err => {
+            setErrorMsg(err.message);
         })
   }
 
@@ -101,7 +111,7 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+        <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -139,6 +149,7 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -197,6 +208,7 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
+          <div className="Warning-text">{errorMsg}</div>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/Login" variant="body2">

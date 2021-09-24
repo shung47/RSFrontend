@@ -61,6 +61,9 @@ const TicketDetails = (props) => {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const history =useHistory();
+  const[errorMsg, setErrorMsg] = useState(null);
+  const [isPending, setIsPending] = useState(true);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -71,10 +74,18 @@ const TicketDetails = (props) => {
                 'Authorization':'bearer '+ token,
             },
             body: JSON.stringify(ticket)
-        }).then(() => {
-            console.log('Ticket updated');
-            history.push('/tickets/updated');
-        })
+        }).then(res => {
+            if(!res.ok)
+            {
+              throw Error('Cannot update the tickect detail')
+            }else
+            {
+              console.log('Ticket updated');
+              history.push('/tickets/updated');
+            }
+        }).catch(err => {
+          setErrorMsg(err.message);
+      })
   }
 
   useEffect(() => {
@@ -87,18 +98,18 @@ const TicketDetails = (props) => {
 
     })
         .then(res =>{
-            console.log(res);
-            // if(!res.ok){
-            //     throw Error('Could not fetch the data');
-            // }
-            return res.json();
+             if(!res.ok){
+                throw Error('Could not fetch the data');
+             }else{
+              return res.json();
+             }
         })
         .then(data =>{
-            console.log(data);
             setTicket(data[0]);
+            setIsPending(false);
         })
         .catch(err => {
-            console.log(err.message);
+            setErrorMsg(err.message);
         })
 }, []);
 
@@ -106,15 +117,15 @@ const TicketDetails = (props) => {
     <Container component="main" maxWidth="md">
     <form onSubmit={handleSubmit}
       autoComplete="off"
-      noValidate
       {...props}
     >
       <Card>
         <CardHeader
-          subheader="The information can be edited"
+          subheader={errorMsg}
           title="Ticket Details"
         />
         <Divider />
+        {isPending && <div style={{ height: 200, width: '100%'}}><h3>Loading...</h3></div>}
         {ticket&&<CardContent>
           <Grid
             container
@@ -199,7 +210,7 @@ const TicketDetails = (props) => {
                 label="Reviewer"
                 name="reviewer"
                 onChange={handleChange}
-                required
+                //required
                 //value={}
                 variant="outlined"
               />

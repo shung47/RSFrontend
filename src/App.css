@@ -43,6 +43,11 @@
 .CheckBox{
   text-align: left;
 }
+
+.Warning-text{
+  color: #F00;
+  padding-bottom: 20px;
+}
 /*
 .Create {
   padding-left: 15%;

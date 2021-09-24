@@ -65,7 +65,7 @@ export default function Login() {
   const classes = useStyles();
   const[email,  setEmail] = useState();
   const[password,  setPassword] = useState();
-  const history =useHistory();
+  const[errorMsg, setErrorMsg] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,8 +73,15 @@ export default function Login() {
         const token = await loginUser({
           email, password
         });
-        setToken(token);
-        window.location.replace('/Tickets');
+
+        if(token.status==404)
+        {
+          setErrorMsg('Incorrect Email or password');
+        }else{
+          setToken(token);
+          window.location.replace('/Tickets');
+        }
+
   }
 
   function setToken(userToken) {
@@ -131,6 +138,7 @@ export default function Login() {
           >
             Sign In
           </Button>
+          <div className="Warning-text">{errorMsg}</div>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
