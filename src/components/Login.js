@@ -109,6 +109,7 @@ export default function Login() {
             name="email"
             autoComplete="email"
             autoFocus
+            type = "email"
             value={email}
             onChange = {(e) => setEmail(e.target.value)}
           />

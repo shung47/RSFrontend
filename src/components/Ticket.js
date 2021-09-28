@@ -13,12 +13,13 @@ import Container from '@material-ui/core/Container';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import useToken from './useToken';
+import jwtDecode from 'jwt-decode';
 
 
 const approval = [
   {
-    value: 'reviewing',
-    label: 'Reviewing'
+    value: 'pending',
+    label: 'Pending'
   },
   {
     value: 'approve',
@@ -31,10 +32,10 @@ const approval = [
 ];
 
 const types = [
-  {
-    value: 'RPA',
-    label: 'RPA'
-  },
+  // {
+  //   value: 'RPA',
+  //   label: 'RPA'
+  // },
   {
     value: 'project',
     label: 'Project'
@@ -49,9 +50,26 @@ const types = [
   }
 ];
 
+const status = [
+{
+  value: 'progressing',
+  label: 'Progressing'
+},
+{
+  value: 'reviewing',
+  label: 'Reviewing'
+},
+{
+  value: 'completed',
+  label: 'Completed'
+},
+
+]
+
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
   const { token, setToken } = useToken();
+  var user =jwtDecode(token);
   const handleChange = (event) => {
     setTicket({
       ...ticket,
@@ -194,11 +212,19 @@ const TicketDetails = (props) => {
                 fullWidth
                 label="Status"
                 name="status"
-                disabled
+                select
                 onChange={handleChange}
                 value={ticket.status}
                 variant="outlined"
-              />
+                SelectProps={{ native: true }}
+              >{status.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}</TextField>
             </Grid>
             <Grid
               item
@@ -207,11 +233,11 @@ const TicketDetails = (props) => {
             >
               <TextField
                 fullWidth
-                label="Reviewer"
-                name="reviewer"
+                label="Assignee"
+                name="assignee"
                 onChange={handleChange}
-                //required
-                //value={}
+                required
+                value={ticket.assignee}
                 variant="outlined"
               />
             </Grid>
@@ -222,11 +248,55 @@ const TicketDetails = (props) => {
             >
               <TextField
                 fullWidth
-                label="Approval"
-                name="approval"
+                label="Developer"
+                name="developer"
+                onChange={handleChange}
+                required
+                value={ticket.developer}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Code Approval"
+                name="codeApproval"
                 onChange={handleChange}
                 required
                 select
+                disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                SelectProps={{ native: true }}
+                value={ticket.codeApproval}
+                variant="outlined"
+              >
+                {approval.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
+              
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="SA Leader Approval"
+                name="saLeaderApproval"
+                onChange={handleChange}
+                required
+                select
+                disabled = {user.Role!='SALeader'}
                 SelectProps={{ native: true }}
                 //value={values.state}
                 variant="outlined"
@@ -240,7 +310,61 @@ const TicketDetails = (props) => {
                   </option>
                 ))}
               </TextField>
-            </Grid>
+              </Grid>
+              <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Business Review Approval"
+                name="BApproval"
+                onChange={handleChange}
+                required
+                select
+                disabled={user.Role!='BA'&&user.Role!='BALeader'}
+                SelectProps={{ native: true }}
+                //value={values.state}
+                variant="outlined"
+              >
+                {approval.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
+              </Grid>
+              <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Director Approval"
+                name="Director pproval"
+                onChange={handleChange}
+                required
+                select
+                disabled={user.Role!="Director"}
+                SelectProps={{ native: true }}
+                //value={values.state}
+                variant="outlined"
+              >
+                {approval.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
+              </Grid>
           </Grid>
         </CardContent>}
         <Divider />

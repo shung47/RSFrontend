@@ -80,6 +80,27 @@ const columns = [
       editable: false,
     },
     {
+      field: 'assignee',
+      headerName: 'Assignee',
+      sortable: true,
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'createdDateTime',
+      headerName: 'Created Time',
+      sortable: true,
+      width: 200,
+      editable: false,
+    },
+    {
+      field: 'completedDateTime',
+      headerName: 'Completed Time',
+      sortable: true,
+      width: 200,
+      editable: false,
+    },
+    {
       field: 'edit',
       headerName: ' ',
       sortable: false,

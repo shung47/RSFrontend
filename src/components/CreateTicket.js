@@ -38,10 +38,10 @@ const useStyles = makeStyles((theme) => ({
   }));
 
   const types = [
-    {
-      value: 'RPA',
-      label: 'RPA'
-    },
+    // {
+    //   value: 'RPA',
+    //   label: 'RPA'
+    // },
     {
       value: 'project',
       label: 'Project'
@@ -60,8 +60,12 @@ const useStyles = makeStyles((theme) => ({
 function CreateTicket(){
     const classes = useStyles();
     const[title,  setTitle] = useState('');
-    const[type,  setType] = useState('');
+    const[type,  setType] = useState('Project');
     const[description,  setDescription] = useState('');
+    const[assignee, setAssignee] = useState('');
+    const[developer, setDeveloper] = useState('');
+    const[businessReview, setBusinessReview] = useState(false);
+    const[IsRPA, setIsRPA] = useState(false);
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
     const { token, setToken } = useToken();
@@ -69,7 +73,7 @@ function CreateTicket(){
     
     const handleSubmit =(e) => {
         e.preventDefault();
-        const ticket = {title, type, description,"status":"Unassign" };
+        const ticket = {title, type, assignee,'status':'unassign' , developer, description, IsRPA, businessReview };
        
 
         setIsPending(true);
@@ -108,7 +112,6 @@ function CreateTicket(){
                     fullWidth
                     id="ticketTitle"
                     label="Title"
-                    autoFocus
                     value ={title}
                     onChange = {(e) => setTitle(e.target.value)}
                 />
@@ -136,6 +139,32 @@ function CreateTicket(){
                 ))}
                 </TextField>
                 </Grid>
+                <Grid item xs={6}>
+                <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="assignee"
+                    label="Assignee"
+                    id="assignee"
+                    value={assignee}
+                    onChange = {(e) => setAssignee(e.target.value)}
+                    //select
+                />
+                </Grid>
+                <Grid item xs={6}>
+                <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="developer"
+                    label="Developer"
+                    id="developer"
+                    value={developer}
+                    onChange = {(e) => setDeveloper(e.target.value)}
+                    //select
+                />
+                </Grid>
                 <Grid item xs={12}>
                 <TextField
                     variant="outlined"
@@ -150,41 +179,18 @@ function CreateTicket(){
                     onChange = {(e) => setDescription(e.target.value)}
                 />
                 </Grid>
-                <Grid item xs={12}>
-                <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="reviewers"
-                    label="Reviewers"
-                    type="Reviewers"
-                    id="reviewers"
-                    autoComplete="Reviewers"
-                    //select
-                />
-                </Grid>
                 <Grid item xs={6} className="CheckBox">
-                <FormControlLabel
-                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                    label="SA leader approval required"
+                <FormControlLabel 
+                    control={<Checkbox value={businessReview} color="primary" />}
+                    label="Business review required"
+                    onChange = {(e) =>setBusinessReview(e.target.checked)}
                 />
                 </Grid>
                 <Grid item xs={6} className="CheckBox">
                 <FormControlLabel 
-                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                    label="BA leader approval required"
-                />
-                </Grid>
-                <Grid item xs={6} className="CheckBox">
-                <FormControlLabel 
-                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                    label="CY approval required"
-                />
-                </Grid>
-                <Grid item xs={6} className="CheckBox">
-                <FormControlLabel 
-                    control={<Checkbox value="allowExtraEmails" color="primary" />}
+                    control={<Checkbox value= {IsRPA} color="primary" />}
                     label="RPA required"
+                    onChange = {(e) =>setIsRPA(e.target.checked)}
                 />
                 </Grid>
             </Grid>
