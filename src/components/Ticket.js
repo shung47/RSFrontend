@@ -14,30 +14,29 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
-const approval = [
+const approvals = [
   {
-    value: 'pending',
+    value: 'Pending',
     label: 'Pending'
   },
   {
-    value: 'approve',
-    label: 'Approve'
+    value: 'Approved',
+    label: 'Approved'
   },
   {
-    value: 'reject',
-    label: 'Reject'
+    value: 'Rejected',
+    label: 'Rejected'
   }
 ];
 
 const types = [
-  // {
-  //   value: 'RPA',
-  //   label: 'RPA'
-  // },
+
   {
-    value: 'project',
+    value: 'Project',
     label: 'Project'
   },
   {
@@ -52,15 +51,15 @@ const types = [
 
 const status = [
 {
-  value: 'progressing',
+  value: 'Progressing',
   label: 'Progressing'
 },
 {
-  value: 'reviewing',
+  value: 'Reviewing',
   label: 'Reviewing'
 },
 {
-  value: 'completed',
+  value: 'Completed',
   label: 'Completed'
 },
 
@@ -76,15 +75,51 @@ const TicketDetails = (props) => {
       [event.target.name]: event.target.value
     });
   };
+
+  const handleApprovalChange =(e) =>{
+    e.preventDefault();
+    console.log(e);
+    
+    const approval ={ApprovalType: e.target.name,ApprovalStatus:e.target.value};
+
+    fetch('https://localhost:5001/api/Tickets/'+ id, {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'bearer '+ token,
+            },
+            body: JSON.stringify(approval)
+        }).then(res => {
+            if(!res.ok)
+            {
+              throw Error('Cannot approve the tickect')
+            }else
+            {
+              setTicket({
+                ...ticket,
+                [e.target.name] : approval.ApprovalStatus
+              });
+              setApprovalMsg("The " + e.target.name + " is " + approval.ApprovalStatus );
+              console.log('Ticket updated');
+            }
+        }).catch(err => {
+          setErrorMsg(err.message);
+      })
+  }
+
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const history =useHistory();
   const[errorMsg, setErrorMsg] = useState(null);
   const [isPending, setIsPending] = useState(true);
+  const[businessReview, setBusinessReview] = useState(null);
+  const[isRPA, setIsRPA] = useState(null);
+  const[approvalMsg, setApprovalMsg] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    ticket.isRpa = isRPA;
+    ticket.businessReview = businessReview;
         fetch('https://localhost:5001/api/Tickets/'+ id, {
             method:'PUT',
             headers:{
@@ -95,7 +130,7 @@ const TicketDetails = (props) => {
         }).then(res => {
             if(!res.ok)
             {
-              throw Error('Cannot update the tickect detail')
+              res.text().then(text => {setErrorMsg(text)})
             }else
             {
               console.log('Ticket updated');
@@ -123,7 +158,9 @@ const TicketDetails = (props) => {
              }
         })
         .then(data =>{
-            setTicket(data[0]);
+            setTicket(data);            
+            setIsRPA(data.isRpa);           
+            setBusinessReview(data.businessReview);
             setIsPending(false);
         })
         .catch(err => {
@@ -187,22 +224,7 @@ const TicketDetails = (props) => {
                   {option.label}
                 </option>
               ))}</TextField>
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Description"
-                name="description"
-                onChange={handleChange}
-                required
-                value={ticket.description}
-                variant="outlined"
-              />
-            </Grid>
+            </Grid>           
             <Grid
               item
               md={6}
@@ -265,7 +287,7 @@ const TicketDetails = (props) => {
                 fullWidth
                 label="Code Approval"
                 name="codeApproval"
-                onChange={handleChange}
+                onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
                 disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
@@ -273,7 +295,7 @@ const TicketDetails = (props) => {
                 value={ticket.codeApproval}
                 variant="outlined"
               >
-                {approval.map((option) => (
+                {approvals.map((option) => (
                   <option
                     key={option.value}
                     value={option.value}
@@ -293,15 +315,15 @@ const TicketDetails = (props) => {
                 fullWidth
                 label="SA Leader Approval"
                 name="saLeaderApproval"
-                onChange={handleChange}
+                onChange={(e)=>handleApprovalChange(e)}
+                value={ticket.saLeaderApproval}
                 required
                 select
                 disabled = {user.Role!='SALeader'}
                 SelectProps={{ native: true }}
-                //value={values.state}
                 variant="outlined"
               >
-                {approval.map((option) => (
+                {approvals.map((option) => (
                   <option
                     key={option.value}
                     value={option.value}
@@ -319,24 +341,22 @@ const TicketDetails = (props) => {
               <TextField
                 fullWidth
                 label="Business Review Approval"
-                name="BApproval"
-                onChange={handleChange}
+                name="businessApproval"
+                onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
                 disabled={user.Role!='BA'&&user.Role!='BALeader'}
                 SelectProps={{ native: true }}
-                //value={values.state}
+                value={ticket.businessApproval}
                 variant="outlined"
-              >
-                {approval.map((option) => (
+              >{approvals.map((option) => (
                   <option
                     key={option.value}
                     value={option.value}
                   >
                     {option.label}
                   </option>
-                ))}
-              </TextField>
+                ))}</TextField>
               </Grid>
               <Grid
               item
@@ -346,28 +366,74 @@ const TicketDetails = (props) => {
               <TextField
                 fullWidth
                 label="Director Approval"
-                name="Director pproval"
-                onChange={handleChange}
+                name="directorApproval"
+                onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                disabled={user.Role!="Director"}
+                //disabled={user.Role!="Director"}
                 SelectProps={{ native: true }}
-                //value={values.state}
+                value={ticket.directorApproval}
                 variant="outlined"
-              >
-                {approval.map((option) => (
+              >{approvals.map((option) => (
                   <option
                     key={option.value}
                     value={option.value}
                   >
                     {option.label}
                   </option>
-                ))}
-              </TextField>
+                ))}</TextField>                
               </Grid>
+              <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="For something"
+                name="something"
+                multiline
+                //onChange={handleChange}
+                // required
+                //value={ticket.developer}
+                variant="outlined"
+              />
+            </Grid>
+                <Grid item xs={6} className="CheckBox">
+                  <FormControlLabel 
+                      control={<Checkbox checked={ticket.businessReview} color="primary" />}
+                      label="Business review required"
+                      disabled
+                      onChange = {handleChange}
+                  />
+                  </Grid>
+                  <Grid item xs={6} className="CheckBox">
+                  <FormControlLabel 
+                      control={<Checkbox checked= {ticket.isRpa} color="primary" />}
+                      label="RPA required"
+                      disabled
+                      onChange = {handleChange}
+                  />
+                </Grid>
+                <Grid
+              item
+              md={12}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Description"
+                name="description"
+                onChange={handleChange}
+                required
+                value={ticket.description}
+                variant="outlined"
+              />
+            </Grid>
           </Grid>
         </CardContent>}
         <Divider />
+        {approvalMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{approvalMsg}</div>}
         <Box
           sx={{
             display: 'flex',

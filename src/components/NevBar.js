@@ -158,7 +158,7 @@ export default function PersistentDrawerLeft() {
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Create"/>
             </ListItem>
-            <ListItem button component={Link} to="/Tickets/Edit/1">
+            <ListItem button component={Link} to="/Tickets/Edit/3">
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Edit"/>
             </ListItem>
