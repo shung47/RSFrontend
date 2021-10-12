@@ -16,6 +16,11 @@ import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 const approvals = [
@@ -68,6 +73,7 @@ const status = [
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
   const { token, setToken } = useToken();
+  
   var user =jwtDecode(token);
   const handleChange = (event) => {
     setTicket({
@@ -75,6 +81,33 @@ const TicketDetails = (props) => {
       [event.target.name]: event.target.value
     });
   };
+
+  const handleCheckboxChange = (e) =>{   
+    setTicket({
+      ...ticket,    
+      [e.target.name]: e.target.checked
+    });
+  };
+
+  const handleDelete = (e) =>{
+    fetch('https://localhost:5001/api/Tickets/'+ id, {
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'bearer '+ token,
+            }           
+        }).then(res => {
+            if(!res.ok)
+            {
+              res.text().then(text => {setErrorMsg(text)})
+            }else
+            {             
+              history.push('/tickets/updated');
+            }
+        }).catch(err => {
+          setErrorMsg(err.message);
+      })
+  }
 
   const handleApprovalChange =(e) =>{
     e.preventDefault();
@@ -92,7 +125,7 @@ const TicketDetails = (props) => {
         }).then(res => {
             if(!res.ok)
             {
-              throw Error('Cannot approve the tickect')
+              res.text().then(text => {setErrorMsg(text)})
             }else
             {
               setTicket({
@@ -115,6 +148,13 @@ const TicketDetails = (props) => {
   const[businessReview, setBusinessReview] = useState(null);
   const[isRPA, setIsRPA] = useState(null);
   const[approvalMsg, setApprovalMsg] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -290,7 +330,7 @@ const TicketDetails = (props) => {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
                 SelectProps={{ native: true }}
                 value={ticket.codeApproval}
                 variant="outlined"
@@ -319,7 +359,7 @@ const TicketDetails = (props) => {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                disabled = {user.Role!='SALeader'}
+                //disabled = {user.Role!='SALeader'}
                 SelectProps={{ native: true }}
                 variant="outlined"
               >
@@ -345,7 +385,8 @@ const TicketDetails = (props) => {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                disabled={user.Role!='BA'&&user.Role!='BALeader'}
+                disabled = {!ticket.businessReview}
+                //disabled={user.Role!='BA'&&user.Role!='BALeader'}
                 SelectProps={{ native: true }}
                 value={ticket.businessApproval}
                 variant="outlined"
@@ -401,18 +442,16 @@ const TicketDetails = (props) => {
             </Grid>
                 <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
-                      control={<Checkbox checked={ticket.businessReview} color="primary" />}
+                      control={<Checkbox checked={businessReview} color="primary" />}
                       label="Business review required"
-                      disabled
-                      onChange = {handleChange}
+                      onChange = {(e) =>setBusinessReview(e.target.checked)}
                   />
                   </Grid>
                   <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
-                      control={<Checkbox checked= {ticket.isRpa} color="primary" />}
+                      control={<Checkbox checked= {isRPA} color="primary" />}
                       label="RPA required"
-                      disabled
-                      onChange = {handleChange}
+                      onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
                 <Grid
@@ -431,6 +470,14 @@ const TicketDetails = (props) => {
               />
             </Grid>
           </Grid>
+          <Grid item
+              md={6}
+              xs={12}>
+            <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <h4>*A project needs to be approved by the director and others</h4>
+            </div>
+          </Grid>
+
         </CardContent>}
         <Divider />
         {approvalMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{approvalMsg}</div>}
@@ -441,6 +488,13 @@ const TicketDetails = (props) => {
             p: 2
           }}
         >
+          <Button 
+          variant="outlined" 
+          onClick={handleClickOpen} 
+          color ="secondary"
+          variant="contained"> 
+          Send reminding Email
+          </Button>
           <Button
             color="primary"
             variant="contained"
@@ -451,12 +505,59 @@ const TicketDetails = (props) => {
           <Button
             color="#ffffff"
             variant="contained"
+            onClick={handleClickOpen}
           >
             Delete
           </Button>
         </Box>
       </Card>
     </form>
+    <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Warning"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you wanna delete this ticket?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+          color="primary"
+          variant="contained"
+          onClick={handleDelete}>Delete</Button>
+          <Button
+          color="#ffffff"
+          variant="contained"
+          onClick={handleClose}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Send a request email</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Need someone to approve your ticket? Please provide the email and we will send out the request email for you.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Send</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
