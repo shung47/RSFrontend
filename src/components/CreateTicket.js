@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     //   label: 'RPA'
     // },
     {
-      value: 'project',
+      value: 'Project',
       label: 'Project'
     },
     {
@@ -53,6 +53,10 @@ const useStyles = makeStyles((theme) => ({
     {
       value: 'SSR',
       label: 'SSR'
+    },
+    {
+      value: 'Incident',
+      label: 'Incident'
     }
   ];
 
@@ -189,7 +193,7 @@ function CreateTicket(){
                 <Grid item xs={6} className="CheckBox">
                 <FormControlLabel 
                     control={<Checkbox value= {IsRPA} color="primary" />}
-                    label="RPA required"
+                    label="RPA or DB changes required"
                     onChange = {(e) =>setIsRPA(e.target.checked)}
                 />
                 </Grid>

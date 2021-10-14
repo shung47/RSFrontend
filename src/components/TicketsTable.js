@@ -42,8 +42,12 @@ export default function DataTable(props) {
             if(props.status=='Completed')
             {
               setTickets(data.filter(e=>e.status==='Completed'));
-            }else{
-              setTickets(data.filter(e=>e.status!='Completed'));
+            }else if(props.status=='Reviewing')
+            {
+              setTickets(data.filter(e=>e.status=='Reviewing'));
+            }else 
+            {
+              setTickets(data.filter(e=>e.status=='Progressing'));
             }
             setIsPending(false);
         })
@@ -73,15 +77,15 @@ const columns = [
       editable: false,
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: 'assignee',
+      headerName: 'Assignee',
       sortable: true,
-      width: 120,
+      width: 150,
       editable: false,
     },
     {
-      field: 'assignee',
-      headerName: 'Assignee',
+      field: 'developer',
+      headerName: 'Developer',
       sortable: true,
       width: 150,
       editable: false,

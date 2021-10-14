@@ -51,6 +51,10 @@ const types = [
   {
     value: 'SSR',
     label: 'SSR'
+  },
+  {
+    value: 'Incident',
+    label: 'Incident'
   }
 ];
 
@@ -75,7 +79,9 @@ const TicketDetails = (props) => {
   const { token, setToken } = useToken();
   
   var user =jwtDecode(token);
+
   const handleChange = (event) => {
+    event.preventDefault();
     setTicket({
       ...ticket,
       [event.target.name]: event.target.value
@@ -89,7 +95,7 @@ const TicketDetails = (props) => {
     });
   };
 
-  const handleDelete = (e) =>{
+  const handleDelete = () =>{
     fetch('https://localhost:5001/api/Tickets/'+ id, {
             method:'DELETE',
             headers:{
@@ -100,12 +106,15 @@ const TicketDetails = (props) => {
             if(!res.ok)
             {
               res.text().then(text => {setErrorMsg(text)})
+              setOpenDelete(false);
+              setApprovalMsg(null);
             }else
             {             
               history.push('/tickets/updated');
             }
         }).catch(err => {
           setErrorMsg(err.message);
+          setApprovalMsg(null);
       })
   }
 
@@ -128,11 +137,15 @@ const TicketDetails = (props) => {
               res.text().then(text => {setErrorMsg(text)})
             }else
             {
+              var now = new Date();
+              var timeNow = now.toISOString()
               setTicket({
                 ...ticket,
-                [e.target.name] : approval.ApprovalStatus
+                [e.target.name] : approval.ApprovalStatus,
+                [e.target.name +'Time']: timeNow
               });
               setApprovalMsg("The " + e.target.name + " is " + approval.ApprovalStatus );
+              setErrorMsg(null);
               console.log('Ticket updated');
             }
         }).catch(err => {
@@ -149,6 +162,38 @@ const TicketDetails = (props) => {
   const[isRPA, setIsRPA] = useState(null);
   const[approvalMsg, setApprovalMsg] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [firstCRwindow, setFirstCRwindow] = useState(false);
+  const [secCRwindow, setSecCRwindow] = useState(false);
+  const [brWindow, setBrWindow] = useState(false);
+  const [users, setUsers] = useState(null);
+
+  const handleFirstClose = () => {
+    setFirstCRwindow(false);
+  };
+  const handleFirstOpen = () => {
+    setFirstCRwindow(true);
+  };
+  const handleSecClose = () => {
+    setSecCRwindow(false);
+  };
+  const handleSecOpen = () => {
+    setSecCRwindow(true);
+  };
+  const handleBrClose = () => {
+    setBrWindow(false);
+  };
+  const handleBrOpen = () => {
+    setBrWindow(true);
+  };
+
+  const handleClickDelete = () => {
+    setOpenDelete(true);
+  };
+  const handleDeleteClose = () => {
+    setOpenDelete(false);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -158,6 +203,7 @@ const TicketDetails = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     ticket.isRpa = isRPA;
     ticket.businessReview = businessReview;
         fetch('https://localhost:5001/api/Tickets/'+ id, {
@@ -171,6 +217,7 @@ const TicketDetails = (props) => {
             if(!res.ok)
             {
               res.text().then(text => {setErrorMsg(text)})
+              setApprovalMsg(null);
             }else
             {
               console.log('Ticket updated');
@@ -178,6 +225,7 @@ const TicketDetails = (props) => {
             }
         }).catch(err => {
           setErrorMsg(err.message);
+          setApprovalMsg(null);
       })
   }
 
@@ -208,15 +256,39 @@ const TicketDetails = (props) => {
         })
 }, []);
 
+  useEffect(() => {
+    fetch('https://localhost:5001/api/Users/',{
+        method: 'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        },
+
+    })
+        .then(res =>{
+            if(!res.ok){
+                throw Error('Could not fetch the data');
+            }else{
+              return res.json();
+            }
+        })
+        .then(data =>{
+            setUsers(data);
+            console.log('user'+users.first());
+        })
+        .catch(err => {
+            setErrorMsg(err.message);
+        })
+  }, []);
+
   return (
     <Container component="main" maxWidth="md">
-    <form onSubmit={handleSubmit}
+    <form onSubmit={handleSubmit} 
       autoComplete="off"
       {...props}
     >
       <Card>
         <CardHeader
-          subheader={errorMsg}
           title="Ticket Details"
         />
         <Divider />
@@ -301,7 +373,10 @@ const TicketDetails = (props) => {
                 required
                 value={ticket.assignee}
                 variant="outlined"
-              />
+                select
+                SelectProps={{ native: true }}
+              >
+              </TextField>
             </Grid>
             <Grid
               item
@@ -320,31 +395,135 @@ const TicketDetails = (props) => {
             </Grid>
             <Grid
               item
+              md={12}
+              xs={12}
+            >
+              <TextField 
+                type="textarea"
+                multiline 
+                fullWidth
+                label="Description"
+                name="description"
+                onChange={handleChange}
+                required
+                value={ticket.description}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={6} className="CheckBox">
+                  <FormControlLabel 
+                      control={<Checkbox checked={businessReview} color="primary" />}
+                      label="Business review required"
+                      onChange = {(e) =>setBusinessReview(e.target.checked)}
+                  />
+                  </Grid>
+                  <Grid item xs={6} className="CheckBox">
+                  <FormControlLabel 
+                      control={<Checkbox checked= {isRPA} color="primary" />}
+                      label="RPA or DB changes required"
+                      onChange = {(e) =>setIsRPA(e.target.checked)}
+                  />
+                </Grid>
+          </Grid>
+          {ticket.status!='Progressing'&&<Grid
+            container
+            spacing={3}>
+            <Grid
+              item
               md={6}
               xs={12}
             >
               <TextField
                 fullWidth
-                label="Code Approval"
-                name="codeApproval"
-                onChange={(e)=>handleApprovalChange(e)}
-                required
-                select
-                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
-                SelectProps={{ native: true }}
-                value={ticket.codeApproval}
+                label="Primary code reviewer"
+                name="primaryCodeReviewer"
+                onChange={handleChange}
+                value={ticket.primaryCodeReviewer}
                 variant="outlined"
-              >
-                {approvals.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </TextField>
-              
+              />
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    variant="outlined" 
+                    onClick={handleFirstOpen} 
+                    color ="primary"
+                    variant="contained"> 
+                    Approval
+                </Button>
+                <Button 
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    variant="contained"> 
+                    {ticket.primaryCodeApproval} {ticket.primaryCodeApprovalTime}
+                </Button>
+
+              </div>
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Secondary code reviewer"
+                name="secondaryCodeReviewer"
+                onChange={handleChange}
+                value={ticket.secondaryCodeReviewer}
+                variant="outlined"
+              />
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    variant="outlined" 
+                    onClick={handleSecOpen} 
+                    color ="primary"
+                    variant="contained"> 
+                    Approval
+                </Button>
+                <Button 
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    variant="contained"> 
+                    {ticket.secondaryCodeApproval} {ticket.secondaryCodeApprovalTime}
+                </Button>
+              </div>
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Business Reviewer"
+                name="businessReviewer"
+                onChange={handleChange}
+                value={ticket.businessReviewer}
+                variant="outlined"
+              />
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    variant="outlined" 
+                    onClick={handleBrOpen} 
+                    color ="primary"
+                    variant="contained"> 
+                    Approval
+                </Button>
+                <Button 
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    variant="contained"> 
+                    {ticket.businessApproval} {ticket.businessApprovalTime}
+                </Button>
+              </div>
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
             </Grid>
             <Grid
               item
@@ -372,33 +551,16 @@ const TicketDetails = (props) => {
                   </option>
                 ))}
               </TextField>
-              </Grid>
-              <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Business Review Approval"
-                name="businessApproval"
-                onChange={(e)=>handleApprovalChange(e)}
-                required
-                select
-                disabled = {!ticket.businessReview}
-                //disabled={user.Role!='BA'&&user.Role!='BALeader'}
-                SelectProps={{ native: true }}
-                value={ticket.businessApproval}
-                variant="outlined"
-              >{approvals.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}</TextField>
-              </Grid>
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    variant="contained"> 
+                    {ticket.saLeaderApprovalTime}
+                </Button>
+              </div>             
+            </Grid>
               <Grid
               item
               md={6}
@@ -422,54 +584,19 @@ const TicketDetails = (props) => {
                   >
                     {option.label}
                   </option>
-                ))}</TextField>                
+                ))}</TextField>
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    variant="contained"> 
+                    {ticket.directorApprovalTime}
+                </Button>
+              </div>               
               </Grid>
-              <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="For something"
-                name="something"
-                multiline
-                //onChange={handleChange}
-                // required
-                //value={ticket.developer}
-                variant="outlined"
-              />
-            </Grid>
-                <Grid item xs={6} className="CheckBox">
-                  <FormControlLabel 
-                      control={<Checkbox checked={businessReview} color="primary" />}
-                      label="Business review required"
-                      onChange = {(e) =>setBusinessReview(e.target.checked)}
-                  />
-                  </Grid>
-                  <Grid item xs={6} className="CheckBox">
-                  <FormControlLabel 
-                      control={<Checkbox checked= {isRPA} color="primary" />}
-                      label="RPA required"
-                      onChange = {(e) =>setIsRPA(e.target.checked)}
-                  />
-                </Grid>
-                <Grid
-              item
-              md={12}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Description"
-                name="description"
-                onChange={handleChange}
-                required
-                value={ticket.description}
-                variant="outlined"
-              />
-            </Grid>
-          </Grid>
+                
+          </Grid>}
           <Grid item
               md={6}
               xs={12}>
@@ -477,10 +604,10 @@ const TicketDetails = (props) => {
               <h4>*A project needs to be approved by the director and others</h4>
             </div>
           </Grid>
-
         </CardContent>}
         <Divider />
         {approvalMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{approvalMsg}</div>}
+        {errorMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{errorMsg}</div>}
         <Box
           sx={{
             display: 'flex',
@@ -505,7 +632,7 @@ const TicketDetails = (props) => {
           <Button
             color="#ffffff"
             variant="contained"
-            onClick={handleClickOpen}
+            onClick={handleClickDelete}
           >
             Delete
           </Button>
@@ -513,8 +640,8 @@ const TicketDetails = (props) => {
       </Card>
     </form>
     <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openDelete}
+        onClose={handleDeleteClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -534,30 +661,141 @@ const TicketDetails = (props) => {
           <Button
           color="#ffffff"
           variant="contained"
-          onClick={handleClose}>Cancel</Button>
+          onClick={handleDeleteClose}>Cancel</Button>
         </DialogActions>
-      </Dialog>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Send a request email</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Need someone to approve your ticket? Please provide the email and we will send out the request email for you.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
+    </Dialog>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Send a request email</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Need someone to approve your ticket? Please provide the email and we will send out the request email for you.
+        </DialogContentText>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Email Address"
+          type="email"
+          fullWidth
+          variant="standard"
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={handleClose}>Send</Button>
+      </DialogActions>
+    </Dialog>
+    {ticket&&<Dialog open={firstCRwindow} onClose={handleFirstClose}>
+      <DialogTitle>Primary Code Review</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          This is the window you approve the code review
+        </DialogContentText>       
+      </DialogContent>
+      <DialogContent>
+        <TextField
             fullWidth
-            variant="standard"
-          />
+            label="Primary Code Approval"
+            name="primaryCodeApproval"
+            onChange={(e)=>handleApprovalChange(e)}
+            required
+            select
+            //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+            SelectProps={{ native: true }}
+            value={ticket.primaryCodeApproval}
+            variant="outlined"
+        >
+              {approvals.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Send</Button>
-        </DialogActions>
-      </Dialog>
+          <DialogContentText>
+          {errorMsg}
+          </DialogContentText>   
+      <DialogActions>
+        <Button color="primary"  variant="contained" onClick={handleFirstClose}>Ok</Button>
+      </DialogActions>
+    </Dialog>}
+    {ticket&&<Dialog open={secCRwindow} onClose={handleSecClose}>
+      <DialogTitle>Secondary Code Review</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          This is the window you approve the code review
+        </DialogContentText>       
+      </DialogContent>
+        <DialogContent>
+          <TextField
+                fullWidth
+                label="Secondary Code Approval"
+                name="secondaryCodeApproval"
+                onChange={(e)=>handleApprovalChange(e)}             
+                required
+                select
+                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                SelectProps={{ native: true }}
+                value={ticket.secondaryCodeApproval}
+                variant="outlined"
+            >
+              {approvals.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+        </DialogContent>
+        <DialogContentText>
+          {errorMsg}
+        </DialogContentText>   
+      <DialogActions>
+        <Button color="primary"  variant="contained" onClick={handleSecClose}>Ok</Button>
+      </DialogActions>
+    </Dialog>}
+    {ticket&&<Dialog open={brWindow} onClose={handleBrClose}>
+      <DialogTitle>Business Review</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          This is the window you approve the business review
+        </DialogContentText>       
+      </DialogContent>
+        <DialogContent>
+          <TextField
+                fullWidth
+                label="BusinessApproval"
+                name="businessApproval"
+                onChange={(e)=>handleApprovalChange(e)}
+                required
+                select
+                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                SelectProps={{ native: true }}
+                value={ticket.codeApproval}
+                variant="outlined"
+            >
+                {approvals.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+            </TextField>
+          <DialogContentText>
+            {errorMsg}
+          </DialogContentText>       
+        </DialogContent>
+      <DialogActions>
+        <Button color="primary"  variant="contained" onClick={handleBrClose}>Ok</Button>
+      </DialogActions>
+    </Dialog>}
     </Container>
   );
 };

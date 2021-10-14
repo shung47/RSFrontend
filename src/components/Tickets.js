@@ -62,13 +62,17 @@ export default function SimpleTabs() {
       <AppBar position="relative" >
         <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
           <Tab label="Active Tickets" {...a11yProps(0)} />
-          <Tab label="Completed Tickets" {...a11yProps(1)} />
+          <Tab label="Reviewiing Tickets" {...a11yProps(0)} />
+          <Tab label="Completed Tickets" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
         <TicketsTable status='Active'/>
       </TabPanel>
       <TabPanel value={value} index={1}>
+        <TicketsTable status='Reviewing'/>
+      </TabPanel>
+      <TabPanel value={value} index={2}>
         <TicketsTable status='Completed'/>
       </TabPanel>
       <div>
