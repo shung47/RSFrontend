@@ -18,6 +18,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import {Link} from 'react-router-dom';
+import useToken from './useToken';
+import jwtDecode from 'jwt-decode';
 
 const drawerWidth = 240;
 
@@ -82,6 +84,9 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const { token, setToken } = useToken();
+  
+  var user =jwtDecode(token);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -132,6 +137,7 @@ export default function PersistentDrawerLeft() {
         }}
       >
         <div className={classes.drawerHeader}>
+          <h3 style={{ alignContent:"flex-start", display : "flex" }}>{user.FirstName} {user.LastName}</h3>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>

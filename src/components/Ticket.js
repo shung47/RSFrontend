@@ -88,13 +88,6 @@ const TicketDetails = (props) => {
     });
   };
 
-  const handleCheckboxChange = (e) =>{   
-    setTicket({
-      ...ticket,    
-      [e.target.name]: e.target.checked
-    });
-  };
-
   const handleDelete = () =>{
     fetch('https://localhost:5001/api/Tickets/'+ id, {
             method:'DELETE',
@@ -274,7 +267,6 @@ const TicketDetails = (props) => {
         })
         .then(data =>{
             setUsers(data);
-            console.log('user'+users.first());
         })
         .catch(err => {
             setErrorMsg(err.message);
@@ -365,7 +357,7 @@ const TicketDetails = (props) => {
               md={6}
               xs={12}
             >
-              <TextField
+              {users&&<TextField
                 fullWidth
                 label="Assignee"
                 name="assignee"
@@ -375,15 +367,22 @@ const TicketDetails = (props) => {
                 variant="outlined"
                 select
                 SelectProps={{ native: true }}
-              >
-              </TextField>
+              >{users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}
+              </TextField>}
             </Grid>
             <Grid
               item
               md={6}
               xs={12}
             >
-              <TextField
+              {users&&<TextField
                 fullWidth
                 label="Developer"
                 name="developer"
@@ -391,7 +390,16 @@ const TicketDetails = (props) => {
                 required
                 value={ticket.developer}
                 variant="outlined"
-              />
+                select
+                SelectProps={{ native: true }}
+              >{users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}</TextField>}
             </Grid>
             <Grid
               item
@@ -410,7 +418,12 @@ const TicketDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={6} className="CheckBox">
+
+          </Grid>
+          {ticket.status!='Progressing'&&users&&<Grid
+            container
+            spacing={3}>
+                <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox checked={businessReview} color="primary" />}
                       label="Business review required"
@@ -424,10 +437,6 @@ const TicketDetails = (props) => {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
-          </Grid>
-          {ticket.status!='Progressing'&&<Grid
-            container
-            spacing={3}>
             <Grid
               item
               md={6}
@@ -440,13 +449,23 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 value={ticket.primaryCodeReviewer}
                 variant="outlined"
-              />
+                select
+                //SelectProps={{ native: true }}
+              >{users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
                     variant="outlined" 
                     onClick={handleFirstOpen} 
                     color ="primary"
-                    variant="contained"> 
+                    disabled = {user.Email != ticket.primaryCodeReviewer}
+                    variant="contained">                    
                     Approval
                 </Button>
                 <Button 
@@ -471,12 +490,22 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 value={ticket.secondaryCodeReviewer}
                 variant="outlined"
-              />
+                select
+                //SelectProps={{ native: true, default: ""}}
+              >{users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
                     variant="outlined" 
                     onClick={handleSecOpen} 
                     color ="primary"
+                    disabled = {user.Email != ticket.secondaryCodeReviewer}
                     variant="contained"> 
                     Approval
                 </Button>
@@ -501,13 +530,24 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 value={ticket.businessReviewer}
                 variant="outlined"
-              />
+                select
+                //SelectProps={{ native: true }}
+              >{users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
                     variant="outlined" 
                     onClick={handleBrOpen} 
                     color ="primary"
+                    disabled = {user.Email != ticket.businessReviewer}
                     variant="contained"> 
+                    
                     Approval
                 </Button>
                 <Button 

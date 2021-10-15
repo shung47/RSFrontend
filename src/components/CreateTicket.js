@@ -16,6 +16,7 @@ import { SettingsOutlined } from '@material-ui/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
 import useToken from './useToken';
+import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -74,6 +75,7 @@ function CreateTicket(){
     const history =useHistory();
     const { token, setToken } = useToken();
     const[errorMsg, setErrorMsg] = useState(null);
+    const[users, setUsers] = useState();
     
     const handleSubmit =(e) => {
         e.preventDefault();
@@ -101,9 +103,33 @@ function CreateTicket(){
       })
     }
 
+    useEffect(() => {
+      fetch('https://localhost:5001/api/Users/',{
+          method: 'GET',
+          headers:{
+              'Content-Type':'application/json',
+              'Authorization':'bearer '+ token,
+          },
+  
+      })
+          .then(res =>{
+              if(!res.ok){
+                  throw Error('Could not fetch the data');
+              }else{
+                return res.json();
+              }
+          })
+          .then(data =>{
+              setUsers(data);
+          })
+          .catch(err => {
+              setErrorMsg(err.message);
+          })
+    }, []);
+
     return(
-        <Container component="main" maxWidth="sm">
-        <div className = "Create">
+      <Container component="main" maxWidth="sm">
+        {users&&<div className = "Create">
             <h1>Create a ticket</h1>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -153,8 +179,17 @@ function CreateTicket(){
                     id="assignee"
                     value={assignee}
                     onChange = {(e) => setAssignee(e.target.value)}
-                    //select
-                />
+                    select
+                    //SelectProps={{ native: true }}
+                >{users.map((option) => (
+                  <option
+                    key={option.email}
+                    value={option.email}
+                  >
+                    {option.email}
+                  </option>
+                ))}
+                </TextField>
                 </Grid>
                 <Grid item xs={6}>
                 <TextField
@@ -166,8 +201,16 @@ function CreateTicket(){
                     id="developer"
                     value={developer}
                     onChange = {(e) => setDeveloper(e.target.value)}
-                    //select
-                />
+                    select
+                    //SelectProps={{ native: true }}
+                >{users.map((option) => (
+                  <option
+                    key={option.email}
+                    value={option.email}
+                  >
+                    {option.email}
+                  </option>))}
+                </TextField>
                 </Grid>
                 <Grid item xs={12}>
                 <TextField
@@ -183,7 +226,7 @@ function CreateTicket(){
                     onChange = {(e) => setDescription(e.target.value)}
                 />
                 </Grid>
-                <Grid item xs={6} className="CheckBox">
+{/*                 <Grid item xs={6} className="CheckBox">
                 <FormControlLabel 
                     control={<Checkbox value={businessReview} color="primary" />}
                     label="Business review required"
@@ -196,7 +239,7 @@ function CreateTicket(){
                     label="RPA or DB changes required"
                     onChange = {(e) =>setIsRPA(e.target.checked)}
                 />
-                </Grid>
+                </Grid> */}
             </Grid>
             {!isPending && <Button
                 type="submit"               
@@ -217,7 +260,7 @@ function CreateTicket(){
             </Button>}
             <div className="Warning-text">{errorMsg}</div>
             </form>
-        </div>
+        </div>}
         </Container>
     );
 }

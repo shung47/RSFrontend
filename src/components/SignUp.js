@@ -72,6 +72,7 @@ export default function SignUp() {
   const[email,  setEmail] = useState('');
   const[password, setPassword] =useState('');
   const[role, setRole] = useState('BA');
+  const[employeeId, setEmployeeId]=useState('');
   const[errorMsg, setErrorMsg] = useState(null);
 
 
@@ -79,7 +80,7 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = {firstName, lastName, email, password, role};
+    const user = {firstName, lastName, email, password, employeeId, role};
 
         fetch('https://localhost:5001/api/Users/', {
             method:'POST',
@@ -138,6 +139,19 @@ export default function SignUp() {
                 autoComplete="lname"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="employeeId"
+                label="Employee Id"
+                name="employeeId"
+                autoComplete=""
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
