@@ -91,7 +91,7 @@ export default function SignUp() {
         }).then(res => {
             if(!res.ok)
             {
-              throw new Error("Failed to created a new account. Make sure your email hasn't been registered.")
+              res.text().then(text => {setErrorMsg(text)})
             }else{
               history.push('/SignUpCompleted');
             }

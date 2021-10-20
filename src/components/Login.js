@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
+import { blue } from '@material-ui/core/colors';
 
 function Copyright() {
   return (
@@ -92,6 +93,9 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+      <Typography component="h1" variant="h4" style = {{marginBottom:"20px", color:'#3f51b5'}}>
+          CDBA Requests System
+      </Typography>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>

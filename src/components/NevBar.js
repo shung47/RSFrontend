@@ -144,30 +144,18 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
-            <ListItem button component={Link} to="/Dashboard">
+            {/* <ListItem button component={Link} to="/Dashboard">
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Dashboard"/>
-            </ListItem> 
+            </ListItem>  */}
             <ListItem button component={Link} to="/Tickets">
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Tickets"/>
+            </ListItem>
+            <ListItem button component={Link} to="/Tasks">
+              <ListItemIcon><InboxIcon /></ListItemIcon>
+              <ListItemText primary="Tasks"/>
             </ListItem> 
-            <ListItem button component={Link} to="/SignUp">
-              <ListItemIcon><MailIcon /></ListItemIcon>
-              <ListItemText primary="Sign Up"/>
-            </ListItem>
-            <ListItem button component={Link} to="/Login">
-              <ListItemIcon><InboxIcon /></ListItemIcon>
-              <ListItemText primary="Login"/>
-            </ListItem>
-            <ListItem button component={Link} to="/Tickets/Create">
-              <ListItemIcon><InboxIcon /></ListItemIcon>
-              <ListItemText primary="Create"/>
-            </ListItem>
-            <ListItem button component={Link} to="/Tickets/Edit/3">
-              <ListItemIcon><InboxIcon /></ListItemIcon>
-              <ListItemText primary="Edit"/>
-            </ListItem>
             <ListItem button onClick ={handleClick}>
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Log Out"/>

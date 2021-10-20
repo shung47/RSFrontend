@@ -103,7 +103,7 @@ const TicketDetails = (props) => {
               setApprovalMsg(null);
             }else
             {             
-              history.push('/tickets/updated');
+              history.push('/tasks/updated');
             }
         }).catch(err => {
           setErrorMsg(err.message);
@@ -139,7 +139,6 @@ const TicketDetails = (props) => {
               });
               setApprovalMsg("The " + e.target.name + " is " + approval.ApprovalStatus );
               setErrorMsg(null);
-              console.log('Ticket updated');
             }
         }).catch(err => {
           setErrorMsg(err.message);
@@ -160,6 +159,7 @@ const TicketDetails = (props) => {
   const [secCRwindow, setSecCRwindow] = useState(false);
   const [brWindow, setBrWindow] = useState(false);
   const [users, setUsers] = useState(null);
+  const [tasks, setTasks] = useState(null);
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -273,6 +273,30 @@ const TicketDetails = (props) => {
         })
   }, []);
 
+  useEffect(() => {
+    fetch('https://localhost:5001/api/Tasks/',{
+        method: 'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        },
+
+    })
+        .then(res =>{
+            if(!res.ok){
+                throw Error('Could not fetch the data');
+            }else{
+              return res.json();
+            }
+        })
+        .then(data =>{
+            setTasks(data);
+        })
+        .catch(err => {
+            setErrorMsg(err.message);
+        })
+  }, []);
+
   return (
     <Container component="main" maxWidth="md">
     <form onSubmit={handleSubmit} 
@@ -304,6 +328,31 @@ const TicketDetails = (props) => {
                 value={ticket.title}
                 variant="outlined"
               />
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              {tasks&&<TextField
+                fullWidth
+                label="Task Name"
+                name="taskId"
+                onChange={handleChange}
+                value={ticket.taskId}
+                variant="outlined"
+                select
+                SelectProps={{ native: true }}
+              ><option></option>
+              {tasks.map((option) => (                
+                <option
+                  key={option.id}
+                  value={option.id}
+                >
+                  {option.taskName}
+                </option>
+              ))}
+              </TextField>}
             </Grid>
             <Grid
               item
@@ -392,7 +441,8 @@ const TicketDetails = (props) => {
                 variant="outlined"
                 select
                 SelectProps={{ native: true }}
-              >{users.map((option) => (
+              >
+                {users.map((option) => (               
                 <option
                   key={option.email}
                   value={option.email}
@@ -400,6 +450,46 @@ const TicketDetails = (props) => {
                   {option.email}
                 </option>
               ))}</TextField>}
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              {users&&<TextField
+                fullWidth
+                label="Secondary Developer"
+                name="secondaryDeveloper"
+                onChange={handleChange}
+                value={ticket.secondaryDeveloper}
+                variant="outlined"
+                select
+                SelectProps={{ native: true }}
+              ><option></option>
+              {users.map((option) => (
+                <option
+                  key={option.email}
+                  value={option.email}
+                >
+                  {option.email}
+                </option>
+              ))}</TextField>}
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label="Creator"
+                name="creator"
+                onChange={handleChange}
+                required
+                value={ticket.creator}
+                variant="outlined"
+                disabled
+              />
             </Grid>
             <Grid
               item
@@ -418,16 +508,12 @@ const TicketDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-
-          </Grid>
-          {ticket.status!='Progressing'&&users&&<Grid
-            container
-            spacing={3}>
-                <Grid item xs={6} className="CheckBox">
+            <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox checked={businessReview} color="primary" />}
                       label="Business review required"
                       onChange = {(e) =>setBusinessReview(e.target.checked)}
+                      disabled = {ticket.type!="Incident"}
                   />
                   </Grid>
                   <Grid item xs={6} className="CheckBox">
@@ -437,6 +523,11 @@ const TicketDetails = (props) => {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
+          </Grid>
+          {ticket.status!='Progressing'&&users&&<Grid
+            container
+            spacing={3}>
+                
             <Grid
               item
               md={6}
@@ -468,7 +559,7 @@ const TicketDetails = (props) => {
                     variant="contained">                    
                     Approval
                 </Button>
-                <Button 
+                <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
@@ -509,7 +600,7 @@ const TicketDetails = (props) => {
                     variant="contained"> 
                     Approval
                 </Button>
-                <Button 
+                <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
@@ -550,7 +641,7 @@ const TicketDetails = (props) => {
                     
                     Approval
                 </Button>
-                <Button 
+                <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
@@ -592,7 +683,7 @@ const TicketDetails = (props) => {
                 ))}
               </TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
-                <Button 
+                <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
@@ -626,7 +717,7 @@ const TicketDetails = (props) => {
                   </option>
                 ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
-                <Button 
+                <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"

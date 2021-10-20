@@ -13,6 +13,10 @@ import useToken from './components/useToken';
 import SignUpCompleted from './components/SignUpCompleted';
 import TicketUpdated from './components/TicketUpdated';
 import  NotFound  from './components/NotFound';
+import Tasks from './components/Tasks';
+import CreateTask from './components/CreateTask';
+import Task from './components/Task';
+import TaskUpdated from './components/TaskUpdated'
 
 
 function App() {
@@ -41,9 +45,21 @@ function App() {
           </Route>
           <Route exact path="/Tickets/Create">
             <CreateTicket/>
-          </Route>
+          </Route>         
           <Route exact path="/Tickets/Updated">
             <TicketUpdated/>
+          </Route>
+          <Route exact path="/Tasks">
+            <Tasks/>
+          </Route>
+          <Route exact path="/Tasks/Create">
+            <CreateTask/>
+          </Route>
+          <Route exact path="/Tasks/Edit/:id">
+            <Task/>
+          </Route>
+          <Route exact path="/Tasks/Updated">
+            <TaskUpdated/>
           </Route>
           <Route exact path="/Dashboard">
             <Dashboard/>

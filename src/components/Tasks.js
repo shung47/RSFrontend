@@ -6,7 +6,6 @@ import { useState } from 'react';
 import useToken from './useToken';
 
 
-
 // const rows = [
 //   { id: 1, description: 'Snow', title: 'Jon', type: 35 },
 //   { id: 2, description: 'Lannister', title: 'Cersei', type: 42 },
@@ -16,13 +15,13 @@ import useToken from './useToken';
 //   { id: 6, description: 'Melisandre', title: null, type: 150 },
 // ];
 
-export default function DataTable(props) {
-    const [tickets, setTickets] = useState(null);
+export default function Tasks() {
+    const [tasks, setTasks] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const { token, setToken } = useToken();
 
     useEffect(() => {
-    fetch('https://localhost:5001/api/Tickets',{
+    fetch('https://localhost:5001/api/Tasks',{
         method: 'GET',
         headers:{
           'Content-Type':'application/json',
@@ -32,24 +31,14 @@ export default function DataTable(props) {
     })
         .then(res =>{
             console.log(res);
-            // if(!res.ok){
-            //     throw Error('Could not fetch the data');
-            // }
-            return res.json();
-        })
-        .then(data =>{
-            console.log(data);
-            if(props.status=='Completed')
-            {
-              setTickets(data.filter(e=>e.status==='Completed'));
-            }else if(props.status=='Reviewing')
-            {
-              setTickets(data.filter(e=>e.status=='Reviewing'));
-            }else 
-            {
-              setTickets(data.filter(e=>e.status=='Progressing'));
+            if(!res.ok){
+                throw Error('Could not fetch the data');
             }
             setIsPending(false);
+            return res.json();
+        })
+        .then(data =>{          
+              setTasks(data);
         })
         .catch(err => {
             console.log(err.message);
@@ -58,64 +47,35 @@ export default function DataTable(props) {
 const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     {
-      field: 'title',
-      headerName: 'Title',
+      field: 'name',
+      headerName: 'Name',
       width: 150,
       editable: false,
     },
     {
-      field: 'description',
-      headerName: 'Description',
+      field: 'summary',
+      headerName: 'Summary',
       width: 200,
       editable: false,
     },
     {
-      field: 'type',
-      headerName: 'Type',
-      type: 'number',
+      field: 'region',
+      headerName: 'Region',
       width: 110,
       editable: false,
     },
     {
-      field: 'assignee',
-      headerName: 'Assignee',
+      field: 'department',
+      headerName: 'Department',
       sortable: true,
       width: 150,
       editable: false,
     },
     {
-      field: 'developer',
-      headerName: 'Developer',
+      field: 'referenceNumber',
+      headerName: 'Reference Number',
       sortable: true,
       width: 150,
-      editable: false,
-    },
-    {
-      field: 'primaryCodeReviewer',
-      headerName: 'Primary Code Reviewer',
-      sortable: true,
-      width: 250,
-      editable: false,
-    },
-    {
-      field: 'businessReviewer',
-      headerName: 'Business Reviewer',
-      sortable: true,
-      width: 200,
-      editable: false,
-    },
-    {
-      field: 'createdDateTime',
-      headerName: 'Created Time',
-      sortable: true,
-      width: 200,
-      editable: false,
-    },
-    {
-      field: 'completedDateTime',
-      headerName: 'Completed Time',
-      sortable: true,
-      width: 200,
       editable: false,
     },
     {
@@ -130,7 +90,7 @@ const columns = [
             color="primary"
             onClick={(e) => {
               e.preventDefault();
-              window.location.href='/Tickets/Edit/'+ cellValues.id;
+              window.location.href='/Tasks/Edit/'+ cellValues.id;
             }}
           >
             View
@@ -141,16 +101,20 @@ const columns = [
   ];
 
 
-  return (
-    <div style={{ height: 400, width: '100%' }}>
-        {isPending && <div>Loading...</div>}
-        {tickets && <DataGrid
-
-        rows={tickets}
-        columns={columns}
-        pageSize={5}
-        
-      />}
+  return (   
+      <div>        
+      
+        <div style={{ height: 600, width: '80%', position:'center',margin: '0 auto' }}>
+            {isPending && <div>Loading...</div>}
+            {tasks && <DataGrid
+            rows={tasks}
+            columns={columns}
+            pageSize={10}           
+        />}
+        </div>
+        <div>
+        <Button variant="contained" color="primary" href='Tasks/Create'>Create</Button>
+        </div>
     </div>
   );
 }
