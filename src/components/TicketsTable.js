@@ -5,17 +5,6 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import useToken from './useToken';
 
-
-
-// const rows = [
-//   { id: 1, description: 'Snow', title: 'Jon', type: 35 },
-//   { id: 2, description: 'Lannister', title: 'Cersei', type: 42 },
-//   { id: 3, description: 'Lannister', title: 'Jaime', type: 45 },
-//   { id: 4, description: 'Stark', title: 'Arya', type: 16 },
-//   { id: 5, description: 'Targaryen', title: 'Daenerys', type: null },
-//   { id: 6, description: 'Melisandre', title: null, type: 150 },
-// ];
-
 export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
@@ -47,7 +36,7 @@ export default function DataTable(props) {
               setTickets(data.filter(e=>e.status=='Reviewing'));
             }else 
             {
-              setTickets(data.filter(e=>e.status=='Progressing'));
+              setTickets(data.filter(e=>e.status=='OnHold'||e.status=='UnderDevelopment'));
             }
             setIsPending(false);
         })

@@ -60,8 +60,12 @@ const types = [
 
 const status = [
 {
-  value: 'Progressing',
-  label: 'Progressing'
+  value: 'OnHold',
+  label: 'On Hold'
+},
+{
+  value: 'UnderDevelopment',
+  label: 'Under Development'
 },
 {
   value: 'Reviewing',
@@ -160,6 +164,7 @@ const TicketDetails = (props) => {
   const [brWindow, setBrWindow] = useState(false);
   const [users, setUsers] = useState(null);
   const [tasks, setTasks] = useState(null);
+  const [dbControlList, setDbControlList]=useState(null);
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -236,12 +241,14 @@ const TicketDetails = (props) => {
                 throw Error('Could not fetch the data');
              }else{
               return res.json();
+
              }
         })
         .then(data =>{
             setTicket(data);            
             setIsRPA(data.isRpa);           
             setBusinessReview(data.businessReview);
+            setDbControlList(data.dbControlList);
             setIsPending(false);
         })
         .catch(err => {
@@ -262,7 +269,7 @@ const TicketDetails = (props) => {
             if(!res.ok){
                 throw Error('Could not fetch the data');
             }else{
-              return res.json();
+              return res.json();              
             }
         })
         .then(data =>{
@@ -480,6 +487,30 @@ const TicketDetails = (props) => {
               md={6}
               xs={12}
             >
+              {dbControlList&&<TextField
+                fullWidth
+                label="Database Modification"
+                name="dbmaster"
+                onChange={handleChange}
+                value={ticket.dbmaster}
+                variant="outlined"
+                select
+                SelectProps={{ native: true }}
+              ><option></option>
+              {Array.from(dbControlList).map((option) => (
+                <option
+                  key={option.database + option.saMaster }
+                  value={option.saMaster}
+                >
+                  {option.database} - {option.saMaster}
+                </option>
+              ))}</TextField>}
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
               <TextField
                 fullWidth
                 label="Creator"
@@ -524,7 +555,7 @@ const TicketDetails = (props) => {
                   />
                 </Grid>
           </Grid>
-          {ticket.status!='Progressing'&&users&&<Grid
+          {(ticket.status=='Reviewing'||ticket.status=='Completed')&&users&&<Grid
             container
             spacing={3}>
                 
@@ -542,7 +573,7 @@ const TicketDetails = (props) => {
                 variant="outlined"
                 select
                 //SelectProps={{ native: true }}
-              >{users.map((option) => (
+              ><option></option>{users.map((option) => (
                 <option
                   key={option.email}
                   value={option.email}
