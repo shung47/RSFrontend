@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return fetch('https://localhost:5001/api/login/', {
+  return fetch(`${process.env.REACT_APP_API_URL}login/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

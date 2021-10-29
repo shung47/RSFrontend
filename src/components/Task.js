@@ -35,7 +35,7 @@ const TaskDetails = (props) => {
     };
   
     const handleDelete = () =>{
-      fetch('https://localhost:5001/api/Tasks/'+ id, {
+      fetch(`${process.env.REACT_APP_API_URL}Tasks/`+ id, {
               method:'DELETE',
               headers:{
                   'Content-Type':'application/json',
@@ -81,7 +81,7 @@ const TaskDetails = (props) => {
     const handleSubmit = (e) => {
       e.preventDefault();
   
-          fetch('https://localhost:5001/api/Tasks/'+ id, {
+          fetch(`${process.env.REACT_APP_API_URL}Tasks/`+ id, {
               method:'PUT',
               headers:{
                   'Content-Type':'application/json',
@@ -102,7 +102,7 @@ const TaskDetails = (props) => {
     }
   
     useEffect(() => {
-      fetch('https://localhost:5001/api/Tasks/'+ id,{
+      fetch(`${process.env.REACT_APP_API_URL}Tasks/`+ id,{
           method: 'GET',
           headers:{
               'Content-Type':'application/json',

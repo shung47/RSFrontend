@@ -86,7 +86,7 @@ function CreateTicket(){
        
 
         setIsPending(true);
-        fetch('https://localhost:5001/api/Tickets', {
+        fetch(`${process.env.REACT_APP_API_URL}Tickets`, {
             method:'POST',
             headers:{
               'Content-Type':'application/json',
@@ -107,8 +107,9 @@ function CreateTicket(){
     }
 
     useEffect(() => {
-      fetch('https://localhost:5001/api/Users/',{
+      fetch(`${process.env.REACT_APP_API_URL}Users/`,{
           method: 'GET',
+          withCredentials: true,
           headers:{
               'Content-Type':'application/json',
               'Authorization':'bearer '+ token,
@@ -131,8 +132,9 @@ function CreateTicket(){
     }, []);
 
     useEffect(() => {
-      fetch('https://localhost:5001/api/Tasks/',{
+      fetch(`${process.env.REACT_APP_API_URL}Tasks/`,{
           method: 'GET',
+          withCredentials: true,
           headers:{
               'Content-Type':'application/json',
               'Authorization':'bearer '+ token,

@@ -93,7 +93,7 @@ const TicketDetails = (props) => {
   };
 
   const handleDelete = () =>{
-    fetch('https://localhost:5001/api/Tickets/'+ id, {
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -121,7 +121,7 @@ const TicketDetails = (props) => {
     
     const approval ={ApprovalType: e.target.name,ApprovalStatus:e.target.value};
 
-    fetch('https://localhost:5001/api/Tickets/'+ id, {
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -204,7 +204,7 @@ const TicketDetails = (props) => {
 
     ticket.isRpa = isRPA;
     ticket.businessReview = businessReview;
-        fetch('https://localhost:5001/api/Tickets/'+ id, {
+        fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'PUT',
             headers:{
                 'Content-Type':'application/json',
@@ -228,7 +228,7 @@ const TicketDetails = (props) => {
   }
 
   useEffect(() => {
-    fetch('https://localhost:5001/api/Tickets/'+ id,{
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id,{
         method: 'GET',
         headers:{
             'Content-Type':'application/json',
@@ -257,7 +257,7 @@ const TicketDetails = (props) => {
 }, []);
 
   useEffect(() => {
-    fetch('https://localhost:5001/api/Users/',{
+    fetch(`${process.env.REACT_APP_API_URL}Users/`,{
         method: 'GET',
         headers:{
             'Content-Type':'application/json',
@@ -281,7 +281,7 @@ const TicketDetails = (props) => {
   }, []);
 
   useEffect(() => {
-    fetch('https://localhost:5001/api/Tasks/',{
+    fetch(`${process.env.REACT_APP_API_URL}Tasks/`,{
         method: 'GET',
         headers:{
             'Content-Type':'application/json',
@@ -415,7 +415,7 @@ const TicketDetails = (props) => {
             >
               {users&&<TextField
                 fullWidth
-                label="Assignee"
+                label="Assignee(Responsible)"
                 name="assignee"
                 onChange={handleChange}
                 required
@@ -495,6 +495,7 @@ const TicketDetails = (props) => {
                 value={ticket.dbmaster}
                 variant="outlined"
                 select
+                disabled = {!isRPA}
                 SelectProps={{ native: true }}
               ><option></option>
               {Array.from(dbControlList).map((option) => (
@@ -572,7 +573,7 @@ const TicketDetails = (props) => {
                 value={ticket.primaryCodeReviewer}
                 variant="outlined"
                 select
-                //SelectProps={{ native: true }}
+                SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
                   key={option.email}
@@ -613,8 +614,8 @@ const TicketDetails = (props) => {
                 value={ticket.secondaryCodeReviewer}
                 variant="outlined"
                 select
-                //SelectProps={{ native: true, default: ""}}
-              >{users.map((option) => (
+                SelectProps={{ native: true, default: ""}}
+              ><option></option>{users.map((option) => (
                 <option
                   key={option.email}
                   value={option.email}
@@ -653,8 +654,8 @@ const TicketDetails = (props) => {
                 value={ticket.businessReviewer}
                 variant="outlined"
                 select
-                //SelectProps={{ native: true }}
-              >{users.map((option) => (
+                SelectProps={{ native: true }}
+              ><option></option>{users.map((option) => (
                 <option
                   key={option.email}
                   value={option.email}
@@ -700,7 +701,7 @@ const TicketDetails = (props) => {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                //disabled = {user.Role!='SALeader'}
+                disabled = {user.Role!='SALeader'}
                 SelectProps={{ native: true }}
                 variant="outlined"
               >

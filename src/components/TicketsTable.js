@@ -4,37 +4,44 @@ import Button from '@material-ui/core/Button';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import useToken from './useToken';
+import jwtDecode from 'jwt-decode';
 
 export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const { token, setToken } = useToken();
+    var user =jwtDecode(token);
 
     useEffect(() => {
-    fetch('https://localhost:5001/api/Tickets',{
+    fetch(`${process.env.REACT_APP_API_URL}Tickets`,{
         method: 'GET',
+        //mode: 'cors',
+        //credentials: 'include',
         headers:{
-          'Content-Type':'application/json',
+          'Content-Type':'application/json',          
           'Authorization':'bearer '+ token,
       },
 
     })
         .then(res =>{
             console.log(res);
-            // if(!res.ok){
+            //  if(!res.ok){
             //     throw Error('Could not fetch the data');
             // }
             return res.json();
         })
         .then(data =>{
-            console.log(data);
             if(props.status=='Completed')
             {
               setTickets(data.filter(e=>e.status==='Completed'));
             }else if(props.status=='Reviewing')
             {
               setTickets(data.filter(e=>e.status=='Reviewing'));
-            }else 
+            }else if(props.status=='MyTickets')
+            {
+              setTickets(data.filter(e=>e.assignee==user.Email||e.primaryCodeReviewer==user.Email||e.secondaryCodeReviewer==user.Email||e.businessReviewer==user.Email));
+            }
+            else 
             {
               setTickets(data.filter(e=>e.status=='OnHold'||e.status=='UnderDevelopment'));
             }

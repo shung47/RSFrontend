@@ -21,7 +21,7 @@ export default function Tasks() {
     const { token, setToken } = useToken();
 
     useEffect(() => {
-    fetch('https://localhost:5001/api/Tasks',{
+    fetch(`${process.env.REACT_APP_API_URL}Tasks`,{
         method: 'GET',
         headers:{
           'Content-Type':'application/json',
@@ -49,7 +49,7 @@ const columns = [
     {
       field: 'name',
       headerName: 'Name',
-      width: 150,
+      width: 200,
       editable: false,
     },
     {
@@ -61,21 +61,21 @@ const columns = [
     {
       field: 'region',
       headerName: 'Region',
-      width: 110,
+      width: 150,
       editable: false,
     },
     {
       field: 'department',
       headerName: 'Department',
       sortable: true,
-      width: 150,
+      width: 180,
       editable: false,
     },
     {
       field: 'referenceNumber',
       headerName: 'Reference Number',
       sortable: true,
-      width: 150,
+      width: 200,
       editable: false,
     },
     {
