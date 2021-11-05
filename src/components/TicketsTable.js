@@ -94,8 +94,22 @@ const columns = [
       editable: false,
     },
     {
+      field: 'secondaryCodeReviewer',
+      headerName: 'Secondary Code Reviewer',
+      sortable: true,
+      width: 250,
+      editable: false,
+    },
+    {
       field: 'businessReviewer',
       headerName: 'Business Reviewer',
+      sortable: true,
+      width: 200,
+      editable: false,
+    },
+    props.status=='MyTickets'&&{
+      field: 'status',
+      headerName: 'Status',
       sortable: true,
       width: 200,
       editable: false,
@@ -107,7 +121,7 @@ const columns = [
       width: 200,
       editable: false,
     },
-    {
+    props.status=='Completed'||props.status=='MyTickets'&&{
       field: 'completedDateTime',
       headerName: 'Completed Time',
       sortable: true,
@@ -138,13 +152,13 @@ const columns = [
 
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 600, width: '100%' }}>
         {isPending && <div>Loading...</div>}
         {tickets && <DataGrid
 
         rows={tickets}
         columns={columns}
-        pageSize={5}
+        pageSize={10}
         
       />}
     </div>

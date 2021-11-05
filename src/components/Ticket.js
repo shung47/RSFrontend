@@ -21,7 +21,37 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Select from '@mui/material/Select';
+import MuiCheckbox from '@mui/material/Checkbox';
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const names = [
+  'Oliver Hansen',
+  'Van Henry',
+  'April Tucker',
+  'Ralph Hubbard',
+  'Omar Alexander',
+  'Carlos Abbott',
+  'Miriam Wagner',
+  'Bradley Wilkerson',
+  'Virginia Andrews',
+  'Kelly Snyder',
+];
 
 const approvals = [
   {
@@ -117,7 +147,6 @@ const TicketDetails = (props) => {
 
   const handleApprovalChange =(e) =>{
     e.preventDefault();
-    console.log(e);
     
     const approval ={ApprovalType: e.target.name,ApprovalStatus:e.target.value};
 
@@ -147,6 +176,27 @@ const TicketDetails = (props) => {
         }).catch(err => {
           setErrorMsg(err.message);
       })
+  }
+
+  const handleEmailReminder=(e)=>{
+    e.preventDefault();
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/SendEmail/`+id,{
+      method: 'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        },
+    }).then(res =>{
+      if(!res.ok)
+      {
+        res.text().then(text => {setErrorMsg(text)})
+        setOpen(false);
+      }else{
+        setApprovalMsg('Email sent');
+        setOpen(false);
+      }
+    })
+
   }
 
   const { id } = useParams();
@@ -240,8 +290,7 @@ const TicketDetails = (props) => {
              if(!res.ok){
                 throw Error('Could not fetch the data');
              }else{
-              return res.json();
-
+              return res.json();              
              }
         })
         .then(data =>{
@@ -303,6 +352,18 @@ const TicketDetails = (props) => {
             setErrorMsg(err.message);
         })
   }, []);
+
+  //Email sending function
+  const [personName, setPersonName] = useState([]);
+  const handleEmailChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(
+      // On autofill we get a the stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
 
   return (
     <Container component="main" maxWidth="md">
@@ -831,21 +892,34 @@ const TicketDetails = (props) => {
       <DialogTitle>Send a request email</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Need someone to approve your ticket? Please provide the email and we will send out the request email for you.
+          Need someone to approve your ticket? Please click the send button and it will remind all approvers.
         </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Email Address"
-          type="email"
-          fullWidth
-          variant="standard"
-        />
+{/*         {users&&<div>
+          <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
+            <Select
+              labelId="demo-multiple-checkbox-label"
+              id="demo-multiple-checkbox"
+              multiple
+              value={personName}
+              onChange={handleEmailChange}
+              input={<OutlinedInput label="Tag" />}
+              renderValue={(selected) => selected.join(', ')}
+              MenuProps={MenuProps}
+            >
+              {users.map((user) => (
+                <MenuItem key={user.email} value={user.email}>
+                  <Checkbox checked={personName.indexOf(user.email) > -1} />
+                  <ListItemText primary={user.email} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>} */}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>Send</Button>
+        <Button onClick={handleEmailReminder}>Send</Button>
       </DialogActions>
     </Dialog>
     {ticket&&<Dialog open={firstCRwindow} onClose={handleFirstClose}>
