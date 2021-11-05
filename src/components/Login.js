@@ -64,7 +64,7 @@ async function loginUser(credentials) {
 
 export default function Login() {
   const classes = useStyles();
-  const[email,  setEmail] = useState();
+  const[employeeId,  setEmployeeId] = useState();
   const[password,  setPassword] = useState();
   const[errorMsg, setErrorMsg] = useState(null);
 
@@ -72,7 +72,7 @@ export default function Login() {
     e.preventDefault();
   
         const token = await loginUser({
-          email, password
+          employeeId, password
         });
 
         if(token.status==404)
@@ -108,14 +108,13 @@ export default function Login() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="employeeId"
+            label="EmployeeID"
+            name="employeeId"
+            autoComplete="employeeId"
             autoFocus
-            type = "email"
-            value={email}
-            onChange = {(e) => setEmail(e.target.value)}
+            value={employeeId}
+            onChange = {(e) => setEmployeeId(e.target.value)}
           />
           <TextField
             variant="outlined"

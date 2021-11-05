@@ -137,7 +137,7 @@ export default function PersistentDrawerLeft() {
         }}
       >
         <div className={classes.drawerHeader}>
-          <h3 style={{ alignContent:"flex-start", display : "flex" }}>{user.FirstName} {user.LastName}</h3>
+          <h3 style={{ alignContent:"flex-start", display : "flex" }}>{user.Name}</h3>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>

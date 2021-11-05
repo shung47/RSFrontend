@@ -35,43 +35,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const roles = [
-  {
-    value: 'BA',
-    label: 'BA'
-  },
-  {
-    value: 'SA',
-    label: 'SA'
-  },
-  {
-    value: 'BALeader',
-    label: 'BA Leader'
-  },
-  {
-    value: 'SALeader',
-    label: 'SALeader'
-  },
-  {
-    value: 'Director',
-    label: 'Director'
-  },
-  {
-    value: 'Admin',
-    label: 'Admin'
-  }
-
-];
-
-
 export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
-  const[firstName,  setFirstName] = useState('');
-  const[lastName,  setLastName] = useState('');
-  const[email,  setEmail] = useState('');
+  const [name, setName] = useState('');
   const[password, setPassword] =useState('');
-  const[role, setRole] = useState('BA');
   const[employeeId, setEmployeeId]=useState('');
   const[errorMsg, setErrorMsg] = useState(null);
 
@@ -80,9 +48,9 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = {firstName, lastName, email, password, employeeId, role};
+    const user = {password, employeeId};
 
-        fetch('https://localhost:5001/api/Users/', {
+        fetch(`${process.env.REACT_APP_API_URL}Users`, {
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -113,34 +81,7 @@ export default function SignUp() {
           Sign up
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </Grid>
+          <Grid container spacing={2}>           
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
@@ -153,21 +94,7 @@ export default function SignUp() {
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Grid>
+            </Grid>          
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -181,31 +108,7 @@ export default function SignUp() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="role"
-                label="Role"
-                id="role"
-                select
-                value={role}
-                SelectProps={{ native: true }}
-                onChange={(e) => setRole(e.target.value)}
-                >
-                  {roles.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-                </TextField>
-              
-            </Grid>
+            </Grid>           
             <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}

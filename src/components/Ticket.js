@@ -486,10 +486,10 @@ const TicketDetails = (props) => {
                 SelectProps={{ native: true }}
               >{users.map((option) => (
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}
               </TextField>}
@@ -512,10 +512,10 @@ const TicketDetails = (props) => {
               >
                 {users.map((option) => (               
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}</TextField>}
             </Grid>
@@ -536,10 +536,10 @@ const TicketDetails = (props) => {
               ><option></option>
               {users.map((option) => (
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}</TextField>}
             </Grid>
@@ -579,7 +579,7 @@ const TicketDetails = (props) => {
                 name="creator"
                 onChange={handleChange}
                 required
-                value={ticket.creator}
+                value={ticket.creatorName}
                 variant="outlined"
                 disabled
               />
@@ -637,10 +637,10 @@ const TicketDetails = (props) => {
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
@@ -648,7 +648,7 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     onClick={handleFirstOpen} 
                     color ="primary"
-                    disabled = {user.Email != ticket.primaryCodeReviewer}
+                    disabled = {user.EmployeeId != ticket.primaryCodeReviewer}
                     variant="contained">                    
                     Approval
                 </Button>
@@ -678,10 +678,10 @@ const TicketDetails = (props) => {
                 SelectProps={{ native: true, default: ""}}
               ><option></option>{users.map((option) => (
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
@@ -689,7 +689,7 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     onClick={handleSecOpen} 
                     color ="primary"
-                    disabled = {user.Email != ticket.secondaryCodeReviewer}
+                    disabled = {user.EmployeeId != ticket.secondaryCodeReviewer}
                     variant="contained"> 
                     Approval
                 </Button>
@@ -718,10 +718,10 @@ const TicketDetails = (props) => {
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
-                  key={option.email}
-                  value={option.email}
+                  key={option.employeeId}
+                  value={option.employeeId}
                 >
-                  {option.email}
+                  {option.name}
                 </option>
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
@@ -729,7 +729,7 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     onClick={handleBrOpen} 
                     color ="primary"
-                    disabled = {user.Email != ticket.businessReviewer}
+                    disabled = {user.EmployeeId != ticket.businessReviewer}
                     variant="contained"> 
                     
                     Approval
@@ -762,7 +762,7 @@ const TicketDetails = (props) => {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                disabled = {user.Role!='SALeader'}
+                //disabled = {user.Role!='SALeader'}
                 SelectProps={{ native: true }}
                 variant="outlined"
               >

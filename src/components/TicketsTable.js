@@ -39,7 +39,7 @@ export default function DataTable(props) {
               setTickets(data.filter(e=>e.status=='Reviewing'));
             }else if(props.status=='MyTickets')
             {
-              setTickets(data.filter(e=>e.assignee==user.Email||e.primaryCodeReviewer==user.Email||e.secondaryCodeReviewer==user.Email||e.businessReviewer==user.Email));
+              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.primaryCodeReviewer==user.EmployeeId||e.secondaryCodeReviewer==user.EmployeeId||e.businessReviewer==user.EmployeeId||e.developer==user.EmployeeId));
             }
             else 
             {
@@ -68,40 +68,39 @@ const columns = [
     {
       field: 'type',
       headerName: 'Type',
-      type: 'number',
       width: 110,
       editable: false,
     },
     {
-      field: 'assignee',
+      field: 'assigneeName',
       headerName: 'Assignee',
       sortable: true,
       width: 150,
       editable: false,
     },
     {
-      field: 'developer',
+      field: 'developerName',
       headerName: 'Developer',
       sortable: true,
       width: 150,
       editable: false,
     },
     {
-      field: 'primaryCodeReviewer',
+      field: 'primaryCodeReviewerName',
       headerName: 'Primary Code Reviewer',
       sortable: true,
       width: 250,
       editable: false,
     },
     {
-      field: 'secondaryCodeReviewer',
+      field: 'secondaryCodeReviewerName',
       headerName: 'Secondary Code Reviewer',
       sortable: true,
       width: 250,
       editable: false,
     },
     {
-      field: 'businessReviewer',
+      field: 'businessReviewerName',
       headerName: 'Business Reviewer',
       sortable: true,
       width: 200,

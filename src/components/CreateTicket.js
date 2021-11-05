@@ -238,10 +238,10 @@ function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (
                     <option
-                      key={option.email}
-                      value={option.email}
+                      key={option.employeeId}
+                      value={option.employeeId}
                     >
-                      {option.firstName}{option.lastName}
+                      {option.name}
                     </option>
                   ))}
                   </TextField>
@@ -261,10 +261,10 @@ function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (                    
                     <option
-                    key={option.email}
-                    value={option.email}
+                    key={option.employeeId}
+                    value={option.employeeId}
                   >
-                    {option.firstName}{option.lastName}
+                    {option.name}
                   </option>))}
                   </TextField>
                   </Grid>
@@ -282,10 +282,10 @@ function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (                    
                     <option
-                    key={option.email}
-                    value={option.email}
+                    key={option.employeeId}
+                    value={option.employeeId}
                   >
-                    {option.firstName}{option.lastName}
+                    {option.name}
                   </option>))}
                   </TextField>
                   </Grid>
