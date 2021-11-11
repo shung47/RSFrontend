@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router';
 import useToken from './useToken';
 import { useEffect } from 'react';
+import jwtDecode from 'jwt-decode';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-function CreateTask(){
+  export default function CreateTask(){
     const classes = useStyles();
     const[taskName,  setTaskName] = useState('');
     const[region,  setRegion] = useState('');
@@ -42,6 +43,7 @@ function CreateTask(){
     const { token, setToken } = useToken();
     const[errorMsg, setErrorMsg] = useState(null);
     const[users, setUsers] = useState();
+    var user =jwtDecode(token);
     
     const handleSubmit =(e) => {
         e.preventDefault();
@@ -164,5 +166,3 @@ function CreateTask(){
         </Container>
     );
 }
-
-export default CreateTask;

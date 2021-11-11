@@ -38,37 +38,39 @@ function App() {
           <Route exact path="/SignUp">
             <SignUp/>
           </Route>
-          <Route exact path="/Tickets">
-            <div className ="Ticket-content">
-              <Tickets/>
-            </div>
+          <Route exact path="/SignUpCompleted">
+            <SignUpCompleted/>
           </Route>
+
           <Route exact path="/Tickets/Create">
             <CreateTicket/>
-          </Route>         
+          </Route>
           <Route exact path="/Tickets/Updated">
             <TicketUpdated/>
-          </Route>
-          <Route exact path="/Tasks">
-            <Tasks/>
-          </Route>
-          <Route exact path="/Tasks/Create">
-            <CreateTask/>
-          </Route>
-          <Route exact path="/Tasks/Edit/:id">
-            <Task/>
-          </Route>
-          <Route exact path="/Tasks/Updated">
-            <TaskUpdated/>
-          </Route>
-          <Route exact path="/Dashboard">
-            <Dashboard/>
           </Route>
           <Route path="/Tickets/Edit/:id">
             <Ticket/>
           </Route>
-          <Route exact path="/SignUpCompleted">
-            <SignUpCompleted/>
+          <Route path="/Tickets">
+            <div className ="Ticket-content">
+              <Tickets/>
+            </div>
+          </Route>
+                  
+          <Route exact path="/Tasks/Create">
+            <CreateTask/>
+          </Route>
+          <Route exact path="/Tasks/Updated">
+            <TaskUpdated/>
+          </Route>
+          <Route path="/Tasks/Edit/:id">
+            <Task/>
+          </Route>
+          <Route path="/Tasks">
+            <Tasks/>
+          </Route>
+          <Route exact path="/Dashboard">
+            <Dashboard/>
           </Route>
           <Route exact path="/">
             <Login/>

@@ -58,7 +58,8 @@ async function loginUser(credentials) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(credentials)
-  }).then(data => data.json());
+  }).then(data => data.json()
+  );
 
  }
 
@@ -70,18 +71,22 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-        const token = await loginUser({
-          employeeId, password
-        });
-
-        if(token.status==404)
+    
+        try{
+          const token = await loginUser({
+            employeeId, password
+          });
+          if(!token)
+          {
+            setErrorMsg('Incorrect ID or password');
+          }else{
+            setToken(token);
+            window.location.replace('/Tickets');
+          }
+        }catch
         {
-          setErrorMsg('Incorrect Email or password');
-        }else{
-          setToken(token);
-          window.location.replace('/Tickets');
-        }
+          setErrorMsg('Incorrect ID or password');
+        };
 
   }
 

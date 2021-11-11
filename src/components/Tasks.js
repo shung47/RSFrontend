@@ -37,7 +37,7 @@ export default function Tasks() {
 const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     {
-      field: 'name',
+      field: 'taskName',
       headerName: 'Name',
       width: 200,
       editable: false,

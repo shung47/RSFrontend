@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   ];
 
 
-function CreateTicket(){
+export default function CreateTicket(){
     const classes = useStyles();
     const[title,  setTitle] = useState('');
     const[type,  setType] = useState('Project');
@@ -342,5 +342,3 @@ function CreateTicket(){
         </Container>
     );
 }
-
-export default CreateTicket;

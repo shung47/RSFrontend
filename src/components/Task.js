@@ -20,7 +20,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const TaskDetails = (props) => {
+export default function TaskDetails(props){
     //const [values, setValues] = useState();
     const { token, setToken } = useToken();
     
@@ -263,6 +263,7 @@ const TaskDetails = (props) => {
             <Button 
             color="primary"
             variant="contained"
+            disabled={!(user.EmployeeId == "041086"||user.EmployeeId == "043138")}
             onClick={handleDelete}>Delete</Button>
             <Button
             color="#ffffff"
@@ -273,5 +274,3 @@ const TaskDetails = (props) => {
       </Container>
     );
   };
-  
-  export default TaskDetails;

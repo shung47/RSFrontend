@@ -21,13 +21,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import ListItemText from '@mui/material/ListItemText';
-import Select from '@mui/material/Select';
-import MuiCheckbox from '@mui/material/Checkbox';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -459,6 +452,7 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 value={ticket.status}
                 variant="outlined"
+                disabled = {user.EmployeeId!=ticket.assignee}
                 SelectProps={{ native: true }}
               >{status.map((option) => (
                 <option
@@ -605,8 +599,7 @@ const TicketDetails = (props) => {
                   <FormControlLabel 
                       control={<Checkbox checked={businessReview} color="primary" />}
                       label="Business review required"
-                      onChange = {(e) =>setBusinessReview(e.target.checked)}
-                      disabled = {ticket.type!="Incident"}
+                      onChange = {(e) =>setBusinessReview(e.target.checked)}                    
                   />
                   </Grid>
                   <Grid item xs={6} className="CheckBox">
@@ -634,6 +627,7 @@ const TicketDetails = (props) => {
                 value={ticket.primaryCodeReviewer}
                 variant="outlined"
                 select
+                disabled = {!(user.EmployeeId == "043138" || user.EmployeeId == "041086") }
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
@@ -675,6 +669,7 @@ const TicketDetails = (props) => {
                 value={ticket.secondaryCodeReviewer}
                 variant="outlined"
                 select
+                disabled = {!(user.EmployeeId == "041086"||user.EmployeeId == "043138") }
                 SelectProps={{ native: true, default: ""}}
               ><option></option>{users.map((option) => (
                 <option
@@ -715,6 +710,7 @@ const TicketDetails = (props) => {
                 value={ticket.businessReviewer}
                 variant="outlined"
                 select
+                disabled = {user.EmployeeId != ticket.assignee }
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
@@ -762,7 +758,7 @@ const TicketDetails = (props) => {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                //disabled = {user.Role!='SALeader'}
+                disabled = {!(user.EmployeeId == "043138" || user.EmployeeId == "041086") }
                 SelectProps={{ native: true }}
                 variant="outlined"
               >
@@ -797,7 +793,7 @@ const TicketDetails = (props) => {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                //disabled={user.Role!="Director"}
+                disabled = {user.EmployeeId != "904218" }
                 SelectProps={{ native: true }}
                 value={ticket.directorApproval}
                 variant="outlined"
