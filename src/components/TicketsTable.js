@@ -9,7 +9,7 @@ import jwtDecode from 'jwt-decode';
 export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
-    const { token, setToken } = useToken();
+    const { token } = useToken();
     var user =jwtDecode(token);
 
     useEffect(() => {
@@ -24,33 +24,29 @@ export default function DataTable(props) {
 
     })
         .then(res =>{
-            console.log(res);
-            //  if(!res.ok){
-            //     throw Error('Could not fetch the data');
-            // }
             return res.json();
         })
         .then(data =>{
-            if(props.status=='Completed')
+            if(props.status==='Completed')
             {
               setTickets(data.filter(e=>e.status==='Completed'));
-            }else if(props.status=='Reviewing')
+            }else if(props.status==='Reviewing')
             {
-              setTickets(data.filter(e=>e.status=='Reviewing'));
-            }else if(props.status=='MyTickets')
+              setTickets(data.filter(e=>e.status==='Reviewing'));
+            }else if(props.status==='MyTickets')
             {
-              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.primaryCodeReviewer==user.EmployeeId||e.secondaryCodeReviewer==user.EmployeeId||e.businessReviewer==user.EmployeeId||e.developer==user.EmployeeId));
+              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.primaryCodeReviewer===user.EmployeeId||e.secondaryCodeReviewer===user.EmployeeId||e.businessReviewer===user.EmployeeId||e.developer===user.EmployeeId));
             }
             else 
             {
-              setTickets(data.filter(e=>e.status=='OnHold'||e.status=='UnderDevelopment'));
+              setTickets(data.filter(e=>e.status==='OnHold'||e.status==='UnderDevelopment'));
             }
             setIsPending(false);
         })
         .catch(err => {
             console.log(err.message);
         })
-}, []);
+});
 const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     {
@@ -106,7 +102,7 @@ const columns = [
       width: 200,
       editable: false,
     },
-    props.status=='MyTickets'&&{
+    props.status==='MyTickets'&&{
       field: 'status',
       headerName: 'Status',
       sortable: true,
@@ -120,7 +116,7 @@ const columns = [
       width: 200,
       editable: false,
     },
-    props.status=='Completed'||props.status=='MyTickets'&&{
+    (props.status==='Completed'||props.status==='MyTickets')&&{
       field: 'completedDateTime',
       headerName: 'Completed Time',
       sortable: true,

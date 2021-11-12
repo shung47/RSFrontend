@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
-  const [name, setName] = useState('');
   const[password, setPassword] =useState('');
   const[employeeId, setEmployeeId]=useState('');
   const[errorMsg, setErrorMsg] = useState(null);

@@ -8,7 +8,7 @@ import useToken from './useToken';
 export default function Tasks() {
     const [tasks, setTasks] = useState(null);
     const [isPending, setIsPending] = useState(true);
-    const { token, setToken } = useToken();
+    const { token } = useToken();
 
     useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}Tasks`,{

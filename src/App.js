@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -8,7 +7,6 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import CreateTicket from './components/CreateTicket';
 import Dashboard  from './components/Dashboard';
 import Ticket from './components/Ticket';
-import { useState } from 'react';
 import useToken from './components/useToken';
 import SignUpCompleted from './components/SignUpCompleted';
 import TicketUpdated from './components/TicketUpdated';
@@ -21,7 +19,7 @@ import TaskUpdated from './components/TaskUpdated'
 
 function App() {
 
-  const { token, setToken } = useToken();
+  const { token } = useToken();
 
 
   return (

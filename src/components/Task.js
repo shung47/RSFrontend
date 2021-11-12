@@ -22,7 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function TaskDetails(props){
     //const [values, setValues] = useState();
-    const { token, setToken } = useToken();
+    const { token } = useToken();
     
     var user =jwtDecode(token);
   
@@ -61,7 +61,6 @@ export default function TaskDetails(props){
     const history =useHistory();
     const[errorMsg, setErrorMsg] = useState(null);
     const [isPending, setIsPending] = useState(true);
-    const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
     const handleClickDelete = () => {
@@ -69,13 +68,6 @@ export default function TaskDetails(props){
       };
       const handleDeleteClose = () => {
         setOpenDelete(false);
-      };
-    
-      const handleClickOpen = () => {
-        setOpen(true);
-      };
-      const handleClose = () => {
-        setOpen(false);
       };
 
     const handleSubmit = (e) => {
@@ -256,14 +248,14 @@ export default function TaskDetails(props){
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you wanna delete this task? It will affect the tickets which refer to this task
+              Are you sure you wanna delete this task? It will affect the tickets which refer to this task(Only SA leader can delete tasks)
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button 
             color="primary"
             variant="contained"
-            disabled={!(user.EmployeeId == "041086"||user.EmployeeId == "043138")}
+            disabled={!(user.EmployeeId === "041086"||user.EmployeeId === "043138")}
             onClick={handleDelete}>Delete</Button>
             <Button
             color="#ffffff"

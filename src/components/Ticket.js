@@ -22,30 +22,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
-
 const approvals = [
   {
     value: 'Pending',
@@ -103,7 +79,7 @@ const status = [
 
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
-  const { token, setToken } = useToken();
+  const { token } = useToken();
   
   var user =jwtDecode(token);
 
@@ -346,18 +322,6 @@ const TicketDetails = (props) => {
         })
   }, []);
 
-  //Email sending function
-  const [personName, setPersonName] = useState([]);
-  const handleEmailChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a the stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
-
   return (
     <Container component="main" maxWidth="md">
     <form onSubmit={handleSubmit} 
@@ -452,7 +416,7 @@ const TicketDetails = (props) => {
                 onChange={handleChange}
                 value={ticket.status}
                 variant="outlined"
-                disabled = {user.EmployeeId!=ticket.assignee}
+                disabled = {user.EmployeeId!==ticket.assignee}
                 SelectProps={{ native: true }}
               >{status.map((option) => (
                 <option
@@ -610,7 +574,7 @@ const TicketDetails = (props) => {
                   />
                 </Grid>
           </Grid>
-          {(ticket.status=='Reviewing'||ticket.status=='Completed')&&users&&<Grid
+          {(ticket.status==='Reviewing'||ticket.status==='Completed')&&users&&<Grid
             container
             spacing={3}>
                 
@@ -627,7 +591,7 @@ const TicketDetails = (props) => {
                 value={ticket.primaryCodeReviewer}
                 variant="outlined"
                 select
-                disabled = {!(user.EmployeeId == "043138" || user.EmployeeId == "041086") }
+                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086") }
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
@@ -639,18 +603,18 @@ const TicketDetails = (props) => {
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     onClick={handleFirstOpen} 
                     color ="primary"
-                    disabled = {user.EmployeeId != ticket.primaryCodeReviewer}
-                    variant="contained">                    
+                    disabled = {user.EmployeeId !== ticket.primaryCodeReviewer}
+                    >                    
                     Approval
                 </Button>
                 <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    variant="contained"> 
+                    > 
                     {ticket.primaryCodeApproval} {ticket.primaryCodeApprovalTime}
                 </Button>
 
@@ -669,7 +633,7 @@ const TicketDetails = (props) => {
                 value={ticket.secondaryCodeReviewer}
                 variant="outlined"
                 select
-                disabled = {!(user.EmployeeId == "041086"||user.EmployeeId == "043138") }
+                disabled = {!(user.EmployeeId === "041086"||user.EmployeeId === "043138") }
                 SelectProps={{ native: true, default: ""}}
               ><option></option>{users.map((option) => (
                 <option
@@ -681,18 +645,18 @@ const TicketDetails = (props) => {
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     onClick={handleSecOpen} 
                     color ="primary"
-                    disabled = {user.EmployeeId != ticket.secondaryCodeReviewer}
-                    variant="contained"> 
+                    disabled = {user.EmployeeId !== ticket.secondaryCodeReviewer}
+                    > 
                     Approval
                 </Button>
                 <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    variant="contained"> 
+                    > 
                     {ticket.secondaryCodeApproval} {ticket.secondaryCodeApprovalTime}
                 </Button>
               </div>
@@ -710,7 +674,7 @@ const TicketDetails = (props) => {
                 value={ticket.businessReviewer}
                 variant="outlined"
                 select
-                disabled = {user.EmployeeId != ticket.assignee }
+                disabled = {user.EmployeeId !== ticket.assignee }
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
@@ -722,11 +686,11 @@ const TicketDetails = (props) => {
               ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex" }}>
                 <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     onClick={handleBrOpen} 
                     color ="primary"
-                    disabled = {user.EmployeeId != ticket.businessReviewer}
-                    variant="contained"> 
+                    disabled = {user.EmployeeId !== ticket.businessReviewer}
+                    > 
                     
                     Approval
                 </Button>
@@ -734,7 +698,7 @@ const TicketDetails = (props) => {
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    variant="contained"> 
+                    > 
                     {ticket.businessApproval} {ticket.businessApprovalTime}
                 </Button>
               </div>
@@ -758,7 +722,7 @@ const TicketDetails = (props) => {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                disabled = {!(user.EmployeeId == "043138" || user.EmployeeId == "041086") }
+                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086") }
                 SelectProps={{ native: true }}
                 variant="outlined"
               >
@@ -776,7 +740,7 @@ const TicketDetails = (props) => {
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    variant="contained"> 
+                    > 
                     {ticket.saLeaderApprovalTime}
                 </Button>
               </div>             
@@ -793,7 +757,7 @@ const TicketDetails = (props) => {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                disabled = {user.EmployeeId != "904218" }
+                disabled = {user.EmployeeId !== "904218" }
                 SelectProps={{ native: true }}
                 value={ticket.directorApproval}
                 variant="outlined"
@@ -810,7 +774,7 @@ const TicketDetails = (props) => {
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    variant="contained"> 
+                    > 
                     {ticket.directorApprovalTime}
                 </Button>
               </div>               
@@ -836,10 +800,10 @@ const TicketDetails = (props) => {
           }}
         >
           <Button 
-          variant="outlined" 
+          variant="contained" 
           onClick={handleClickOpen} 
           color ="secondary"
-          variant="contained"> 
+          > 
           Send reminding Email
           </Button>
           <Button

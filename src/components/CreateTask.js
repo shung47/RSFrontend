@@ -7,7 +7,6 @@ import Container from '@material-ui/core/Container';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
 import useToken from './useToken';
-import { useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,9 +39,8 @@ const useStyles = makeStyles((theme) => ({
     const[referenceNumber, setReferenceNumber] = useState('');
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
-    const { token, setToken } = useToken();
+    const { token } = useToken();
     const[errorMsg, setErrorMsg] = useState(null);
-    const[users, setUsers] = useState();
     var user =jwtDecode(token);
     
     const handleSubmit =(e) => {

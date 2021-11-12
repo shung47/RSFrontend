@@ -15,8 +15,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Bookmark from '@material-ui/icons/Bookmark';
+import Subject from '@material-ui/icons/Subject';
+import ExitToApp from '@material-ui/icons/ExitToApp';
 import {Link} from 'react-router-dom';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
@@ -84,7 +85,7 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const { token, setToken } = useToken();
+  const { token } = useToken();
   
   var user =jwtDecode(token);
 
@@ -149,15 +150,15 @@ export default function PersistentDrawerLeft() {
               <ListItemText primary="Dashboard"/>
             </ListItem>  */}
             <ListItem button component={Link} to="/Tickets">
-              <ListItemIcon><InboxIcon /></ListItemIcon>
+              <ListItemIcon><Subject /></ListItemIcon>
               <ListItemText primary="Tickets"/>
             </ListItem>
             <ListItem button component={Link} to="/Tasks">
-              <ListItemIcon><InboxIcon /></ListItemIcon>
+              <ListItemIcon><Bookmark /></ListItemIcon>
               <ListItemText primary="Tasks"/>
             </ListItem> 
             <ListItem button onClick ={handleClick}>
-              <ListItemIcon><InboxIcon /></ListItemIcon>
+              <ListItemIcon><ExitToApp /></ListItemIcon>
               <ListItemText primary="Log Out"/>
             </ListItem>
         </List>
