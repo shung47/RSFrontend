@@ -14,7 +14,8 @@ import  NotFound  from './components/NotFound';
 import Tasks from './components/Tasks';
 import CreateTask from './components/CreateTask';
 import Task from './components/Task';
-import TaskUpdated from './components/TaskUpdated'
+import TaskUpdated from './components/TaskUpdated';
+import PendingTickets  from './components/PendingTickets';
 
 
 function App() {
@@ -53,6 +54,9 @@ function App() {
             <div className ="Ticket-content">
               <Tickets/>
             </div>
+          </Route>
+          <Route path="/PendingTickets">
+            <PendingTickets/>
           </Route>
                   
           <Route exact path="/Tasks/Create">

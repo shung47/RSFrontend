@@ -21,6 +21,41 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import { ClassNames } from '@emotion/react';
+import Link from '@material-ui/core/Link';
+
+const useStyles = makeStyles({
+  root: {
+    //minWidth: 275,
+    display:'flex',
+    justifyContent:'space-between',
+  },
+  editor: {
+    display: 'flex',
+    position: 'relative',
+    left:10
+  },
+  content:{
+    display: 'flex',
+    position: 'relative',
+    left:10,
+    textAlign: 'left'
+
+  },
+  btn:{
+    display: 'flex',
+    position: 'relative',
+    right:10,
+    margin:5
+  },
+  btnContent:{
+    display: 'flex',
+    position: 'relative',
+  }
+
+});
 
 const approvals = [
   {
@@ -87,6 +122,14 @@ const TicketDetails = (props) => {
     event.preventDefault();
     setTicket({
       ...ticket,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleCommentChange = (event) => {
+    event.preventDefault();
+    setNewComment({
+      ...newComment,
       [event.target.name]: event.target.value
     });
   };
@@ -184,6 +227,9 @@ const TicketDetails = (props) => {
   const [users, setUsers] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [dbControlList, setDbControlList]=useState(null);
+  const [comments, setComments]=useState([]);
+  const [newComment, setNewComment]=useState([null]);
+  const classes = useStyles();
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -321,6 +367,54 @@ const TicketDetails = (props) => {
             setErrorMsg(err.message);
         })
   }, []);
+
+  useEffect(() => {
+    getAllComment();
+  }, []);
+
+  async function getAllComment(){
+    fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+ id,{
+      method: 'GET',
+      headers:{
+          'Content-Type':'application/json',
+          'Authorization':'bearer '+ token,
+      },
+
+  })
+      .then(res =>{
+          if(!res.ok){
+              throw Error('Could not fetch the data');
+          }else{
+            return res.json();
+          }
+      })
+      .then(data =>{
+          setComments(data);
+      })
+      .catch(err => {
+          setErrorMsg(err.message);
+      })
+  };
+
+  const handleAddComment = (e) =>{
+    e.preventDefault();
+
+    var comment = { CommentContent: newComment.comment, TicketId: id}
+    fetch(`${process.env.REACT_APP_API_URL}TicketComments/`, {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'bearer '+ token,
+            },
+            body: JSON.stringify(comment)           
+        }).then(
+          getAllComment()
+        ).catch(err => {
+          setErrorMsg(err.message);
+          setApprovalMsg(null);
+      })
+             
+  }
 
   return (
     <Container component="main" maxWidth="md">
@@ -779,8 +873,62 @@ const TicketDetails = (props) => {
                 </Button>
               </div>               
               </Grid>
-                
+              <Grid item
+              md={8}
+              xs={12}>
+                {comments.map(({id, creator, commentContent }) => (
+                  <Card key={id}>
+                    <CardContent className={classes.root}>
+                      <div>
+                      <Typography className={classes.editor}>
+                        {creator}
+                      </Typography>
+                      <p></p>
+                      <Typography className={classes.content}>
+                        {commentContent}
+                      </Typography>
+                      </div>
+                      <div  className={classes.btnContent}>
+                        <Link className={classes.btn}>
+                          Edit
+                        </Link>
+                        <p> </p>
+                        <Link className={classes.btn}>
+                          Delete
+                        </Link>
+                      </div>
+
+                    </CardContent>
+                  </Card>
+                    
+                  ))}
+              </Grid>
+              <Grid item
+              md={8}
+              xs={12}>
+                <TextField 
+                  type="textarea"
+                  multiline 
+                  fullWidth
+                  label="Comment"
+                  name="comment"
+                  onChange={handleCommentChange}
+                  //value={newComment}
+                  variant="outlined"
+                />
+                <div style={{ alignContent:"flex-start", display : "flex" }}>
+                  <Button 
+                    variant="contained" 
+                    onClick={(e)=>handleAddComment(e)} 
+                    color ="primary"
+                    > 
+                    Add Comment
+                  </Button>
+                </div>
+              </Grid>
+
           </Grid>}
+          
           <Grid item
               md={6}
               xs={12}>

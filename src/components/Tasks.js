@@ -9,6 +9,7 @@ export default function Tasks() {
     const [tasks, setTasks] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const { token } = useToken();
+    
 
     useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}Tasks`,{
@@ -55,15 +56,15 @@ const columns = [
       editable: false,
     },
     {
-      field: 'department',
-      headerName: 'Department',
+      field: 'functions',
+      headerName: 'Functions',
       sortable: true,
       width: 180,
       editable: false,
     },
     {
-      field: 'referenceNumber',
-      headerName: 'Reference Number',
+      field: 'creator',
+      headerName: 'Creator',
       sortable: true,
       width: 200,
       editable: false,

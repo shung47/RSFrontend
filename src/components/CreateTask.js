@@ -8,6 +8,52 @@ import { useState } from 'react';
 import { useHistory } from 'react-router';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
+import { useTheme } from '@mui/material/styles';
+import NewBox from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const allFunctions = [
+  'APEX',
+  'MI',
+  'FAE',
+  'DP',
+  'OCR',
+  'P&Q',
+  'AA',
+  'APM',
+  'Sales',
+  'CS',
+  'MM',
+  'Finance',
+  'BOM',
+  'CDBA',
+  'GTC'
+];
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -29,13 +75,48 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+  const regions = [
+    {
+      value: 'TW',
+      label: 'TW'
+    },
+    {
+      value: 'CN',
+      label: 'CN'
+    },
+    {
+      value: 'South',
+      label: 'South'
+    },
+    {
+      value: 'Asia',
+      label: 'Asia'
+    },
+    {
+      value: 'APAC',
+      label: 'APAC'
+    },
+    {
+      value: 'Japan',
+      label: 'Japan'
+    },
+    {
+      value: 'Global',
+      label: 'Global'
+    },
+    {
+      value: 'Others',
+      label: 'Others'
+    }
+  ];
+
 
   export default function CreateTask(){
     const classes = useStyles();
     const[taskName,  setTaskName] = useState('');
     const[region,  setRegion] = useState('');
     const[summary,  setSummary] = useState('');
-    const[department,  setDepartment] = useState('');
+    const[selectedFunctions,  setFunctions] = useState([]);
     const[referenceNumber, setReferenceNumber] = useState('');
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
@@ -45,7 +126,8 @@ const useStyles = makeStyles((theme) => ({
     
     const handleSubmit =(e) => {
         e.preventDefault();
-        const task = {taskName, region, summary, department, referenceNumber};
+        let functions = selectedFunctions.toString();
+        const task = {taskName, region, summary, functions, referenceNumber};
        
 
         setIsPending(true);
@@ -69,6 +151,17 @@ const useStyles = makeStyles((theme) => ({
       })
     }
 
+    const theme = useTheme();
+
+  const handleFunctionsChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFunctions(
+      // On autofill we get a the stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
 
     return(
       <Container component="main" maxWidth="sm">
@@ -92,27 +185,65 @@ const useStyles = makeStyles((theme) => ({
                 <TextField
                     variant="outlined"
                     required
+                    select
                     fullWidth                  
                     id="region"
                     label="Region"
                     name="region"
                     value ={region}
+                    SelectProps={{ native: true }}
                     onChange = {(e) => setRegion(e.target.value)}
-                >               
+                ><option></option>{regions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}               
                 </TextField>
                 </Grid>
                 <Grid item xs={6}>
-                <TextField
+                <FormControl sx={{ m: 0, width: 400 }}>
+                  <InputLabel id="functions">Functions</InputLabel>
+                  <Select
+                    labelId="functions"
+                    id="functions"
+                    multiple
+                    value={selectedFunctions}
+                    onChange={handleFunctionsChange}
+                    input={<OutlinedInput id="select-multiple-functions" label="Functions" />}
+                    renderValue={(selected) => (
+                      <NewBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </NewBox>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {allFunctions.map((name) => (
+                      <MenuItem
+                        key={name}
+                        value={name}
+                        style={getStyles(name, selectedFunctions, theme)}
+                      >
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* <TextField
                     variant="outlined"
                     required
                     fullWidth
-                    name="department"
-                    label="Department"
-                    id="department"
-                    value={department}
-                    onChange = {(e) => setDepartment(e.target.value)}
+                    name="Functions"
+                    label="Functions"
+                    id="functions"
+                    value={functions}
+                    onChange = {(e) => setFunctions(e.target.value)}
                 >
-                </TextField>
+                </TextField> */}
                 </Grid>
                 <Grid item xs={12}>
                 <TextField

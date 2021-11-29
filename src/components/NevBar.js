@@ -21,6 +21,10 @@ import ExitToApp from '@material-ui/icons/ExitToApp';
 import {Link} from 'react-router-dom';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
+import Badge from '@material-ui/core/Badge';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const drawerWidth = 240;
 
@@ -79,6 +83,14 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },
+  sectionDesktop: {
+    display: 'flex',
+    position: 'absolute',
+    right: 20,
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',   
+    },
+  },
 }));
 
 export default function PersistentDrawerLeft() {
@@ -86,6 +98,15 @@ export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const { token } = useToken();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleNotificationClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose =( event) => {
+    setAnchorEl(null);
+  }
   
   var user =jwtDecode(token);
 
@@ -126,7 +147,26 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap>
             CDBA Requests System
           </Typography>
+          <div className={classes.sectionDesktop}>
+            <IconButton aria-label=" notifications" color="inherit" onClick= {handleNotificationClick} >
+              <Badge badgeContent={"!"} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </div>
         </Toolbar>
+        <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleNotificationClose}
+        >
+          <MenuItem onClick={(e) => {
+              e.preventDefault();
+              window.location.href='/PendingTickets';
+            }}>Pending tickets</MenuItem>
+        </Menu>
       </AppBar>
       <Drawer
         className={classes.drawer}

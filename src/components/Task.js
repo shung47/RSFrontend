@@ -19,6 +19,89 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import * as React from 'react';
+import { useTheme } from '@mui/material/styles';
+import NewBox from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import { textAlign } from '@mui/system';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const allFunctions = [
+  'APEX',
+  'MI',
+  'FAE',
+  'DP',
+  'OCR',
+  'P&Q',
+  'AA',
+  'APM',
+  'Sales',
+  'CS',
+  'MM',
+  'Finance',
+  'BOM',
+  'CDBA',
+  'GTC'
+];
+
+const regions = [
+  {
+    value: 'TW',
+    label: 'TW'
+  },
+  {
+    value: 'CN',
+    label: 'CN'
+  },
+  {
+    value: 'South',
+    label: 'South'
+  },
+  {
+    value: 'Asia',
+    label: 'Asia'
+  },
+  {
+    value: 'APAC',
+    label: 'APAC'
+  },
+  {
+    value: 'Japan',
+    label: 'Japan'
+  },
+  {
+    value: 'Global',
+    label: 'Global'
+  },
+  {
+    value: 'Others',
+    label: 'Others'
+  }
+];
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 export default function TaskDetails(props){
     //const [values, setValues] = useState();
@@ -112,11 +195,27 @@ export default function TaskDetails(props){
           .then(data =>{
               setTask(data);            
               setIsPending(false);
+              const funcArray = data.functions.split(",")
+              setFunctions(funcArray);
           })
           .catch(err => {
               setErrorMsg(err.message);
           })
   }, []);
+
+  const theme = useTheme();
+  const [selectedFunctions, setFunctions] = React.useState([]);
+
+  const handleFunctionsChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFunctions(
+      // On autofill we get a the stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+    task.functions = selectedFunctions.toString();
+  };
    
     return (
       <Container component="main" maxWidth="md">
@@ -163,22 +262,19 @@ export default function TaskDetails(props){
                   required
                   value={task.region}
                   variant="outlined"
-                ></TextField>
+                  select
+                  SelectProps={{ native: true }}
+                >{regions.map((option) => (               
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.value}
+                  </option>
+                ))}
+
+                </TextField>
               </Grid>           
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label="Department"
-                  name="department"
-                  onChange={handleChange}
-                  value={task.department}
-                  variant="outlined"
-                ></TextField>
-              </Grid>
               <Grid
                 item
                 md={6}
@@ -207,6 +303,65 @@ export default function TaskDetails(props){
                   required
                   value={task.summary}
                   variant="outlined"
+                >
+                </TextField>
+              </Grid>
+              <Grid
+                item
+                md={6}
+                xs={12}
+              >
+                  <FormControl sx={{ m: 0, width: 430 }}>
+                  <InputLabel id="functions">Functions</InputLabel>
+                  <Select
+                    labelId="functions"
+                    id="functions"
+                    multiple
+                    value={selectedFunctions}
+                    onChange={handleFunctionsChange}
+                    input={<OutlinedInput id="select-multiple-functions" label="Chip" />}
+                    renderValue={(selected) => (
+                      <NewBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </NewBox>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {allFunctions.map((name) => (
+                      <MenuItem
+                        key={name}
+                        value={name}
+                        style={getStyles(name, selectedFunctions, theme)}
+                      >
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* <TextField
+                  fullWidth
+                  label="Department"
+                  name="department"
+                  onChange={handleChange}
+                  value={task.department}
+                  variant="outlined"
+                ></TextField> */}
+              </Grid>
+              <Grid
+                item
+                md={6}
+                xs={12}
+              >
+                <TextField
+                  fullWidth
+                  label="Creator"
+                  name="creator"
+                  onChange={handleChange}
+                  value={task.creator}
+                  variant="outlined"
+                  disabled
                 >
                 </TextField>
               </Grid>

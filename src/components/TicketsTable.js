@@ -35,7 +35,7 @@ export default function DataTable(props) {
               setTickets(data.filter(e=>e.status==='Reviewing'));
             }else if(props.status==='MyTickets')
             {
-              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.primaryCodeReviewer===user.EmployeeId||e.secondaryCodeReviewer===user.EmployeeId||e.businessReviewer===user.EmployeeId||e.developer===user.EmployeeId));
+              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId));
             }
             else 
             {
@@ -49,6 +49,12 @@ export default function DataTable(props) {
 });
 const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
+    {
+      field: 'taskName',
+      headerName: 'Task Name',
+      width: 150,
+      editable: false,
+    },
     {
       field: 'title',
       headerName: 'Title',
