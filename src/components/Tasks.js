@@ -36,6 +36,26 @@ export default function Tasks() {
         })
 }, []);
 const columns = [
+  {
+    field: 'edit',
+    headerName: ' ',
+    sortable: false,
+    width: 100,
+    renderCell: (cellValues) => {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.href='/Tasks/Edit/'+ cellValues.id;
+          }}
+        >
+          View
+        </Button>
+      );
+    }
+  },
     { field: 'id', headerName: 'ID', width: 100 },
     {
       field: 'taskName',
@@ -70,24 +90,18 @@ const columns = [
       editable: false,
     },
     {
-      field: 'edit',
-      headerName: ' ',
-      sortable: false,
-      width: 100,
-      renderCell: (cellValues) => {
-        return (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href='/Tasks/Edit/'+ cellValues.id;
-            }}
-          >
-            View
-          </Button>
-        );
-      }
+      field: 'priority',
+      headerName: 'Priority',
+      sortable: true,
+      width: 200,
+      editable: false,
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      sortable: true,
+      width: 200,
+      editable: false,
     },
   ];
 

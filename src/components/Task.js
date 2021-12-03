@@ -28,7 +28,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import { textAlign } from '@mui/system';
+import { DataGrid } from '@material-ui/data-grid';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -40,6 +40,40 @@ const MenuProps = {
     },
   },
 };
+const priorityOptions =[
+  {
+    value: 'Low',
+    label: 'Low'
+  },
+  {
+    value: 'Medium',
+    label: 'Medium'
+  },
+  {
+    value: 'High',
+    label: 'High'
+  }
+]
+
+const statusStage =[
+  {
+    value: 'Todo',
+    label: 'To do'
+  },
+  {
+    value: 'InProgress',
+    label: 'In Progress'
+  },
+  {
+    value: 'Reviewing',
+    label: 'Reviewing'
+  },
+  {
+    value: 'Done',
+    label: 'Done'
+  }
+
+]
 
 const allFunctions = [
   'APEX',
@@ -94,6 +128,56 @@ const regions = [
   }
 ];
 
+const columns = [
+  {
+    field: 'edit',
+    headerName: ' ',
+    sortable: false,
+    width: 100,
+    renderCell: (cellValues) => {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.href='/Tickets/Edit/'+ cellValues.id;
+          }}
+        >
+          View
+        </Button>
+      );
+    }
+  },
+    { field: 'id', headerName: 'ID', width: 100 },
+    {
+      field: 'title',
+      headerName: 'Title',
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 110,
+      editable: false,
+    },
+    {
+      field: 'assigneeName',
+      headerName: 'Assignee',
+      sortable: true,
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      sortable: true,
+      width: 200,
+      editable: false,
+    }
+  ];
+
 function getStyles(name, personName, theme) {
   return {
     fontWeight:
@@ -145,6 +229,7 @@ export default function TaskDetails(props){
     const[errorMsg, setErrorMsg] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const [openDelete, setOpenDelete] = useState(false);
+    const [tickets, setTickets] =useState(null);
 
     const handleClickDelete = () => {
         setOpenDelete(true);
@@ -203,6 +288,30 @@ export default function TaskDetails(props){
           })
   }, []);
 
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/task/`+ id,{
+        method: 'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        },
+
+    })
+        .then(res =>{
+             if(!res.ok){
+                throw Error('Could not fetch the data');
+             }else{
+              return res.json();
+             }
+        })
+        .then(data =>{
+            setTickets(data);            
+        })
+        .catch(err => {
+            setErrorMsg(err.message);
+        })
+}, []);
+
   const theme = useTheme();
   const [selectedFunctions, setFunctions] = React.useState([]);
 
@@ -214,7 +323,7 @@ export default function TaskDetails(props){
       // On autofill we get a the stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-    task.functions = selectedFunctions.toString();
+    task.functions = value.toString();
   };
    
     return (
@@ -274,7 +383,49 @@ export default function TaskDetails(props){
                 ))}
 
                 </TextField>
-              </Grid>           
+              </Grid> 
+              <Grid item xs={6}>
+                <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="priority"
+                    label="Priority"
+                    name="priority"
+                    value ={task.priority}
+                    select
+                    required
+                    SelectProps={{ native: true }}
+                    onChange = {handleChange}
+                >{priorityOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}</TextField>   
+                </Grid>
+                <Grid item xs={6}>
+                <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="status"
+                    label="Status"
+                    name="status"
+                    value ={task.status}
+                    select
+                    required
+                    SelectProps={{ native: true }}
+                    onChange = {handleChange}
+                >{statusStage.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}</TextField>   
+                </Grid>                       
               <Grid
                 item
                 md={6}
@@ -340,14 +491,6 @@ export default function TaskDetails(props){
                     ))}
                   </Select>
                 </FormControl>
-                {/* <TextField
-                  fullWidth
-                  label="Department"
-                  name="department"
-                  onChange={handleChange}
-                  value={task.department}
-                  variant="outlined"
-                ></TextField> */}
               </Grid>
               <Grid
                 item
@@ -365,8 +508,20 @@ export default function TaskDetails(props){
                 >
                 </TextField>
               </Grid>
-            </Grid>                        
+            </Grid>
+            <CardHeader
+            title="Attached Tickets"
+              />                        
           </CardContent>}
+          <div style={{ height: 400, width: '100%' }}>
+              {tickets && <DataGrid
+
+              rows={tickets}
+              columns={columns}
+              pageSize={5}
+              
+            />}
+          </div>
           <Divider />         
           <Box
             sx={{

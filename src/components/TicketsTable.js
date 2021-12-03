@@ -36,6 +36,9 @@ export default function DataTable(props) {
             }else if(props.status==='MyTickets')
             {
               setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId));
+            }else if(props.status==='ApprovalTickets')
+            {
+              setTickets(data.filter(e=>e.status==='Reviewing'&&(e.businessReviewer===user.EmployeeId||e.primaryCodeReviewer===user.EmployeeId||e.secondaryCodeReviewer===user.EmployeeId||e.dbmaster===user.EmployeeId)));
             }
             else 
             {
@@ -46,8 +49,28 @@ export default function DataTable(props) {
         .catch(err => {
             console.log(err.message);
         })
-});
+},[]);
 const columns = [
+  {
+    field: 'edit',
+    headerName: ' ',
+    sortable: false,
+    width: 100,
+    renderCell: (cellValues) => {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.href='/Tickets/Edit/'+ cellValues.id;
+          }}
+        >
+          View
+        </Button>
+      );
+    }
+  },
     { field: 'id', headerName: 'ID', width: 100 },
     {
       field: 'taskName',
@@ -128,26 +151,6 @@ const columns = [
       sortable: true,
       width: 200,
       editable: false,
-    },
-    {
-      field: 'edit',
-      headerName: ' ',
-      sortable: false,
-      width: 100,
-      renderCell: (cellValues) => {
-        return (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href='/Tickets/Edit/'+ cellValues.id;
-            }}
-          >
-            View
-          </Button>
-        );
-      }
     },
   ];
 

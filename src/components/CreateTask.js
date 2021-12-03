@@ -28,6 +28,21 @@ const MenuProps = {
   },
 };
 
+const priorityOptions =[
+  {
+    value: 'Low',
+    label: 'Low'
+  },
+  {
+    value: 'Medium',
+    label: 'Medium'
+  },
+  {
+    value: 'High',
+    label: 'High'
+  }
+]
+
 const allFunctions = [
   'APEX',
   'MI',
@@ -122,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
     const history =useHistory();
     const { token } = useToken();
     const[errorMsg, setErrorMsg] = useState(null);
+    const[priority, setPriority] = useState('');
     var user =jwtDecode(token);
     
     const handleSubmit =(e) => {
@@ -259,6 +275,27 @@ const useStyles = makeStyles((theme) => ({
                 >
                 </TextField>
                 </Grid>
+                <Grid item xs={6}>
+                <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="priority"
+                    label="Priority"
+                    name="priority"
+                    value ={priority}
+                    select
+                    required
+                    SelectProps={{ native: true }}
+                    onChange = {(e) => setPriority(e.target.value)}
+                >{priorityOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}</TextField>   
+                </Grid>    
                 <Grid item xs={6}>
                 <TextField
                     variant="outlined"

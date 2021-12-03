@@ -147,13 +147,13 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap>
             CDBA Requests System
           </Typography>
-          <div className={classes.sectionDesktop}>
+          {/* <div className={classes.sectionDesktop}>
             <IconButton aria-label=" notifications" color="inherit" onClick= {handleNotificationClick} >
               <Badge badgeContent={"!"} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-          </div>
+          </div> */}
         </Toolbar>
         <Menu
         id="simple-menu"

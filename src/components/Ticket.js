@@ -25,6 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { ClassNames } from '@emotion/react';
 import Link from '@material-ui/core/Link';
+import Moment from 'react-moment';
 
 const useStyles = makeStyles({
   root: {
@@ -51,11 +52,35 @@ const useStyles = makeStyles({
     margin:5
   },
   btnContent:{
-    display: 'flex',
+    display: 'inline-flex',
     position: 'relative',
+  },
+  lastModification:{
+    color:'gray',
+    fontSize:10
+  },
+  approveTime:{
+    marginLeft:15
+  },
+  parentFrid:{
+    "@media(min-width: 720px)":{
+      display:'flex'
+    }
   }
 
 });
+
+const dbStatus = [
+  {
+    value: 'Pending',
+    label: 'Pending'
+  },
+  {
+    value: 'Completed',
+    label: 'Completed'
+  }
+
+]
 
 const approvals = [
   {
@@ -224,12 +249,15 @@ const TicketDetails = (props) => {
   const [firstCRwindow, setFirstCRwindow] = useState(false);
   const [secCRwindow, setSecCRwindow] = useState(false);
   const [brWindow, setBrWindow] = useState(false);
+  const [dbWindow, setDbWindow] = useState(false);
   const [users, setUsers] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [dbControlList, setDbControlList]=useState(null);
   const [comments, setComments]=useState([]);
-  const [newComment, setNewComment]=useState([null]);
+  const [newComment, setNewComment]=useState(" ");
   const classes = useStyles();
+
+  //const parseLines = (value) => value.replace(/(\n)/g, "n");
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -248,6 +276,13 @@ const TicketDetails = (props) => {
   };
   const handleBrOpen = () => {
     setBrWindow(true);
+  };
+
+  const handleDbClose = () => {
+    setDbWindow(false);
+  };
+  const handleDbOpen = () => {
+    setDbWindow(true);
   };
 
   const handleClickDelete = () => {
@@ -373,7 +408,7 @@ const TicketDetails = (props) => {
   }, []);
 
   async function getAllComment(){
-    fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+ id,{
+     fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+ id,{
       method: 'GET',
       headers:{
           'Content-Type':'application/json',
@@ -398,25 +433,60 @@ const TicketDetails = (props) => {
 
   const handleAddComment = (e) =>{
     e.preventDefault();
+    if(newComment!=="")
+    {
+      var comment = { CommentContent: newComment.comment, TicketId: id}
+      fetch(`${process.env.REACT_APP_API_URL}TicketComments/`, {
+             method:'POST',
+             headers:{
+                 'Content-Type':'application/json',
+                 'Authorization':'bearer '+ token,
+             },
+             body: JSON.stringify(comment)           
+         }).then(res=>{
+           if(res.ok)
+           {
+             getAllComment()
+             setNewComment("");
+           }
+         }
+         ).catch(err => {
+           setErrorMsg(err.message);
+           setApprovalMsg(null);
+           
+       })
+       
+       console.log(newComment)
+    }            
+  }
 
-    var comment = { CommentContent: newComment.comment, TicketId: id}
-    fetch(`${process.env.REACT_APP_API_URL}TicketComments/`, {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':'bearer '+ token,
-            },
-            body: JSON.stringify(comment)           
-        }).then(
-          getAllComment()
-        ).catch(err => {
-          setErrorMsg(err.message);
-          setApprovalMsg(null);
-      })
-             
+   function handleDeleteComment(e, id) {
+    e.preventDefault();
+       fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+id, {
+          method:'DELETE',
+          headers:{
+              'Content-Type':'application/json',
+              'Authorization':'bearer '+ token,
+          }             
+      }).then(res=>{
+        if(res.ok)
+          {
+            getAllComment()
+          }
+      }
+      ).catch(err => {
+        setErrorMsg(err.message);
+        setApprovalMsg(null);
+    })
   }
 
   return (
+    <Grid className = {classes.parentFrid}>
+      <Grid
+              item
+              md={7}
+              xs={12}
+    >
     <Container component="main" maxWidth="md">
     <form onSubmit={handleSubmit} 
       autoComplete="off"
@@ -600,31 +670,6 @@ const TicketDetails = (props) => {
               md={6}
               xs={12}
             >
-              {dbControlList&&<TextField
-                fullWidth
-                label="Database Modification"
-                name="dbmaster"
-                onChange={handleChange}
-                value={ticket.dbmaster}
-                variant="outlined"
-                select
-                disabled = {!isRPA}
-                SelectProps={{ native: true }}
-              ><option></option>
-              {Array.from(dbControlList).map((option) => (
-                <option
-                  key={option.database + option.saMaster }
-                  value={option.saMaster}
-                >
-                  {option.database} - {option.saMaster}
-                </option>
-              ))}</TextField>}
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
               <TextField
                 fullWidth
                 label="Creator"
@@ -667,6 +712,18 @@ const TicketDetails = (props) => {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
+                <input
+                    accept="*"
+                    //className={classes.input}
+                    id="contained-button-file"
+                    multiple
+                    type="file"
+                  />
+                  <label htmlFor="contained-button-file">
+                    <Button variant="contained" color="primary" component="span">
+                      Upload
+                    </Button>
+                  </label>
           </Grid>
           {(ticket.status==='Reviewing'||ticket.status==='Completed')&&users&&<Grid
             container
@@ -709,7 +766,10 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     color ="primary"
                     > 
-                    {ticket.primaryCodeApproval} {ticket.primaryCodeApprovalTime}
+                    {ticket.primaryCodeApproval}
+                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.primaryCodeApprovalTime}
+                    </Moment>
                 </Button>
 
               </div>
@@ -751,7 +811,10 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     color ="primary"
                     > 
-                    {ticket.secondaryCodeApproval} {ticket.secondaryCodeApprovalTime}
+                    {ticket.secondaryCodeApproval} 
+                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.secondaryCodeApprovalTime}
+                    </Moment>
                 </Button>
               </div>
             </Grid>
@@ -793,7 +856,10 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     color ="primary"
                     > 
-                    {ticket.businessApproval} {ticket.businessApprovalTime}
+                    {ticket.businessApproval}  
+                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.businessApprovalTime}
+                    </Moment>
                 </Button>
               </div>
             </Grid>
@@ -801,7 +867,45 @@ const TicketDetails = (props) => {
               item
               md={6}
               xs={12}
-            >
+            >{dbControlList&&<TextField
+              fullWidth
+              label="Database Modification"
+              name="dbmaster"
+              onChange={handleChange}
+              value={ticket.dbmaster}
+              variant="outlined"
+              select
+              disabled = {!isRPA||ticket.assignee!==user.EmployeeId}
+              SelectProps={{ native: true }}
+            ><option></option>
+            {Array.from(dbControlList).map((option) => (
+              <option
+                key={option.database + option.samaster }
+                value={option.employeeId}
+              >
+                {option.database} - {option.samaster}
+              </option>
+            ))}</TextField>}             
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    variant="contained" 
+                    onClick={handleDbOpen} 
+                    color ="primary"
+                    disabled = {user.EmployeeId !== ticket.dbmaster}
+                    >                    
+                    Status
+                </Button>
+                <Button style ={{color:'black'}}
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    > 
+                    {ticket.dbMasterApproval}  
+                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.dbMasterApprovalTime}
+                    </Moment>
+                </Button>
+              </div>
             </Grid>
             <Grid
               item
@@ -835,7 +939,9 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     color ="primary"
                     > 
+                    <Moment format="YYYY/MM/DD HH:mm:ss">
                     {ticket.saLeaderApprovalTime}
+                    </Moment>
                 </Button>
               </div>             
             </Grid>
@@ -869,64 +975,12 @@ const TicketDetails = (props) => {
                     variant="outlined" 
                     color ="primary"
                     > 
+                    <Moment format="YYYY/MM/DD HH:mm:ss">
                     {ticket.directorApprovalTime}
+                    </Moment>
                 </Button>
               </div>               
-              </Grid>
-              <Grid item
-              md={8}
-              xs={12}>
-                {comments.map(({id, creator, commentContent }) => (
-                  <Card key={id}>
-                    <CardContent className={classes.root}>
-                      <div>
-                      <Typography className={classes.editor}>
-                        {creator}
-                      </Typography>
-                      <p></p>
-                      <Typography className={classes.content}>
-                        {commentContent}
-                      </Typography>
-                      </div>
-                      <div  className={classes.btnContent}>
-                        <Link className={classes.btn}>
-                          Edit
-                        </Link>
-                        <p> </p>
-                        <Link className={classes.btn}>
-                          Delete
-                        </Link>
-                      </div>
-
-                    </CardContent>
-                  </Card>
-                    
-                  ))}
-              </Grid>
-              <Grid item
-              md={8}
-              xs={12}>
-                <TextField 
-                  type="textarea"
-                  multiline 
-                  fullWidth
-                  label="Comment"
-                  name="comment"
-                  onChange={handleCommentChange}
-                  //value={newComment}
-                  variant="outlined"
-                />
-                <div style={{ alignContent:"flex-start", display : "flex" }}>
-                  <Button 
-                    variant="contained" 
-                    onClick={(e)=>handleAddComment(e)} 
-                    color ="primary"
-                    > 
-                    Add Comment
-                  </Button>
-                </div>
-              </Grid>
-
+              </Grid>              
           </Grid>}
           
           <Grid item
@@ -971,6 +1025,7 @@ const TicketDetails = (props) => {
         </Box>
       </Card>
     </form>
+    
     <Dialog
         open={openDelete}
         onClose={handleDeleteClose}
@@ -1141,7 +1196,113 @@ const TicketDetails = (props) => {
         <Button color="primary"  variant="contained" onClick={handleBrClose}>Ok</Button>
       </DialogActions>
     </Dialog>}
+    {ticket&&<Dialog open={dbWindow} onClose={handleDbClose}>
+      <DialogTitle>Database modification</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Is it complete?
+        </DialogContentText>       
+      </DialogContent>
+        <DialogContent>
+          <TextField
+                fullWidth
+                label="DbApproval"
+                name="dbApproval"
+                onChange={(e)=>handleApprovalChange(e)}
+                required
+                select
+                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                SelectProps={{ native: true }}
+                value={ticket.dbmasterApproval}
+                variant="outlined"
+            >
+                {dbStatus.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+            </TextField>
+          <DialogContentText>
+            {errorMsg}
+          </DialogContentText>       
+        </DialogContent>
+      <DialogActions>
+        <Button color="primary"  variant="contained" onClick={handleDbClose}>Ok</Button>
+      </DialogActions>
+    </Dialog>}
     </Container>
+    </Grid>
+        <Grid item
+              md={4}
+              xs={12} >
+              <Card >
+                  {comments.map(({id, creator, commentContent, lastModificationDateTime, creatorId }) => (
+                  <Card key={id} style={{margin:15}}>
+                    <CardContent className={classes.root}>
+                      <div>
+                      <Typography className={classes.editor}>
+                        {creator}
+                      </Typography>             
+                      <p></p>
+                      <Typography className={classes.content}>
+                      <p style={{whiteSpace: "pre-line"}}> {commentContent}</p>
+                      </Typography>
+                      </div>
+                      <div style={{textAlign:"end"}}>
+                      {user.EmployeeId===creatorId&&<div  className={classes.btnContent}>
+                          
+                          <Link disabled className={classes.btn}>
+                            Edit
+                          </Link>
+                          <p> </p>
+                          <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
+                            Delete
+                          </Link>
+                          
+                        </div>} 
+                        <div>
+                        <Typography className={classes.lastModification}>
+                        <Moment format="YYYY/MM/DD HH:mm:ss">
+                            {lastModificationDateTime}
+                        </Moment>                          
+                        </Typography>
+                        </div>
+                      </div>   
+               
+
+                    </CardContent>
+                  </Card>
+                    
+                  ))}
+                <Grid item
+                md={11}
+                xs={12} >
+                    <TextField style={{marginLeft:10, marginTop:10 }}
+                    type="text"
+                    multiline 
+                    fullWidth
+                    label="Comment"
+                    name="comment"
+                    onChange={handleCommentChange}
+                    value={newComment.comment}
+                    variant="outlined"
+                  />
+                  <div style={{ alignContent:"flex-start", display : "flex" }}>
+                    <Button style={{margin:10}}
+                      variant="contained" 
+                      onClick={(e)=>handleAddComment(e)} 
+                      color ="primary"
+                      > 
+                      Add Comment
+                    </Button>
+                  </div>
+                </Grid>
+              </Card>
+      </Grid>
+    </Grid>
   );
 };
 
