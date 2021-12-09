@@ -38,6 +38,13 @@ export default function DataTable(props) {
               setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId));
             }else if(props.status==='ApprovalTickets')
             {
+              if(user.EmployeeId==='904218')
+              {
+                setTickets(data.filter(e=>e.type==='Project'&&e.status==='Reviewing'&&e.directorApproval!=='Approved'))
+              }else if(user.EmployeeId==='043138'||user.EmployeeId==='041086')
+               {
+                setTickets(data.filter(e=>e.status==='Reviewing'&&e.saLeaderApproval!=='Approvel'))
+               } 
               setTickets(data.filter(e=>e.status==='Reviewing'&&(e.businessReviewer===user.EmployeeId||e.primaryCodeReviewer===user.EmployeeId||e.secondaryCodeReviewer===user.EmployeeId||e.dbmaster===user.EmployeeId)));
             }
             else 

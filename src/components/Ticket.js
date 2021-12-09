@@ -23,9 +23,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import { ClassNames } from '@emotion/react';
 import Link from '@material-ui/core/Link';
 import Moment from 'react-moment';
+import PersonIcon from '@material-ui/icons/Person';
 
 const useStyles = makeStyles({
   root: {
@@ -137,6 +140,10 @@ const status = [
 
 ]
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
   const { token } = useToken();
@@ -209,6 +216,7 @@ const TicketDetails = (props) => {
               });
               setApprovalMsg("The " + e.target.name + " is " + approval.ApprovalStatus );
               setErrorMsg(null);
+              setApproveMsgOpen(true);
             }
         }).catch(err => {
           setErrorMsg(err.message);
@@ -218,18 +226,23 @@ const TicketDetails = (props) => {
   const handleEmailReminder=(e)=>{
     e.preventDefault();
     fetch(`${process.env.REACT_APP_API_URL}Tickets/SendEmail/`+id,{
-      method: 'GET',
+      method: 'POST',
         headers:{
             'Content-Type':'application/json',
             'Authorization':'bearer '+ token,
         },
+        body: JSON.stringify(ticket)
     }).then(res =>{
       if(!res.ok)
       {
+        setApprovalMsg(null);
         res.text().then(text => {setErrorMsg(text)})
+        setErrorMsgOpen(true)
         setOpen(false);
       }else{
+        setErrorMsg(null)
         setApprovalMsg('Email sent');
+        setApproveMsgOpen(true)
         setOpen(false);
       }
     })
@@ -256,8 +269,6 @@ const TicketDetails = (props) => {
   const [comments, setComments]=useState([]);
   const [newComment, setNewComment]=useState(" ");
   const classes = useStyles();
-
-  //const parseLines = (value) => value.replace(/(\n)/g, "n");
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -299,6 +310,26 @@ const TicketDetails = (props) => {
     setOpen(false);
   };
 
+  const [openApproveMsg, setApproveMsgOpen] = useState(false);
+  const [openErrorMsg, setErrorMsgOpen] = useState(false);
+
+
+  const handleApproveMsgClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setApproveMsgOpen(false);
+  };
+
+  const handleErrorMsgClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setErrorMsgOpen(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -316,6 +347,7 @@ const TicketDetails = (props) => {
             {
               res.text().then(text => {setErrorMsg(text)})
               setApprovalMsg(null);
+              setErrorMsgOpen(true)
             }else
             {
               console.log('Ticket updated');
@@ -324,6 +356,7 @@ const TicketDetails = (props) => {
         }).catch(err => {
           setErrorMsg(err.message);
           setApprovalMsg(null);
+          setErrorMsgOpen(true)
       })
   }
 
@@ -447,7 +480,7 @@ const TicketDetails = (props) => {
            if(res.ok)
            {
              getAllComment()
-             setNewComment("");
+             
            }
          }
          ).catch(err => {
@@ -455,8 +488,8 @@ const TicketDetails = (props) => {
            setApprovalMsg(null);
            
        })
-       
-       console.log(newComment)
+       setNewComment("")
+       document.getElementById('comment').value = "";
     }            
   }
 
@@ -712,18 +745,6 @@ const TicketDetails = (props) => {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
-                <input
-                    accept="*"
-                    //className={classes.input}
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                  />
-                  <label htmlFor="contained-button-file">
-                    <Button variant="contained" color="primary" component="span">
-                      Upload
-                    </Button>
-                  </label>
           </Grid>
           {(ticket.status==='Reviewing'||ticket.status==='Completed')&&users&&<Grid
             container
@@ -983,17 +1004,8 @@ const TicketDetails = (props) => {
               </Grid>              
           </Grid>}
           
-          <Grid item
-              md={6}
-              xs={12}>
-            <div style={{ alignContent:"flex-start", display : "flex" }}>
-              <h4>*A project needs to be approved by the director and others</h4>
-            </div>
-          </Grid>
         </CardContent>}
         <Divider />
-        {approvalMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{approvalMsg}</div>}
-        {errorMsg&&<div style={{ marginTop:"10px", fontSize:20 }}>{errorMsg}</div>}
         <Box
           sx={{
             display: 'flex',
@@ -1001,13 +1013,14 @@ const TicketDetails = (props) => {
             p: 2
           }}
         >
-          <Button 
+         {ticket&& <Button 
           variant="contained" 
           onClick={handleClickOpen} 
           color ="secondary"
+          disabled = {ticket.status!=="Reviewing"}
           > 
           Send reminding Email
-          </Button>
+          </Button>}
           <Button
             color="primary"
             variant="contained"
@@ -1244,7 +1257,7 @@ const TicketDetails = (props) => {
                     <CardContent className={classes.root}>
                       <div>
                       <Typography className={classes.editor}>
-                        {creator}
+                        <PersonIcon/>{creator}
                       </Typography>             
                       <p></p>
                       <Typography className={classes.content}>
@@ -1254,13 +1267,9 @@ const TicketDetails = (props) => {
                       <div style={{textAlign:"end"}}>
                       {user.EmployeeId===creatorId&&<div  className={classes.btnContent}>
                           
-                          <Link disabled className={classes.btn}>
-                            Edit
-                          </Link>
-                          <p> </p>
-                          <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
+                          {/* <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
                             Delete
-                          </Link>
+                          </Link> */}
                           
                         </div>} 
                         <div>
@@ -1287,7 +1296,8 @@ const TicketDetails = (props) => {
                     label="Comment"
                     name="comment"
                     onChange={handleCommentChange}
-                    value={newComment.comment}
+                    //value={newComment.comment}
+                    id="comment"
                     variant="outlined"
                   />
                   <div style={{ alignContent:"flex-start", display : "flex" }}>
@@ -1302,6 +1312,16 @@ const TicketDetails = (props) => {
                 </Grid>
               </Card>
       </Grid>
+      <Snackbar open={openApproveMsg} autoHideDuration={6000} onClose={handleApproveMsgClose}>
+        <Alert onClose={handleApproveMsgClose} severity="success">
+          {approvalMsg}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openErrorMsg} autoHideDuration={6000} onClose={handleErrorMsgClose}>
+        <Alert onClose={handleErrorMsgClose} severity="error">
+          {errorMsg}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };
