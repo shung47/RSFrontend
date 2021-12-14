@@ -29,6 +29,11 @@ import { ClassNames } from '@emotion/react';
 import Link from '@material-ui/core/Link';
 import Moment from 'react-moment';
 import PersonIcon from '@material-ui/icons/Person';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import List from '@material-ui/core/List';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 const useStyles = makeStyles({
   root: {
@@ -39,7 +44,7 @@ const useStyles = makeStyles({
   editor: {
     display: 'flex',
     position: 'relative',
-    left:10
+    left:10,
   },
   content:{
     display: 'flex',
@@ -267,7 +272,7 @@ const TicketDetails = (props) => {
   const [tasks, setTasks] = useState(null);
   const [dbControlList, setDbControlList]=useState(null);
   const [comments, setComments]=useState([]);
-  const [newComment, setNewComment]=useState(" ");
+  const [newComment, setNewComment]=useState("");
   const classes = useStyles();
 
   const handleFirstClose = () => {
@@ -440,6 +445,10 @@ const TicketDetails = (props) => {
     getAllComment();
   }, []);
 
+  useEffect(() => {
+    getFiles();
+  }, []);
+
   async function getAllComment(){
      fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+ id,{
       method: 'GET',
@@ -512,6 +521,74 @@ const TicketDetails = (props) => {
         setApprovalMsg(null);
     })
   }
+
+  const [selectedFile, setSelectedFile] = useState();
+	const [isFilePicked, setIsFilePicked] = useState(false);
+  const [files, setFiles] = useState([]);
+
+  const fileChangeHandler = (event) => {
+		setSelectedFile(event.target.files[0]);
+		setIsFilePicked(true);
+	};
+
+  async function getFiles(){
+    fetch(`${process.env.REACT_APP_API_URL}Tickets/GetFiles/`+ id,{
+     method: 'GET',
+     headers:{
+         'Content-Type':'application/json',
+         'Authorization':'bearer '+ token,
+     },
+
+ })
+     .then(res =>{
+         if(!res.ok){
+             throw Error('Could not fetch the data');
+         }else{
+           return res.json();
+         }
+     })
+     .then(data =>{
+        setFiles(data);
+     })
+     .catch(err => {
+         setErrorMsg(err.message);
+     })
+ };
+
+  const handleFileUpload = (e) => {
+    e.preventDefault();
+      const formData = new FormData();
+
+      formData.append('files', selectedFile);
+
+      fetch(
+        `${process.env.REACT_APP_API_URL}Tickets/uploadfile/`+ id,
+        {
+          method: 'POST',
+          headers:{
+            'Authorization':'bearer '+ token,
+          }, 
+          body: formData,
+        }
+      ).then(res=>{
+        if(res.ok)
+        {
+          getFiles()
+          setApprovalMsg("Uploaded file successfully")
+          setApproveMsgOpen(true);
+        }
+      }
+      ).catch(err => {
+        setErrorMsg(err.message);
+        setApprovalMsg(null);
+      })
+    };
+
+    const handleFileDownload = (e) => {
+      e.preventDefault();
+      window.open(`${process.env.REACT_APP_API_URL}Tickets/Downloadfile/`+ id +'/'+e.target.outerText);
+      };
+	
 
   return (
     <Grid className = {classes.parentFrid}>
@@ -737,7 +814,7 @@ const TicketDetails = (props) => {
                       label="Business review required"
                       onChange = {(e) =>setBusinessReview(e.target.checked)}                    
                   />
-                  </Grid>
+              </Grid>
                   <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox checked= {isRPA} color="primary" />}
@@ -745,7 +822,9 @@ const TicketDetails = (props) => {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
                 </Grid>
+
           </Grid>
+          
           {(ticket.status==='Reviewing'||ticket.status==='Completed')&&users&&<Grid
             container
             spacing={3}>
@@ -1252,6 +1331,7 @@ const TicketDetails = (props) => {
               md={4}
               xs={12} >
               <Card >
+                <CardHeader title="Comments" />
                   {comments.map(({id, creator, commentContent, lastModificationDateTime, creatorId }) => (
                   <Card key={id} style={{margin:15}}>
                     <CardContent className={classes.root}>
@@ -1266,22 +1346,18 @@ const TicketDetails = (props) => {
                       </div>
                       <div style={{textAlign:"end"}}>
                       {user.EmployeeId===creatorId&&<div  className={classes.btnContent}>
-                          
-                          {/* <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
-                            Delete
-                          </Link> */}
-                          
-                        </div>} 
-                        <div>
+                      <div>
                         <Typography className={classes.lastModification}>
                         <Moment format="YYYY/MM/DD HH:mm:ss">
                             {lastModificationDateTime}
                         </Moment>                          
                         </Typography>
                         </div>
-                      </div>   
-               
-
+                          {/* <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
+                            Delete
+                          </Link> */}                        
+                        </div>} 
+                      </div>              
                     </CardContent>
                   </Card>
                     
@@ -1296,7 +1372,6 @@ const TicketDetails = (props) => {
                     label="Comment"
                     name="comment"
                     onChange={handleCommentChange}
-                    //value={newComment.comment}
                     id="comment"
                     variant="outlined"
                   />
@@ -1310,6 +1385,42 @@ const TicketDetails = (props) => {
                     </Button>
                   </div>
                 </Grid>
+              </Card>
+              <Card style={{marginTop:20, marginBottom:20}}>
+              <CardHeader title="Attachments" />
+                <div>
+                    <input type="file" name="file" onChange={fileChangeHandler} />
+                    {isFilePicked ? (
+                      <div>
+                        <p>Filename: {selectedFile.name}</p>
+                        <p>Filetype: {selectedFile.type}</p>
+                        <p>Size in bytes: {selectedFile.size}</p>
+                        <p>
+                          lastModifiedDate:{' '}
+                          {selectedFile.lastModifiedDate.toLocaleDateString()}
+                        </p>
+                      </div>
+                    ) : (
+                      <p>Select a file to show details</p>
+                    )}
+                    <div>
+                      <button onClick={handleFileUpload}>Upload</button>
+                    </div>
+                </div>
+                <div className={classes.demo}>
+                <List>
+                  {files.map((file)=>(
+                    <ListItem button value={file} onClick={(event) => handleFileDownload(event)}>
+                      <ListItemIcon>
+                        <GetAppIcon/>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={file}                       
+                      />
+                    </ListItem>),
+                  )}
+                </List>
+              </div>
               </Card>
       </Grid>
       <Snackbar open={openApproveMsg} autoHideDuration={6000} onClose={handleApproveMsgClose}>
