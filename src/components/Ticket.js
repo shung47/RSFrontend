@@ -34,6 +34,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import BusinessReivewList from './BusinessReviewList';
 
 const useStyles = makeStyles({
   root: {
@@ -274,6 +275,7 @@ const TicketDetails = (props) => {
   const [comments, setComments]=useState([]);
   const [newComment, setNewComment]=useState("");
   const classes = useStyles();
+  const [canChangeStatus, setCanChangeStatus] = useState(false);
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -292,6 +294,7 @@ const TicketDetails = (props) => {
   };
   const handleBrOpen = () => {
     setBrWindow(true);
+    setCanChangeStatus(false);
   };
 
   const handleDbClose = () => {
@@ -551,7 +554,7 @@ const TicketDetails = (props) => {
         setFiles(data);
      })
      .catch(err => {
-         setErrorMsg(err.message);
+
      })
  };
 
@@ -559,36 +562,43 @@ const TicketDetails = (props) => {
     e.preventDefault();
       const formData = new FormData();
 
+      if(selectedFile!=null){
       formData.append('files', selectedFile);
 
-      fetch(
-        `${process.env.REACT_APP_API_URL}Tickets/uploadfile/`+ id,
-        {
-          method: 'POST',
-          headers:{
-            'Authorization':'bearer '+ token,
-          }, 
-          body: formData,
+        fetch(
+          `${process.env.REACT_APP_API_URL}Tickets/uploadfile/`+ id,
+          {
+            method: 'POST',
+            headers:{
+              'Authorization':'bearer '+ token,
+            }, 
+            body: formData,
+          }
+        ).then(res=>{
+          if(res.ok)
+          {
+            getFiles()
+            setApprovalMsg("Uploaded file successfully")
+            setApproveMsgOpen(true);
+          }
         }
-      ).then(res=>{
-        if(res.ok)
-        {
-          getFiles()
-          setApprovalMsg("Uploaded file successfully")
-          setApproveMsgOpen(true);
-        }
+        ).catch(err => {
+          setErrorMsg(err.message);
+          setApprovalMsg(null);
+        }) 
       }
-      ).catch(err => {
-        setErrorMsg(err.message);
-        setApprovalMsg(null);
-      })
     };
+
+    const handleBusinessReviewListCallback = (childData) =>{
+      setCanChangeStatus({childData})
+    }
 
     const handleFileDownload = (e) => {
       e.preventDefault();
       window.open(`${process.env.REACT_APP_API_URL}Tickets/Downloadfile/`+ id +'/'+e.target.outerText);
       };
-	
+      
+
 
   return (
     <Grid className = {classes.parentFrid}>
@@ -602,7 +612,7 @@ const TicketDetails = (props) => {
       autoComplete="off"
       {...props}
     >
-      <Card>
+      <Card style={{marginBottom:20}}>
         <CardHeader
           title="Ticket Details"
         />
@@ -1251,37 +1261,34 @@ const TicketDetails = (props) => {
         <Button color="primary"  variant="contained" onClick={handleSecClose}>Ok</Button>
       </DialogActions>
     </Dialog>}
-    {ticket&&<Dialog open={brWindow} onClose={handleBrClose}>
+    {ticket&&<Dialog open={brWindow} onClose={handleBrClose} maxWidth="md">
       <DialogTitle>Business Review</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          This is the window you approve the business review
-        </DialogContentText>       
+        <BusinessReivewList handleBusinessReviewListCallback = {handleBusinessReviewListCallback}/>     
       </DialogContent>
-        <DialogContent>
-          <TextField
-                fullWidth
-                label="BusinessApproval"
-                name="businessApproval"
-                onChange={(e)=>handleApprovalChange(e)}
-                required
-                select
-                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
-                SelectProps={{ native: true }}
-                value={ticket.codeApproval}
-                variant="outlined"
-            >
-                {approvals.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-            </TextField>
-          <DialogContentText>
-            {errorMsg}
+        <DialogContent style={{minHeight:100}}>
+          <TextField                         
+              label="BusinessApproval"
+              name="businessApproval"
+              onChange={(e)=>handleApprovalChange(e)}
+              required
+              select
+              disabled = {!canChangeStatus}
+              SelectProps={{ native: true }}
+              value={ticket.codeApproval}
+              variant="outlined"
+          >
+              {approvals.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+          </TextField>
+          <DialogContentText >
+            <div className="Warning-text">{errorMsg}</div>            
           </DialogContentText>       
         </DialogContent>
       <DialogActions>
@@ -1345,18 +1352,18 @@ const TicketDetails = (props) => {
                       </Typography>
                       </div>
                       <div style={{textAlign:"end"}}>
-                      {user.EmployeeId===creatorId&&<div  className={classes.btnContent}>
-                      <div>
-                        <Typography className={classes.lastModification}>
-                        <Moment format="YYYY/MM/DD HH:mm:ss">
-                            {lastModificationDateTime}
-                        </Moment>                          
-                        </Typography>
+                        <div  className={classes.btnContent}>
+                          <div>
+                            <Typography className={classes.lastModification}>
+                            <Moment format="YYYY/MM/DD HH:mm:ss">
+                                {lastModificationDateTime}
+                            </Moment>                          
+                            </Typography>
+                          </div>
+                            {/* <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
+                              Delete
+                            </Link> */}                        
                         </div>
-                          {/* <Link disabled className={classes.btn} key={id} onClick={(e)=>handleDeleteComment(e, id)}>
-                            Delete
-                          </Link> */}                        
-                        </div>} 
                       </div>              
                     </CardContent>
                   </Card>
@@ -1390,7 +1397,7 @@ const TicketDetails = (props) => {
               <CardHeader title="Attachments" />
                 <div>
                     <input type="file" name="file" onChange={fileChangeHandler} />
-                    {isFilePicked ? (
+                    {selectedFile&&isFilePicked ? (
                       <div>
                         <p>Filename: {selectedFile.name}</p>
                         <p>Filetype: {selectedFile.type}</p>

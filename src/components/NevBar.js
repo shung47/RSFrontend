@@ -15,14 +15,12 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Bookmark from '@material-ui/icons/Bookmark';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import Subject from '@material-ui/icons/Subject';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import {Link} from 'react-router-dom';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
-import Badge from '@material-ui/core/Badge';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -194,7 +192,7 @@ export default function PersistentDrawerLeft() {
               <ListItemText primary="Tickets"/>
             </ListItem>
             <ListItem button component={Link} to="/Tasks">
-              <ListItemIcon><Bookmark /></ListItemIcon>
+              <ListItemIcon><AssignmentIcon /></ListItemIcon>
               <ListItemText primary="Tasks"/>
             </ListItem> 
             <ListItem button onClick ={handleClick}>

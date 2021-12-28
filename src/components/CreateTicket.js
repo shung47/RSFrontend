@@ -117,7 +117,7 @@ export default function CreateTicket(){
               }
           })
           .then(data =>{
-              setUsers(data);
+              setUsers(data);              
           })
           .catch(err => {
               setErrorMsg(err.message);
