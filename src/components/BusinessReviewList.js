@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
         margin:10
     },
     accordionDetails:{
-        display:'block'
+        display:'block',
+        marginLeft:10
     },
     singleQuestion: {
         marginLeft:5

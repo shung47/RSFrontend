@@ -23,6 +23,7 @@ import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const drawerWidth = 240;
 
@@ -124,7 +125,8 @@ export default function PersistentDrawerLeft() {
 
 
   return (
-    <div className={classes.root}>
+    <ClickAwayListener onClickAway={handleDrawerClose}>
+    <div className={classes.root}>    
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -171,6 +173,7 @@ export default function PersistentDrawerLeft() {
         variant="persistent"
         anchor="left"
         open={open}
+        onClose={handleDrawerClose}
         classes={{
           paper: classes.drawerPaper,
         }}
@@ -187,14 +190,14 @@ export default function PersistentDrawerLeft() {
               <ListItemIcon><InboxIcon /></ListItemIcon>
               <ListItemText primary="Dashboard"/>
             </ListItem>  */}
-            <ListItem button component={Link} to="/Tickets">
-              <ListItemIcon><Subject /></ListItemIcon>
-              <ListItemText primary="Tickets"/>
-            </ListItem>
             <ListItem button component={Link} to="/Tasks">
               <ListItemIcon><AssignmentIcon /></ListItemIcon>
               <ListItemText primary="Tasks"/>
             </ListItem> 
+            <ListItem button component={Link} to="/Tickets">
+              <ListItemIcon><Subject /></ListItemIcon>
+              <ListItemText primary="Tickets"/>
+            </ListItem>
             <ListItem button onClick ={handleClick}>
               <ListItemIcon><ExitToApp /></ListItemIcon>
               <ListItemText primary="Log Out"/>
@@ -207,7 +210,8 @@ export default function PersistentDrawerLeft() {
         })}
       >
         <div className={classes.drawerHeader} />
-      </main>
+      </main>    
     </div>
+    </ClickAwayListener>
   );
 }

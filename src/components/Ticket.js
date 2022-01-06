@@ -25,8 +25,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { ClassNames } from '@emotion/react';
-import Link from '@material-ui/core/Link';
 import Moment from 'react-moment';
 import PersonIcon from '@material-ui/icons/Person';
 import ListItem from '@material-ui/core/ListItem';
@@ -35,6 +33,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import BusinessReivewList from './BusinessReviewList';
+import { DataGrid } from '@material-ui/data-grid';
 
 const useStyles = makeStyles({
   root: {
@@ -143,8 +142,12 @@ const status = [
   value: 'Completed',
   label: 'Completed'
 },
-
+{
+  value: 'Concelled',
+  Label: 'Concelled'
+}
 ]
+
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -153,6 +156,62 @@ function Alert(props) {
 const TicketDetails = (props) => {
   //const [values, setValues] = useState();
   const { token } = useToken();
+  const { id } = useParams();
+  const [ticket, setTicket] = useState(null);
+  const history =useHistory();
+  const[errorMsg, setErrorMsg] = useState(null);
+  const [isPending, setIsPending] = useState(true);
+  const[businessReview, setBusinessReview] = useState(null);
+  const[isRPA, setIsRPA] = useState(null);
+  const[approvalMsg, setApprovalMsg] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [firstCRwindow, setFirstCRwindow] = useState(false);
+  const [secCRwindow, setSecCRwindow] = useState(false);
+  const [brWindow, setBrWindow] = useState(false);
+  const [dbWindow, setDbWindow] = useState(false);
+  const [users, setUsers] = useState(null);
+  const [tasks, setTasks] = useState(null);
+  const [dbControlList, setDbControlList]=useState(null);
+  const [comments, setComments]=useState([]);
+  const [newComment, setNewComment]=useState("");
+  const classes = useStyles(); 
+  const [openApproveMsg, setApproveMsgOpen] = useState(false);
+  const [openErrorMsg, setErrorMsgOpen] = useState(false);
+  const [canChangeStatus, setCanChangeStatus] = useState(false);
+  const [modifiedTables, setModifiedTables] = useState([]);
+  const [modifiedTable, setModifiedTable] = useState("");
+  const modifiedTableColumn = [
+    {
+      field: 'databaseName',
+      headerName: 'Database Name',
+      width: 200,
+      editable: false,
+    },
+    {
+      field: 'tableName',
+      headerName: 'Table Name',
+      width: 200,
+      editable: false,
+    },
+    {
+      field: 'deleteBtn',
+      headerName: ' ',
+      sortable: false,
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={(e) =>handleDeleteTable(e, cellValues.id)}
+          >
+            Delete
+          </Button>
+        );
+      }
+    }
+    ];
   
   var user =jwtDecode(token);
 
@@ -168,6 +227,14 @@ const TicketDetails = (props) => {
     event.preventDefault();
     setNewComment({
       ...newComment,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleTableChange = (event) => {
+    event.preventDefault();
+    setModifiedTable({
+      ...modifiedTable,
       [event.target.name]: event.target.value
     });
   };
@@ -231,6 +298,34 @@ const TicketDetails = (props) => {
 
   const handleEmailReminder=(e)=>{
     e.preventDefault();
+
+    ticket.isRpa = isRPA;
+    ticket.businessReview = businessReview;
+        fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
+            method:'PUT',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'bearer '+ token,
+            },
+            body: JSON.stringify(ticket)
+        }).then(res => {
+            if(!res.ok)
+            {
+              res.text().then(text => {setErrorMsg(text)})
+              setApprovalMsg(null);
+              setErrorMsgOpen(true)
+            }else
+            {
+              sendEmail();
+            }
+        }).catch(err => {
+          setErrorMsg(err.message);
+          setApprovalMsg(null);
+          setErrorMsgOpen(true)
+      })
+  }
+
+  function sendEmail(){
     fetch(`${process.env.REACT_APP_API_URL}Tickets/SendEmail/`+id,{
       method: 'POST',
         headers:{
@@ -252,30 +347,7 @@ const TicketDetails = (props) => {
         setOpen(false);
       }
     })
-
   }
-
-  const { id } = useParams();
-  const [ticket, setTicket] = useState(null);
-  const history =useHistory();
-  const[errorMsg, setErrorMsg] = useState(null);
-  const [isPending, setIsPending] = useState(true);
-  const[businessReview, setBusinessReview] = useState(null);
-  const[isRPA, setIsRPA] = useState(null);
-  const[approvalMsg, setApprovalMsg] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [firstCRwindow, setFirstCRwindow] = useState(false);
-  const [secCRwindow, setSecCRwindow] = useState(false);
-  const [brWindow, setBrWindow] = useState(false);
-  const [dbWindow, setDbWindow] = useState(false);
-  const [users, setUsers] = useState(null);
-  const [tasks, setTasks] = useState(null);
-  const [dbControlList, setDbControlList]=useState(null);
-  const [comments, setComments]=useState([]);
-  const [newComment, setNewComment]=useState("");
-  const classes = useStyles();
-  const [canChangeStatus, setCanChangeStatus] = useState(false);
 
   const handleFirstClose = () => {
     setFirstCRwindow(false);
@@ -317,9 +389,6 @@ const TicketDetails = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const [openApproveMsg, setApproveMsgOpen] = useState(false);
-  const [openErrorMsg, setErrorMsgOpen] = useState(false);
 
 
   const handleApproveMsgClose = (event, reason) => {
@@ -452,6 +521,10 @@ const TicketDetails = (props) => {
     getFiles();
   }, []);
 
+  useEffect(() =>{
+    getAllModifiedTables();
+  }, []);
+
   async function getAllComment(){
      fetch(`${process.env.REACT_APP_API_URL}TicketComments/`+ id,{
       method: 'GET',
@@ -498,6 +571,7 @@ const TicketDetails = (props) => {
          ).catch(err => {
            setErrorMsg(err.message);
            setApprovalMsg(null);
+           setErrorMsgOpen(true)
            
        })
        setNewComment("")
@@ -524,6 +598,85 @@ const TicketDetails = (props) => {
         setApprovalMsg(null);
     })
   }
+
+  async function getAllModifiedTables(){
+    fetch(`${process.env.REACT_APP_API_URL}TicketModifiedTables/`+ id,{
+     method: 'GET',
+     headers:{
+         'Content-Type':'application/json',
+         'Authorization':'bearer '+ token,
+     },
+
+ })
+     .then(res =>{
+         if(!res.ok){
+             throw Error('Could not fetch the data');
+         }else{
+           return res.json();
+         }
+     })
+     .then(data =>{
+         setModifiedTables(data);
+     })
+     .catch(err => {
+         setErrorMsg(err.message);
+         setErrorMsgOpen(true);
+     })
+ };
+
+ const handleAddTable = (e) =>{
+  e.preventDefault();
+  if(modifiedTable.databaseName&&modifiedTable.tableName)
+  {
+    var table = { DatabaseName: modifiedTable.databaseName, TableName:modifiedTable.tableName, TicketId: id}
+    fetch(`${process.env.REACT_APP_API_URL}TicketModifiedTables/`, {
+           method:'POST',
+           headers:{
+               'Content-Type':'application/json',
+               'Authorization':'bearer '+ token,
+           },
+           body: JSON.stringify(table)           
+       }).then(res=>{
+         if(res.ok)
+         {
+           getAllModifiedTables()
+           
+         }
+       }
+       ).catch(err => {
+         setErrorMsg(err.message);
+         setApprovalMsg(null);
+         setErrorMsgOpen(true);
+         
+     })
+     setModifiedTable("")
+     document.getElementById('tableName').value = "";
+     document.getElementById('databaseName').value = "";
+  }else{
+    setErrorMsg("Please input database name and table name");
+    setErrorMsgOpen(true);
+  }            
+}
+
+function handleDeleteTable(e, id) {
+  e.preventDefault();
+     fetch(`${process.env.REACT_APP_API_URL}TicketModifiedTables/`+id, {
+        method:'DELETE',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        }             
+    }).then(res=>{
+      if(res.ok)
+        {
+          getAllModifiedTables()
+        }
+    }
+    ).catch(err => {
+      setErrorMsg(err.message);
+      setApprovalMsg(null);
+  })
+}
 
   const [selectedFile, setSelectedFile] = useState();
 	const [isFilePicked, setIsFilePicked] = useState(false);
@@ -630,8 +783,8 @@ const TicketDetails = (props) => {
             >
               <TextField
                 fullWidth
-                label="Title"
-                name="title"
+                label="Ticket Name"
+                name="ticketName"
                 onChange={handleChange}
                 required
                 value={ticket.title}
@@ -818,22 +971,74 @@ const TicketDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={6} className="CheckBox">
+            <Grid item
+                md={12}
+                xs={12}
+                style={{display:'flex'}}
+                >
+              <Grid item xs={12} md={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox checked={businessReview} color="primary" />}
                       label="Business review required"
                       onChange = {(e) =>setBusinessReview(e.target.checked)}                    
                   />
               </Grid>
-                  <Grid item xs={6} className="CheckBox">
+                  <Grid item xs={12} md={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox checked= {isRPA} color="primary" />}
                       label="RPA or DB changes required"
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
+              </Grid>
+            </Grid>
+            <Grid item
+                md={5}
+                xs={12} >
+                    <TextField
+                    fullWidth
+                    type="text"
+                    label="Modified Database"
+                    name="databaseName"
+                    onChange={handleTableChange}
+                    id="databaseName"
+                    variant="outlined"
+                    value={modifiedTable.databaseName}
+                  />
+                  <TextField style={{marginTop:10}}
+                    fullWidth
+                    type="text"
+                    label="Modified Table Name"
+                    name="tableName"
+                    onChange={handleTableChange}
+                    id="tableName"
+                    variant="outlined"
+                    value={modifiedTable.tableName}
+                  />
+                  <div style={{ alignContent:"flex-start", display : "flex" }}>
+                    <Button
+                      variant="contained" 
+                      color ="primary"
+                      disabled={!isRPA}
+                      onClick={handleAddTable}
+                      > 
+                      Add table
+                    </Button>
+                  </div>                  
+            </Grid>
+            <Grid md={12}>
+                <CardHeader
+                  title="Modified Tables"
+                />
                 </Grid>
-
-          </Grid>
+              <div style={{ height:250, width: '95%', position:'center',margin: '0 auto', marginBottom:20 }}>
+              {modifiedTables && <DataGrid
+              rows={modifiedTables}
+              columns={modifiedTableColumn}
+              rowHeight={40}
+              pageSize={10}           
+              />}
+              </div>
+            </Grid>
           
           {(ticket.status==='Reviewing'||ticket.status==='Completed')&&users&&<Grid
             container
@@ -852,7 +1057,7 @@ const TicketDetails = (props) => {
                 value={ticket.primaryCodeReviewer}
                 variant="outlined"
                 select
-                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086") }
+                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086"||user.EmployeeId==="057533") }
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
@@ -1001,7 +1206,7 @@ const TicketDetails = (props) => {
                     variant="contained" 
                     onClick={handleDbOpen} 
                     color ="primary"
-                    disabled = {user.EmployeeId !== ticket.dbmaster}
+                    disabled = {!(user.EmployeeId === ticket.dbmaster||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==="057533")}
                     >                    
                     Status
                 </Button>
@@ -1014,6 +1219,7 @@ const TicketDetails = (props) => {
                     <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
                     {ticket.dbMasterApprovalTime}
                     </Moment>
+                    {ticket.dbChanger}
                 </Button>
               </div>
             </Grid>
@@ -1184,7 +1390,7 @@ const TicketDetails = (props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleEmailReminder}>Send</Button>
+        <Button onClick={handleEmailReminder}>Save and Send</Button>
       </DialogActions>
     </Dialog>
     {ticket&&<Dialog open={firstCRwindow} onClose={handleFirstClose}>
@@ -1336,11 +1542,13 @@ const TicketDetails = (props) => {
     </Grid>
         <Grid item
               md={4}
-              xs={12} >
-              <Card >
+              xs={12}               >
+              <Card>
+              <div style={{maxHeight:600, overflow: "auto"}}>
                 <CardHeader title="Comments" />
                   {comments.map(({id, creator, commentContent, lastModificationDateTime, creatorId }) => (
                   <Card key={id} style={{margin:15}}>
+
                     <CardContent className={classes.root}>
                       <div>
                       <Typography className={classes.editor}>
@@ -1369,6 +1577,7 @@ const TicketDetails = (props) => {
                   </Card>
                     
                   ))}
+              </div>
                 <Grid item
                 md={11}
                 xs={12} >

@@ -183,12 +183,12 @@ export default function CreateTicket(){
                   <Grid item xs={10} sm={6}>
                     <TextField
                         autoComplete="fname"
-                        name="title"
+                        name="TicketName"
                         variant="outlined"
                         required
                         fullWidth
                         id="ticketTitle"
-                        label="Title"
+                        label="Ticket Name"
                         value ={title}
                         onChange = {(e) => setTitle(e.target.value)}
                     />

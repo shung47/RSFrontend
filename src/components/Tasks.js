@@ -4,12 +4,13 @@ import Button from '@material-ui/core/Button';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import useToken from './useToken';
+import jwtDecode from 'jwt-decode';
 
 export default function Tasks() {
     const [tasks, setTasks] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const { token } = useToken();
-    
+    var user =jwtDecode(token);
 
     useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}Tasks`,{
@@ -79,7 +80,7 @@ const columns = [
       field: 'functions',
       headerName: 'Functions',
       sortable: true,
-      width: 180,
+      width: 250,
       editable: false,
     },
     {
@@ -93,14 +94,21 @@ const columns = [
       field: 'priority',
       headerName: 'Priority',
       sortable: true,
-      width: 200,
+      width: 150,
       editable: false,
     },
     {
       field: 'status',
       headerName: 'Status',
       sortable: true,
-      width: 200,
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'referenceNumber',
+      headerName: 'Reference Number',
+      sortable: true,
+      width: 150,
       editable: false,
     },
   ];
@@ -109,7 +117,7 @@ const columns = [
   return (   
       <div>        
       
-        <div style={{ height: 600, width: '80%', position:'center',margin: '0 auto' }}>
+        <div style={{ height: 600, width: '90%', position:'center',margin: '0 auto' }}>
             {isPending && <div>Loading...</div>}
             {tasks && <DataGrid
             rows={tasks}
@@ -118,7 +126,12 @@ const columns = [
         />}
         </div>
         <div>
-        <Button variant="contained" color="primary" href='Tasks/Create'>Create</Button>
+        <Button 
+        variant="contained" 
+        color="primary" 
+        href='Tasks/Create'
+        disabled = {!(user.EmployeeId==='057533'||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==='909080'||user.EmployeeId==='902128')}
+        >Create</Button>
         </div>
     </div>
   );

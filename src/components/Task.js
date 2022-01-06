@@ -76,21 +76,22 @@ const statusStage =[
 ]
 
 const allFunctions = [
-  'APEX',
-  'MI',
-  'FAE',
-  'DP',
-  'OCR',
-  'P&Q',
   'AA',
   'APM',
-  'Sales',
-  'CS',
-  'MM',
-  'Finance',
+  'APEX',
   'BOM',
   'CDBA',
-  'GTC'
+  'CS',
+  'DP',
+  'FAE',
+  'Finance',
+  'GTC',
+  'Logistics',
+  'MI',
+  'MM', 
+  'OCR',
+  'Price&Quotation',
+  'Sales'
 ];
 
 const regions = [
