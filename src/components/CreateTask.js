@@ -138,7 +138,7 @@ const useStyles = makeStyles((theme) => ({
     const history =useHistory();
     const { token } = useToken();
     const[errorMsg, setErrorMsg] = useState(null);
-    const[priority, setPriority] = useState('');
+    const[priority, setPriority] = useState('Low');
     var user =jwtDecode(token);
     
     const handleSubmit =(e) => {

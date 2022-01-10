@@ -149,6 +149,7 @@ const columns = [
       field: 'createdDateTime',
       headerName: 'Created Time',
       sortable: true,
+      type:'dateTime',
       width: 200,
       editable: false,
     },

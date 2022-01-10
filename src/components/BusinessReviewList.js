@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-  export default function BusinessReivewList({handleBusinessReviewListCallback}) {
+  export default function BusinessReivewList({handleBusinessReviewListCallback, reviewType}) {
 
     const classes = useStyles();
      const [state, setState] = React.useState({
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
       }, []);
 
     function getBusinessReviewList(){
-        fetch(`${process.env.REACT_APP_API_URL}Tickets/BusinessReviewList/`+ id,{
+        fetch(`${process.env.REACT_APP_API_URL}Tickets/BusinessReviewList/`+ id +'/'+reviewType,{
             method: 'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -134,6 +134,12 @@ const useStyles = makeStyles((theme) => ({
 
     const handleSubmit = (e) =>{
         e.preventDefault();
+
+            if(!state.a&&!state.b&&!state.c&&!state.d&&!state.e&&!state.f&&!state.g&&!state.h&&!state.i&&!state.j&&!state.k&&!state.l&&!state.m&&!state.n&&!state.o&&!state.p&&!state.q&&!state.r&&!state.s)
+            {
+                setErrorMsg('Cannot submit the empty list')
+                return
+            }
 
             if(state.b)
             {
@@ -215,7 +221,7 @@ const useStyles = makeStyles((theme) => ({
                     return
                 }
             }
-          fetch(`${process.env.REACT_APP_API_URL}Tickets/BusinessReviewList/`+ id, {
+          fetch(`${process.env.REACT_APP_API_URL}Tickets/BusinessReviewList/`+ id +'/'+reviewType, {
                  method:'POST',
                  headers:{
                      'Content-Type':'application/json',

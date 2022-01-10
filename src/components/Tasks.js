@@ -116,7 +116,7 @@ const columns = [
 
   return (   
       <div>        
-      
+        <h1>Tasks</h1>
         <div style={{ height: 600, width: '90%', position:'center',margin: '0 auto' }}>
             {isPending && <div>Loading...</div>}
             {tasks && <DataGrid

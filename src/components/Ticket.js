@@ -34,6 +34,7 @@ import List from '@material-ui/core/List';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import BusinessReivewList from './BusinessReviewList';
 import { DataGrid } from '@material-ui/data-grid';
+import CodeReivewList from './CodeReviewList';
 
 const useStyles = makeStyles({
   root: {
@@ -143,8 +144,8 @@ const status = [
   label: 'Completed'
 },
 {
-  value: 'Concelled',
-  Label: 'Concelled'
+  value: 'Cancelled',
+  label: 'Cancelled'
 }
 ]
 
@@ -153,17 +154,16 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const TicketDetails = (props) => {
-  //const [values, setValues] = useState();
+export default function TicketDetails (props) {
   const { token } = useToken();
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const history =useHistory();
-  const[errorMsg, setErrorMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [isPending, setIsPending] = useState(true);
-  const[businessReview, setBusinessReview] = useState(null);
-  const[isRPA, setIsRPA] = useState(null);
-  const[approvalMsg, setApprovalMsg] = useState(null);
+  const [businessReview, setBusinessReview] = useState(null);
+  const [isRPA, setIsRPA] = useState(null);
+  const [approvalMsg, setApprovalMsg] = useState(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [firstCRwindow, setFirstCRwindow] = useState(false);
@@ -179,8 +179,11 @@ const TicketDetails = (props) => {
   const [openApproveMsg, setApproveMsgOpen] = useState(false);
   const [openErrorMsg, setErrorMsgOpen] = useState(false);
   const [canChangeStatus, setCanChangeStatus] = useState(false);
+  const [canChangeCode1Status, setCanChangeCode1Status] = useState(false);
+  const [canChangeCode2Status, setCanChangeCode2Status] = useState(false);
   const [modifiedTables, setModifiedTables] = useState([]);
   const [modifiedTable, setModifiedTable] = useState("");
+  const [isSending, setIsSending ] = useState(false);
   const modifiedTableColumn = [
     {
       field: 'databaseName',
@@ -190,7 +193,7 @@ const TicketDetails = (props) => {
     },
     {
       field: 'tableName',
-      headerName: 'Table Name',
+      headerName: 'Object Name',
       width: 200,
       editable: false,
     },
@@ -296,12 +299,13 @@ const TicketDetails = (props) => {
       })
   }
 
-  const handleEmailReminder=(e)=>{
+  const handleEmailReminder = (e) =>{
     e.preventDefault();
-
+     setIsSending(true);
     ticket.isRpa = isRPA;
     ticket.businessReview = businessReview;
-        fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
+
+     fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'PUT',
             headers:{
                 'Content-Type':'application/json',
@@ -342,7 +346,7 @@ const TicketDetails = (props) => {
         setOpen(false);
       }else{
         setErrorMsg(null)
-        setApprovalMsg('Email sent');
+        setApprovalMsg('Email Sent');
         setApproveMsgOpen(true)
         setOpen(false);
       }
@@ -354,9 +358,11 @@ const TicketDetails = (props) => {
   };
   const handleFirstOpen = () => {
     setFirstCRwindow(true);
+    setCanChangeCode1Status(false);
   };
   const handleSecClose = () => {
     setSecCRwindow(false);
+    setCanChangeCode2Status(false);
   };
   const handleSecOpen = () => {
     setSecCRwindow(true);
@@ -384,6 +390,7 @@ const TicketDetails = (props) => {
   };
 
   const handleClickOpen = () => {
+    setIsSending(false);
     setOpen(true);
   };
   const handleClose = () => {
@@ -746,6 +753,14 @@ function handleDeleteTable(e, id) {
       setCanChangeStatus({childData})
     }
 
+    const handlCode1ReviewListCallback = (childData) =>{
+      setCanChangeCode1Status({childData})
+    }
+
+    const handlCode2ReviewListCallback = (childData) =>{
+      setCanChangeCode2Status({childData})
+    }
+
     const handleFileDownload = (e) => {
       e.preventDefault();
       window.open(`${process.env.REACT_APP_API_URL}Tickets/Downloadfile/`+ id +'/'+e.target.outerText);
@@ -1007,7 +1022,7 @@ function handleDeleteTable(e, id) {
                   <TextField style={{marginTop:10}}
                     fullWidth
                     type="text"
-                    label="Modified Table Name"
+                    label="Object Name"
                     name="tableName"
                     onChange={handleTableChange}
                     id="tableName"
@@ -1021,13 +1036,13 @@ function handleDeleteTable(e, id) {
                       disabled={!isRPA}
                       onClick={handleAddTable}
                       > 
-                      Add table
+                      Add object
                     </Button>
                   </div>                  
             </Grid>
             <Grid md={12}>
                 <CardHeader
-                  title="Modified Tables"
+                  title="Modified Objects"
                 />
                 </Grid>
               <div style={{ height:250, width: '95%', position:'center',margin: '0 auto', marginBottom:20 }}>
@@ -1102,7 +1117,7 @@ function handleDeleteTable(e, id) {
                 value={ticket.secondaryCodeReviewer}
                 variant="outlined"
                 select
-                disabled = {!(user.EmployeeId === "041086"||user.EmployeeId === "043138") }
+                disabled = {!(user.EmployeeId === "041086"||user.EmployeeId === "043138"||user.EmployeeId==="057533") }
                 SelectProps={{ native: true, default: ""}}
               ><option></option>{users.map((option) => (
                 <option
@@ -1363,7 +1378,7 @@ function handleDeleteTable(e, id) {
       <DialogTitle>Send a request email</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Need someone to approve your ticket? Please click the send button and it will remind all approvers.
+          Need someone to approve your ticket? Please click the send and it will remind all approvers.
         </DialogContentText>
 {/*         {users&&<div>
           <FormControl sx={{ m: 1, width: 300 }}>
@@ -1390,25 +1405,28 @@ function handleDeleteTable(e, id) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleEmailReminder}>Save and Send</Button>
+        {!isSending&&<Button onClick={handleEmailReminder}type="submit"               
+                variant="contained"
+                color="primary">Send</Button>}
+        {isSending&&<Button onClick={handleEmailReminder}type="submit"               
+                variant="contained"
+                color="primary" disabled>Sending...</Button>}
       </DialogActions>
     </Dialog>
-    {ticket&&<Dialog open={firstCRwindow} onClose={handleFirstClose}>
+    {ticket&&<Dialog open={firstCRwindow} onClose={handleFirstClose} maxWidth="md">
       <DialogTitle>Primary Code Review</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          This is the window you approve the code review
-        </DialogContentText>       
+        <CodeReivewList handleCodeReviewListCallback = {handlCode1ReviewListCallback} reviewType="PrimaryCodeReivew"/>     
       </DialogContent>
       <DialogContent>
         <TextField
-            fullWidth
+            style={{width:'30%'}}
             label="Primary Code Approval"
             name="primaryCodeApproval"
             onChange={(e)=>handleApprovalChange(e)}
             required
             select
-            //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+            disabled = {!canChangeCode1Status}
             SelectProps={{ native: true }}
             value={ticket.primaryCodeApproval}
             variant="outlined"
@@ -1430,22 +1448,20 @@ function handleDeleteTable(e, id) {
         <Button color="primary"  variant="contained" onClick={handleFirstClose}>Ok</Button>
       </DialogActions>
     </Dialog>}
-    {ticket&&<Dialog open={secCRwindow} onClose={handleSecClose}>
+    {ticket&&<Dialog open={secCRwindow} onClose={handleSecClose} maxWidth="md">
       <DialogTitle>Secondary Code Review</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          This is the window you approve the code review
-        </DialogContentText>       
+        <CodeReivewList handleCodeReviewListCallback = {handlCode2ReviewListCallback} reviewType="SecondaryCodeReivew"/>    
       </DialogContent>
         <DialogContent>
           <TextField
-                fullWidth
+                style={{width:'30%'}}
                 label="Secondary Code Approval"
                 name="secondaryCodeApproval"
                 onChange={(e)=>handleApprovalChange(e)}             
                 required
                 select
-                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
+                disabled = {!canChangeCode2Status}
                 SelectProps={{ native: true }}
                 value={ticket.secondaryCodeApproval}
                 variant="outlined"
@@ -1462,7 +1478,7 @@ function handleDeleteTable(e, id) {
         </DialogContent>
         <DialogContentText>
           {errorMsg}
-        </DialogContentText>   
+        </DialogContentText>
       <DialogActions>
         <Button color="primary"  variant="contained" onClick={handleSecClose}>Ok</Button>
       </DialogActions>
@@ -1470,10 +1486,11 @@ function handleDeleteTable(e, id) {
     {ticket&&<Dialog open={brWindow} onClose={handleBrClose} maxWidth="md">
       <DialogTitle>Business Review</DialogTitle>
       <DialogContent>
-        <BusinessReivewList handleBusinessReviewListCallback = {handleBusinessReviewListCallback}/>     
+        <BusinessReivewList handleBusinessReviewListCallback = {handleBusinessReviewListCallback} reviewType="BusinessReivew"/>     
       </DialogContent>
         <DialogContent style={{minHeight:100}}>
-          <TextField                         
+          <TextField 
+              style={{width:'30%'}}                        
               label="BusinessApproval"
               name="businessApproval"
               onChange={(e)=>handleApprovalChange(e)}
@@ -1653,4 +1670,3 @@ function handleDeleteTable(e, id) {
   );
 };
 
-export default TicketDetails;
