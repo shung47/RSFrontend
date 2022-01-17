@@ -87,8 +87,8 @@ const columns = [
     },
     {
       field: 'title',
-      headerName: 'Title',
-      width: 150,
+      headerName: 'Ticket Name',
+      width: 160,
       editable: false,
     },
     {

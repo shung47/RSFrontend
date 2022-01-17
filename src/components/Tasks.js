@@ -122,7 +122,7 @@ const columns = [
             {tasks && <DataGrid
             rows={tasks}
             columns={columns}
-            pageSize={10}           
+            pageSize={10}       
         />}
         </div>
         <div>

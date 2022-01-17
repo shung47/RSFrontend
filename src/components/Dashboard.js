@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import{ v4 as uuid } from "uuid";
-
+//This page has not been used
 const itemsFromBackend = [
   { id: uuid(), content: "First task" },
   { id: uuid(), content: "Second task" },

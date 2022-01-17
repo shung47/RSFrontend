@@ -255,13 +255,15 @@ export default function TicketDetails (props) {
               res.text().then(text => {setErrorMsg(text)})
               setOpenDelete(false);
               setApprovalMsg(null);
+              setErrorMsgOpen(true);
+              setErrorMsg()
             }else
             {             
               history.push('/tasks/updated');
             }
         }).catch(err => {
           setErrorMsg(err.message);
-          setApprovalMsg(null);
+          setErrorMsgOpen(true);
       })
   }
 
@@ -660,7 +662,7 @@ export default function TicketDetails (props) {
      document.getElementById('tableName').value = "";
      document.getElementById('databaseName').value = "";
   }else{
-    setErrorMsg("Please input database name and table name");
+    setErrorMsg("Please input database name and object name");
     setErrorMsgOpen(true);
   }            
 }

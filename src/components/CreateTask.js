@@ -144,7 +144,7 @@ const useStyles = makeStyles((theme) => ({
     const handleSubmit =(e) => {
         e.preventDefault();
         let functions = selectedFunctions.toString();
-        const task = {taskName, region, summary, functions, referenceNumber};
+        const task = {taskName, region, summary, functions, referenceNumber, priority};
        
 
         setIsPending(true);
