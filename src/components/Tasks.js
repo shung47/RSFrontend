@@ -22,7 +22,6 @@ export default function Tasks() {
 
     })
         .then(res =>{
-            console.log(res);
             if(!res.ok){
                 throw Error('Could not fetch the data');
             }
@@ -31,6 +30,7 @@ export default function Tasks() {
         })
         .then(data =>{          
               setTasks(data);
+              console.log(user);
         })
         .catch(err => {
             console.log(err.message);
@@ -130,7 +130,7 @@ const columns = [
         variant="contained" 
         color="primary" 
         href='Tasks/Create'
-        disabled = {!(user.EmployeeId==='057533'||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==='909080'||user.EmployeeId==='902128')}
+        disabled = {user.CanCreateTask==='N'}
         >Create</Button>
         </div>
     </div>

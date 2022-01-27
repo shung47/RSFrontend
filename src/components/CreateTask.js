@@ -59,7 +59,8 @@ const allFunctions = [
   'MM', 
   'OCR',
   'Price&Quotation',
-  'Sales'
+  'Sales',
+  'SPM'
 ];
 
 function getStyles(name, personName, theme) {

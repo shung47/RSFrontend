@@ -145,7 +145,7 @@ export default function PersistentDrawerLeft() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            CDBA Requests System
+            WELOG
           </Typography>
           {/* <div className={classes.sectionDesktop}>
             <IconButton aria-label=" notifications" color="inherit" onClick= {handleNotificationClick} >

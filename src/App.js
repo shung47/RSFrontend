@@ -40,7 +40,9 @@ function App() {
           <Route exact path="/SignUpCompleted">
             <SignUpCompleted/>
           </Route>
-
+          <Route exact path="/Tickets/Create/:id">
+            <CreateTicket/>
+          </Route>
           <Route exact path="/Tickets/Create">
             <CreateTicket/>
           </Route>

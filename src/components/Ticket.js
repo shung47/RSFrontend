@@ -123,6 +123,10 @@ const types = [
   {
     value: 'Incident',
     label: 'Incident'
+  },
+  {
+    value: 'CYSpecialApproval',
+    label: 'CYSpecialApproval'
   }
 ];
 
@@ -188,13 +192,19 @@ export default function TicketDetails (props) {
     {
       field: 'databaseName',
       headerName: 'Database Name',
-      width: 200,
+      width: 180,
       editable: false,
     },
     {
       field: 'tableName',
       headerName: 'Object Name',
-      width: 200,
+      width: 180,
+      editable: false,
+    },
+    {
+      field: 'summary',
+      headerName: 'Summary',
+      width: 350,
       editable: false,
     },
     {
@@ -436,7 +446,6 @@ export default function TicketDetails (props) {
               setErrorMsgOpen(true)
             }else
             {
-              console.log('Ticket updated');
               history.push('/tickets/updated');
             }
         }).catch(err => {
@@ -637,7 +646,7 @@ export default function TicketDetails (props) {
   e.preventDefault();
   if(modifiedTable.databaseName&&modifiedTable.tableName)
   {
-    var table = { DatabaseName: modifiedTable.databaseName, TableName:modifiedTable.tableName, TicketId: id}
+    var table = { DatabaseName: modifiedTable.databaseName, TableName:modifiedTable.tableName, TicketId: id, Summary: modifiedTable.summary}
     fetch(`${process.env.REACT_APP_API_URL}TicketModifiedTables/`, {
            method:'POST',
            headers:{
@@ -659,8 +668,9 @@ export default function TicketDetails (props) {
          
      })
      setModifiedTable("")
+     //document.getElementById('databaseName').value = "";
      document.getElementById('tableName').value = "";
-     document.getElementById('databaseName').value = "";
+     document.getElementById('summary').value = "";
   }else{
     setErrorMsg("Please input database name and object name");
     setErrorMsgOpen(true);
@@ -822,7 +832,7 @@ function handleDeleteTable(e, id) {
                 variant="outlined"
                 select
                 SelectProps={{ native: true }}
-              ><option></option>
+              >
               {tasks.map((option) => (                
                 <option
                   key={option.id}
@@ -1011,7 +1021,7 @@ function handleDeleteTable(e, id) {
             <Grid item
                 md={5}
                 xs={12} >
-                    <TextField
+                    {dbControlList&&<TextField
                     fullWidth
                     type="text"
                     label="Modified Database"
@@ -1020,7 +1030,17 @@ function handleDeleteTable(e, id) {
                     id="databaseName"
                     variant="outlined"
                     value={modifiedTable.databaseName}
-                  />
+                    select
+                    SelectProps={{ native: true }}
+                  ><option></option>
+                  {Array.from(dbControlList).map((option) => (
+                    <option
+                      key={option.database}
+                      value={option.database}
+                    >
+                      {option.database}
+                    </option>
+                  ))}</TextField>}
                   <TextField style={{marginTop:10}}
                     fullWidth
                     type="text"
@@ -1030,6 +1050,16 @@ function handleDeleteTable(e, id) {
                     id="tableName"
                     variant="outlined"
                     value={modifiedTable.tableName}
+                  />
+                  <TextField style={{marginTop:10}}
+                    fullWidth
+                    type="text"
+                    label="Summary"
+                    name="summary"
+                    onChange={handleTableChange}
+                    id="summary"
+                    variant="outlined"
+                    value={modifiedTable.summary}
                   />
                   <div style={{ alignContent:"flex-start", display : "flex" }}>
                     <Button
@@ -1194,52 +1224,7 @@ function handleDeleteTable(e, id) {
                     </Moment>
                 </Button>
               </div>
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >{dbControlList&&<TextField
-              fullWidth
-              label="Database Modification"
-              name="dbmaster"
-              onChange={handleChange}
-              value={ticket.dbmaster}
-              variant="outlined"
-              select
-              disabled = {!isRPA||ticket.assignee!==user.EmployeeId}
-              SelectProps={{ native: true }}
-            ><option></option>
-            {Array.from(dbControlList).map((option) => (
-              <option
-                key={option.database + option.samaster }
-                value={option.employeeId}
-              >
-                {option.database} - {option.samaster}
-              </option>
-            ))}</TextField>}             
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
-                <Button 
-                    variant="contained" 
-                    onClick={handleDbOpen} 
-                    color ="primary"
-                    disabled = {!(user.EmployeeId === ticket.dbmaster||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==="057533")}
-                    >                    
-                    Status
-                </Button>
-                <Button style ={{color:'black'}}
-                    disabled
-                    variant="outlined" 
-                    color ="primary"
-                    > 
-                    {ticket.dbMasterApproval}  
-                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
-                    {ticket.dbMasterApprovalTime}
-                    </Moment>
-                    {ticket.dbChanger}
-                </Button>
-              </div>
-            </Grid>
+            </Grid>            
             <Grid
               item
               md={6}
@@ -1313,7 +1298,52 @@ function handleDeleteTable(e, id) {
                     </Moment>
                 </Button>
               </div>               
-              </Grid>              
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >{dbControlList&&<TextField
+              fullWidth
+              label="SA Master"
+              name="dbmaster"
+              onChange={handleChange}
+              value={ticket.dbmaster}
+              variant="outlined"
+              select
+              disabled = {!isRPA||ticket.assignee!==user.EmployeeId}
+              SelectProps={{ native: true }}
+            ><option></option>
+            {Array.from(dbControlList).map((option) => (
+              <option
+                key={option.database + option.samaster }
+                value={option.employeeId}
+              >
+                {option.database} - {option.samaster}
+              </option>
+            ))}</TextField>}             
+              <div style={{ alignContent:"flex-start", display : "flex" }}>
+                <Button 
+                    variant="contained" 
+                    onClick={handleDbOpen} 
+                    color ="primary"
+                    disabled = {!(user.EmployeeId === ticket.dbmaster||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==="057533")}
+                    >                    
+                    Status
+                </Button>
+                <Button style ={{color:'black'}}
+                    disabled
+                    variant="outlined" 
+                    color ="primary"
+                    > 
+                    {ticket.dbMasterApproval}  
+                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.dbMasterApprovalTime}
+                    </Moment>
+                    {ticket.dbChanger}
+                </Button>
+              </div>
+            </Grid>              
           </Grid>}
           
         </CardContent>}
@@ -1488,7 +1518,7 @@ function handleDeleteTable(e, id) {
     {ticket&&<Dialog open={brWindow} onClose={handleBrClose} maxWidth="md">
       <DialogTitle>Business Review</DialogTitle>
       <DialogContent>
-        <BusinessReivewList handleBusinessReviewListCallback = {handleBusinessReviewListCallback} reviewType="BusinessReivew"/>     
+        <BusinessReivewList handleBusinessReviewListCallback = {handleBusinessReviewListCallback} reviewType="BusinessReview"/>     
       </DialogContent>
         <DialogContent style={{minHeight:100}}>
           <TextField 

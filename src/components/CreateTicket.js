@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router';
 import useToken from './useToken';
 import { useEffect } from 'react';
+import {useParams} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -51,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
     {
       value: 'Incident',
       label: 'Incident'
+    },
+    {
+      value: 'CYSpecialApproval',
+      label: 'CYSpecialApproval'
     }
   ];
 
@@ -71,7 +76,9 @@ export default function CreateTicket(){
     const[errorMsg, setErrorMsg] = useState(null);
     const[users, setUsers] = useState();
     const[tasks, setTasks] = useState();
+    const { id } = useParams();
     const[taskId, setTaskId] = useState();
+
     
     const handleSubmit =(e) => {
         e.preventDefault();
@@ -149,6 +156,13 @@ export default function CreateTicket(){
           })
     }, []);
 
+    useEffect(() => {     
+      if(id)
+      {
+        setTaskId(id);
+      }
+    })
+
     return(
       <Container component="main" maxWidth="sm">
         {users&&<div className = "Create">
@@ -168,6 +182,7 @@ export default function CreateTicket(){
                         value={taskId}
                         variant="outlined"
                         select
+                        required
                         SelectProps={{ native: true }}
                       ><option></option>
                       {tasks.map((option) => (                

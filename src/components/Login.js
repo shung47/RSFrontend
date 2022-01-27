@@ -49,6 +49,7 @@ async function loginUser(credentials) {
 export default function Login() {
   const classes = useStyles();
   const[employeeId,  setEmployeeId] = useState();
+  const[name, setName] =useState();
   const[password,  setPassword] = useState();
   const[errorMsg, setErrorMsg] = useState(null);
 
@@ -57,18 +58,18 @@ export default function Login() {
     
         try{
           const token = await loginUser({
-            employeeId, password
+            name, password
           });
           if(!token)
           {
-            setErrorMsg('Incorrect ID or password');
+            setErrorMsg('Incorrect name or password');
           }else{
             setToken(token);
             window.location.replace('/Tickets');
           }
         }catch
         {
-          setErrorMsg('Incorrect ID or password');
+          setErrorMsg('Incorrect name or password');
         };
 
   }
@@ -82,7 +83,7 @@ export default function Login() {
       <CssBaseline />
       <div className={classes.paper}>
       <Typography component="h1" variant="h4" style = {{marginBottom:"20px", color:'#3f51b5'}}>
-          CDBA Requests System
+          WELOG
       </Typography>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -96,13 +97,13 @@ export default function Login() {
             margin="normal"
             required
             fullWidth
-            id="employeeId"
-            label="EmployeeID"
-            name="employeeId"
-            autoComplete="employeeId"
+            id="name"
+            label="Login Name(e.g.,seanlee)"
+            name="name"
+            autoComplete="name"
             autoFocus
-            value={employeeId}
-            onChange = {(e) => setEmployeeId(e.target.value)}
+            value={name}
+            onChange = {(e) => setName(e.target.value)}
           />
           <TextField
             variant="outlined"

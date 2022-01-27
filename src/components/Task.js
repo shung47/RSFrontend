@@ -91,7 +91,8 @@ const allFunctions = [
   'MM', 
   'OCR',
   'Price&Quotation',
-  'Sales'
+  'Sales',
+  'SPM'
 ];
 
 const regions = [
@@ -530,12 +531,18 @@ export default function TaskDetails(props){
               justifyContent: 'flex-end',
               p: 2
             }}
-          >                    
+          > <Button
+              color="Secondary"
+              variant="contained"
+              href={"/Tickets/Create/" +id}                
+            >
+          Create
+        </Button>                   
             <Button
               color="primary"
               variant="contained"
               type="submit"
-              disabled={!(user.EmployeeId==='057533'||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==='909080'||user.EmployeeId==='902128')}               
+              disabled={user.CanCreateTask==='N'}               
             >
               Save
             </Button>
