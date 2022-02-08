@@ -252,6 +252,21 @@ export default function TicketDetails (props) {
     });
   };
 
+  const handleDBChange= (event) => {
+    event.preventDefault();
+    var result = dbControlList.find(userList => {return userList.database===event.target.value});
+    setModifiedTable({
+      ...modifiedTable,
+      [event.target.name]: event.target.value
+    });
+    if(event.target.value){
+      setTicket({
+        ...ticket,
+        dbmaster:result.employeeId
+      });
+    }
+  };
+
   const handleDelete = () =>{
     fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'DELETE',
@@ -1026,7 +1041,7 @@ function handleDeleteTable(e, id) {
                     type="text"
                     label="Modified Database"
                     name="databaseName"
-                    onChange={handleTableChange}
+                    onChange={handleDBChange}
                     id="databaseName"
                     variant="outlined"
                     value={modifiedTable.databaseName}
@@ -1303,7 +1318,7 @@ function handleDeleteTable(e, id) {
               item
               md={6}
               xs={12}
-            >{dbControlList&&<TextField
+            >{users&&<TextField
               fullWidth
               label="SA Master"
               name="dbmaster"
@@ -1313,13 +1328,12 @@ function handleDeleteTable(e, id) {
               select
               disabled = {!isRPA||ticket.assignee!==user.EmployeeId}
               SelectProps={{ native: true }}
-            ><option></option>
-            {Array.from(dbControlList).map((option) => (
+            ><option></option>{users.map((option) => (
               <option
-                key={option.database + option.samaster }
+                key={option.employeeId}
                 value={option.employeeId}
               >
-                {option.database} - {option.samaster}
+                {option.name}
               </option>
             ))}</TextField>}             
               <div style={{ alignContent:"flex-start", display : "flex" }}>
