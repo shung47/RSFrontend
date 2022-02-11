@@ -99,10 +99,6 @@ const approvals = [
   {
     value: 'Approved',
     label: 'Approved'
-  },
-  {
-    value: 'Rejected',
-    label: 'Rejected'
   }
 ];
 
@@ -188,6 +184,8 @@ export default function TicketDetails (props) {
   const [modifiedTables, setModifiedTables] = useState([]);
   const [modifiedTable, setModifiedTable] = useState("");
   const [isSending, setIsSending ] = useState(false);
+  const [pageAccessTime, setPageAccessTime] = useState();
+
   const modifiedTableColumn = [
     {
       field: 'databaseName',
@@ -446,7 +444,7 @@ export default function TicketDetails (props) {
 
     ticket.isRpa = isRPA;
     ticket.businessReview = businessReview;
-        fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
+        fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id +`/`+pageAccessTime, {
             method:'PUT',
             headers:{
                 'Content-Type':'application/json',
@@ -492,6 +490,9 @@ export default function TicketDetails (props) {
             setBusinessReview(data.businessReview);
             setDbControlList(data.dbControlList);
             setIsPending(false);
+            var now = new Date();
+            var timeNow = now.toISOString();
+            setPageAccessTime(timeNow);
         })
         .catch(err => {
             setErrorMsg(err.message);
@@ -674,6 +675,10 @@ export default function TicketDetails (props) {
          {
            getAllModifiedTables()
            
+         }else
+         {
+          res.text().then(text => {setErrorMsg(text)})
+          setErrorMsgOpen(true);
          }
        }
        ).catch(err => {
@@ -682,10 +687,12 @@ export default function TicketDetails (props) {
          setErrorMsgOpen(true);
          
      })
-     setModifiedTable("")
-     //document.getElementById('databaseName').value = "";
-     document.getElementById('tableName').value = "";
-     document.getElementById('summary').value = "";
+     //setModifiedTable("")
+     setModifiedTable({...modifiedTable, databaseName: modifiedTable.databaseName, tableName:'', summary:''});
+     //document.getElementById('tableName').value = "";
+     //document.getElementById('summary').value = "";
+
+     //document.getElementById('databaseName').value = modifiedTable.databaseName;
   }else{
     setErrorMsg("Please input database name and object name");
     setErrorMsgOpen(true);

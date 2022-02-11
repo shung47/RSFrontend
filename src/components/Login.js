@@ -13,6 +13,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,12 +51,22 @@ async function loginUser(credentials) {
 
  }
 
+ 
+
 export default function Login() {
   const classes = useStyles();
   const[employeeId,  setEmployeeId] = useState();
   const[name, setName] =useState();
   const[password,  setPassword] = useState();
   const[errorMsg, setErrorMsg] = useState(null);
+  const[openForgetPw, setOpenForgetPw] = useState(false);
+
+  const handleClickForgetPw = () => {
+    setOpenForgetPw(true);
+  };
+  const handleForgetPwClose = () => {
+    setOpenForgetPw(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,6 +89,24 @@ export default function Login() {
 
   }
 
+  function sendResetPwEmail(){
+    fetch(`${process.env.REACT_APP_API_URL}login/SendEmail/`+ employeeId, {
+     method: 'GET',
+     headers: {
+       'Content-Type': 'application/json'
+     },
+   }).then(res =>{
+     if(!res.ok){
+        res.text().then(text => {setErrorMsg(text)})
+     }else{
+       setErrorMsg('Email Sent');
+       return res.json();              
+     }
+     }
+   );
+   setOpenForgetPw(false);
+  }
+
   function setToken(userToken) {
     localStorage.setItem('token', JSON.stringify(userToken));
   }
@@ -83,7 +116,7 @@ export default function Login() {
       <CssBaseline />
       <div className={classes.paper}>
       <Typography component="h1" variant="h4" style = {{marginBottom:"20px", color:'#3f51b5'}}>
-          WELOG
+          AVLOG
       </Typography>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -134,7 +167,7 @@ export default function Login() {
           <div className="Warning-text">{errorMsg}</div>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="#" variant="body2" onClick={handleClickForgetPw}>
                 Forgot password?
               </Link>
             </Grid>
@@ -146,6 +179,44 @@ export default function Login() {
           </Grid>
         </form>
       </div>
+      <Dialog
+        open={openForgetPw}
+        onClose={handleForgetPwClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Warning"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+           Please type your employeeID here and we will sent you an email to reset the password
+          </DialogContentText>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            name="employeeID"
+            label="employeeID"
+            type="employeeID"
+            id="employeeID"
+            autoComplete="current-password"
+            value={employeeId}
+            onChange = {(e) => setEmployeeId(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button 
+          color="primary"
+          variant="contained"
+          onClick={sendResetPwEmail}
+          >Send</Button>
+          <Button
+          color="#ffffff"
+          variant="contained"
+          onClick={handleForgetPwClose}>Cancel</Button>
+        </DialogActions>
+    </Dialog>
     </Container>
   );
 }

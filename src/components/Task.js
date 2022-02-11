@@ -29,6 +29,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { DataGrid } from '@material-ui/data-grid';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -232,6 +234,20 @@ export default function TaskDetails(props){
     const [isPending, setIsPending] = useState(true);
     const [openDelete, setOpenDelete] = useState(false);
     const [tickets, setTickets] =useState(null);
+    const [pageAccessTime, setPageAccessTime] = useState();
+    const [openErrorMsg, setErrorMsgOpen] = useState(false);
+
+    function Alert(props) {
+      return <MuiAlert elevation={6} variant="filled" {...props} />;
+    }
+
+    const handleErrorMsgClose = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setErrorMsgOpen(false);
+    };
 
     const handleClickDelete = () => {
         setOpenDelete(true);
@@ -243,7 +259,7 @@ export default function TaskDetails(props){
     const handleSubmit = (e) => {
       e.preventDefault();
   
-          fetch(`${process.env.REACT_APP_API_URL}Tasks/`+ id, {
+          fetch(`${process.env.REACT_APP_API_URL}Tasks/`+ id + `/` + pageAccessTime, {
               method:'PUT',
               headers:{
                   'Content-Type':'application/json',
@@ -254,6 +270,7 @@ export default function TaskDetails(props){
               if(!res.ok)
               {
                 res.text().then(text => {setErrorMsg(text)})
+                setErrorMsgOpen(true)
               }else
               {
                 history.push('/tasks/updated');
@@ -284,6 +301,9 @@ export default function TaskDetails(props){
               setIsPending(false);
               const funcArray = data.functions.split(",")
               setFunctions(funcArray);
+              var now = new Date();
+              var timeNow = now.toISOString();
+              setPageAccessTime(timeNow);
           })
           .catch(err => {
               setErrorMsg(err.message);
@@ -582,6 +602,11 @@ export default function TaskDetails(props){
             onClick={handleDeleteClose}>Cancel</Button>
           </DialogActions>
       </Dialog>
+      <Snackbar open={openErrorMsg} autoHideDuration={6000} onClose={handleErrorMsgClose}>
+        <Alert onClose={handleErrorMsgClose} severity="error">
+          {errorMsg}
+        </Alert>
+      </Snackbar>
       </Container>
     );
   };

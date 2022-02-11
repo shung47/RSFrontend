@@ -16,7 +16,8 @@ import CreateTask from './components/CreateTask';
 import Task from './components/Task';
 import TaskUpdated from './components/TaskUpdated';
 import PendingTickets  from './components/PendingTickets';
-
+import ResetPassword from './components/ResetPassword';
+import PasswordUpdated from './components/PasswordUpdated';
 
 function App() {
 
@@ -33,6 +34,12 @@ function App() {
         <Switch>
           <Route exact path="/Login">
             <Login/>
+          </Route>
+          <Route path ="/ResetPassword/:employeeId">
+            <ResetPassword/>
+          </Route>
+          <Route exact path ="/PasswordResetCompleted">
+            <PasswordUpdated/>
           </Route>
           <Route exact path="/SignUp">
             <SignUp/>
