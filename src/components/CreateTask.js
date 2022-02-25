@@ -45,8 +45,8 @@ const priorityOptions =[
 
 const allFunctions = [
   'AA',
-  'APM',
   'APEX',
+  'APM',
   'BOM',
   'CDBA',
   'CS',
@@ -94,32 +94,40 @@ const useStyles = makeStyles((theme) => ({
 
   const regions = [
     {
-      value: 'TW',
-      label: 'TW'
-    },
-    {
-      value: 'CN',
-      label: 'CN'
-    },
-    {
-      value: 'South',
-      label: 'South'
+      value: 'APAC',
+      label: 'APAC'
     },
     {
       value: 'Asia',
       label: 'Asia'
     },
     {
-      value: 'APAC',
-      label: 'APAC'
+      value: 'AU',
+      label: 'AU'
+    },
+    {
+      value: 'CN',
+      label: 'CN'
+    },
+    {
+      value: 'Global',
+      label: 'Global'
     },
     {
       value: 'Japan',
       label: 'Japan'
     },
     {
-      value: 'Global',
-      label: 'Global'
+      value: 'South',
+      label: 'South'
+    },
+    {
+      value: 'South+AU',
+      label: 'South+AU'
+    },
+    {
+      value: 'TW',
+      label: 'TW'
     },
     {
       value: 'Others',
@@ -159,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
         }).then(res => {
           if(!res.ok)
           {
-            throw Error('Woops! Something goes wrong.');
+            throw Error('Woops! Something goes wrong. Make sure your task name is not duplicated');
           }else{
             setIsPending(false);
             history.push('/tasks/updated');

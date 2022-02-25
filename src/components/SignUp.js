@@ -109,10 +109,9 @@ export default function SignUp() {
               />
             </Grid>           
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I am a CDBA team member"
-              />
+            <Typography variant="h7">
+                Your login name will be your full name in lower case without any space 
+            </Typography>
             </Grid>
           </Grid>
           <Button 

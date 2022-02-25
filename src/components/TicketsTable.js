@@ -15,8 +15,6 @@ export default function DataTable(props) {
     useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}Tickets`,{
         method: 'GET',
-        //mode: 'cors',
-        //credentials: 'include',
         headers:{
           'Content-Type':'application/json',          
           'Authorization':'bearer '+ token,
@@ -27,29 +25,13 @@ export default function DataTable(props) {
             return res.json();
         })
         .then(data =>{
-            if(props.status==='Completed')
+            if(props.status==='MyTickets')
             {
-              setTickets(data.filter(e=>e.status==='Completed'));
-            }else if(props.status==='Reviewing')
-            {
-              setTickets(data.filter(e=>e.status==='Reviewing'));
-            }else if(props.status==='MyTickets')
-            {
-              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId));
-            }else if(props.status==='ApprovalTickets')
-            {
-              if(user.EmployeeId==='904218')
-              {
-                setTickets(data.filter(e=>e.type==='Project'&&e.status==='Reviewing'&&e.directorApproval!=='Approved'))
-              }else if(user.EmployeeId==='043138'||user.EmployeeId==='041086')
-               {
-                setTickets(data.filter(e=>e.status==='Reviewing'&&e.saLeaderApproval!=='Approved'))
-               } 
-              setTickets(data.filter(e=>e.status==='Reviewing'&&(e.businessReviewer===user.EmployeeId||e.primaryCodeReviewer===user.EmployeeId||e.secondaryCodeReviewer===user.EmployeeId||e.dbmaster===user.EmployeeId)));
+              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId || e.primaryCodeReviewer === user.EmployeeId || e.secondaryCodeReviewer === user.EmployeeId || e.businessReviewer === user.EmployeeId || e.dbmaster === user.EmployeeId));
             }
             else 
             {
-              setTickets(data.filter(e=>e.status==='OnHold'||e.status==='UnderDevelopment'));
+              setTickets(data);
             }
             setIsPending(false);
         })
@@ -96,6 +78,12 @@ const columns = [
       headerName: 'Description',
       width: 200,
       editable: false,
+    },
+    {
+      field: 'status',
+      headerName: 'Satus',
+      width:150,
+      editable:false,
     },
     {
       field: 'type',

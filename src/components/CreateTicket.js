@@ -68,8 +68,8 @@ export default function CreateTicket(){
     const[assignee, setAssignee] = useState('');
     const[developer, setDeveloper] = useState('');
     const[secondaryDeveloper, setSecondaryDeveloper] = useState('');
-    const[businessReview, setBusinessReview] = useState(false);
-    const[IsRPA, setIsRPA] = useState(false);
+    const[businessReview, setBusinessReview] = useState(true);
+    const[IsRPA, setIsRPA] = useState(true);
     const[isPending, setIsPending] = useState(false);
     const history =useHistory();
     const { token, setToken } = useToken();
@@ -96,7 +96,7 @@ export default function CreateTicket(){
         }).then(res => {
           if(!res.ok)
           {
-            throw Error('Woops! Something goes wrong.');
+            throw Error('Woops! Something goes wrong. Make sure your ticket name is not duplicated');
           }else{
             setIsPending(false);
             history.push('/tickets/updated');
@@ -311,7 +311,7 @@ export default function CreateTicket(){
                       onChange = {(e) => setDescription(e.target.value)}
                   />
                   </Grid>
-                  <Grid item xs={6} className="CheckBox">
+{/*                   <Grid item xs={6} className="CheckBox">
                   <FormControlLabel 
                       control={<Checkbox value={businessReview} color="primary" />}
                       label="Business review required"
@@ -324,7 +324,7 @@ export default function CreateTicket(){
                       label="RPA or DB changes required"
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
-                  </Grid>
+                  </Grid> */}
                 </Grid>
             {!isPending && <Button
                 type="submit"               

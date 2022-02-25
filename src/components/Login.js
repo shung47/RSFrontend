@@ -116,7 +116,7 @@ export default function Login() {
       <CssBaseline />
       <div className={classes.paper}>
       <Typography component="h1" variant="h4" style = {{marginBottom:"20px", color:'#3f51b5'}}>
-          AVLOG
+          CDBA LOG
       </Typography>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -190,7 +190,7 @@ export default function Login() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Please type your employeeID here and we will sent you an email to reset the password
+           Please input your employee ID here and we will send you an email to reset the password
           </DialogContentText>
           <TextField
             variant="outlined"

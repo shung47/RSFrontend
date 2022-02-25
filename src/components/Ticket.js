@@ -35,6 +35,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import BusinessReivewList from './BusinessReviewList';
 import { DataGrid } from '@material-ui/data-grid';
 import CodeReivewList from './CodeReviewList';
+import { style } from '@mui/system';
 
 const useStyles = makeStyles({
   root: {
@@ -171,6 +172,7 @@ export default function TicketDetails (props) {
   const [brWindow, setBrWindow] = useState(false);
   const [dbWindow, setDbWindow] = useState(false);
   const [users, setUsers] = useState(null);
+  const [saUsers, setSaUsers] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [dbControlList, setDbControlList]=useState(null);
   const [comments, setComments]=useState([]);
@@ -185,6 +187,8 @@ export default function TicketDetails (props) {
   const [modifiedTable, setModifiedTable] = useState("");
   const [isSending, setIsSending ] = useState(false);
   const [pageAccessTime, setPageAccessTime] = useState();
+  const[isSaving, setIsSaving] = useState(false);
+  const[isActivateSaving, setIsActivateSaving] = useState(false);
 
   const modifiedTableColumn = [
     {
@@ -439,9 +443,20 @@ export default function TicketDetails (props) {
     setErrorMsgOpen(false);
   };
 
+  useEffect(()=>{
+    if(isActivateSaving)
+    {
+      setIsSaving(true);
+    }else{
+      setIsSaving(false);
+    }
+
+  },[isActivateSaving])
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setIsActivateSaving(true);   
+    
     ticket.isRpa = isRPA;
     ticket.businessReview = businessReview;
         fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id +`/`+pageAccessTime, {
@@ -457,6 +472,7 @@ export default function TicketDetails (props) {
               res.text().then(text => {setErrorMsg(text)})
               setApprovalMsg(null);
               setErrorMsgOpen(true)
+              setIsActivateSaving(false);
             }else
             {
               history.push('/tickets/updated');
@@ -466,6 +482,7 @@ export default function TicketDetails (props) {
           setApprovalMsg(null);
           setErrorMsgOpen(true)
       })
+      
   }
 
   useEffect(() => {
@@ -517,6 +534,30 @@ export default function TicketDetails (props) {
         })
         .then(data =>{
             setUsers(data);
+        })
+        .catch(err => {
+            setErrorMsg(err.message);
+        })
+  }, []);
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}Users/SA`,{
+        method: 'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'bearer '+ token,
+        },
+
+    })
+        .then(res =>{
+            if(!res.ok){
+                throw Error('Could not fetch the data');
+            }else{
+              return res.json();              
+            }
+        })
+        .then(data =>{
+            setSaUsers(data);
         })
         .catch(err => {
             setErrorMsg(err.message);
@@ -687,12 +728,8 @@ export default function TicketDetails (props) {
          setErrorMsgOpen(true);
          
      })
-     //setModifiedTable("")
      setModifiedTable({...modifiedTable, databaseName: modifiedTable.databaseName, tableName:'', summary:''});
-     //document.getElementById('tableName').value = "";
-     //document.getElementById('summary').value = "";
 
-     //document.getElementById('databaseName').value = modifiedTable.databaseName;
   }else{
     setErrorMsg("Please input database name and object name");
     setErrorMsgOpen(true);
@@ -711,6 +748,10 @@ function handleDeleteTable(e, id) {
       if(res.ok)
         {
           getAllModifiedTables()
+        }else
+        {
+         res.text().then(text => {setErrorMsg(text)})
+         setErrorMsgOpen(true);
         }
     }
     ).catch(err => {
@@ -799,8 +840,6 @@ function handleDeleteTable(e, id) {
       e.preventDefault();
       window.open(`${process.env.REACT_APP_API_URL}Tickets/Downloadfile/`+ id +'/'+e.target.outerText);
       };
-      
-
 
   return (
     <Grid className = {classes.parentFrid}>
@@ -833,7 +872,7 @@ function handleDeleteTable(e, id) {
               <TextField
                 fullWidth
                 label="Ticket Name"
-                name="ticketName"
+                name="title"
                 onChange={handleChange}
                 required
                 value={ticket.title}
@@ -1020,7 +1059,7 @@ function handleDeleteTable(e, id) {
                 variant="outlined"
               />
             </Grid>
-            <Grid item
+            {/* <Grid item
                 md={12}
                 xs={12}
                 style={{display:'flex'}}
@@ -1039,7 +1078,7 @@ function handleDeleteTable(e, id) {
                       onChange = {(e) =>setIsRPA(e.target.checked)}
                   />
               </Grid>
-            </Grid>
+            </Grid> */}
             <Grid item
                 md={5}
                 xs={12} >
@@ -1083,7 +1122,7 @@ function handleDeleteTable(e, id) {
                     variant="outlined"
                     value={modifiedTable.summary}
                   />
-                  <div style={{ alignContent:"flex-start", display : "flex" }}>
+                  <div style={{ alignContent:"flex-start", display : "flex", marginTop:8 }}>
                     <Button
                       variant="contained" 
                       color ="primary"
@@ -1136,7 +1175,7 @@ function handleDeleteTable(e, id) {
                   {option.name}
                 </option>
               ))}</TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex" , marginTop:10}}>
                 <Button 
                     variant="contained" 
                     onClick={handleFirstOpen} 
@@ -1181,7 +1220,7 @@ function handleDeleteTable(e, id) {
                   {option.name}
                 </option>
               ))}</TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
                 <Button 
                     variant="contained" 
                     onClick={handleSecOpen} 
@@ -1225,7 +1264,7 @@ function handleDeleteTable(e, id) {
                   {option.name}
                 </option>
               ))}</TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
                 <Button 
                     variant="contained" 
                     onClick={handleBrOpen} 
@@ -1273,7 +1312,7 @@ function handleDeleteTable(e, id) {
                   </option>
                 ))}
               </TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
                 <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
@@ -1309,7 +1348,7 @@ function handleDeleteTable(e, id) {
                     {option.label}
                   </option>
                 ))}</TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
                 <Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
@@ -1325,7 +1364,7 @@ function handleDeleteTable(e, id) {
               item
               md={6}
               xs={12}
-            >{users&&<TextField
+            >{saUsers&&<TextField
               fullWidth
               label="SA Master"
               name="dbmaster"
@@ -1333,9 +1372,9 @@ function handleDeleteTable(e, id) {
               value={ticket.dbmaster}
               variant="outlined"
               select
-              disabled = {!isRPA||ticket.assignee!==user.EmployeeId}
+              disabled = {!(isRPA||ticket.assignee!==user.EmployeeId||user.EmployeeId === "043138" || user.EmployeeId === "041086")}
               SelectProps={{ native: true }}
-            ><option></option>{users.map((option) => (
+            ><option></option>{saUsers.map((option) => (
               <option
                 key={option.employeeId}
                 value={option.employeeId}
@@ -1343,7 +1382,7 @@ function handleDeleteTable(e, id) {
                 {option.name}
               </option>
             ))}</TextField>}             
-              <div style={{ alignContent:"flex-start", display : "flex" }}>
+              <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
                 <Button 
                     variant="contained" 
                     onClick={handleDbOpen} 
@@ -1376,21 +1415,30 @@ function handleDeleteTable(e, id) {
             p: 2
           }}
         >
-         {ticket&& <Button 
+{/*          {ticket&& <Button 
           variant="contained" 
           onClick={handleClickOpen} 
           color ="secondary"
           disabled = {ticket.status!=="Reviewing"}
           > 
           Send reminding Email
-          </Button>}
-          <Button
+          </Button>} */}
+          {!isSaving&&<Button
             color="primary"
             variant="contained"
-            type="submit"               
+            type="submit"         
           >
             Save
-          </Button>
+          </Button>}
+          {isSaving&&<Button
+            disabled
+            color="primary"
+            variant="contained"
+            type="submit"             
+          >
+            Saving...
+          </Button>}
+          
           <Button
             color="#ffffff"
             variant="contained"
@@ -1586,7 +1634,6 @@ function handleDeleteTable(e, id) {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                //disabled = {user.Role!='SA'&&user.Role!='SALeader'&&user.Role!='Admin'}
                 SelectProps={{ native: true }}
                 value={ticket.dbmasterApproval}
                 variant="outlined"
