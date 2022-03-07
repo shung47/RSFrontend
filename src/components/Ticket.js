@@ -7,7 +7,8 @@ import {
   CardHeader,
   Divider,
   Grid,
-  TextField
+  TextField,
+  ThemeOptions
 } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import { useHistory, useParams } from 'react-router-dom';
@@ -35,7 +36,8 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import BusinessReivewList from './BusinessReviewList';
 import { DataGrid } from '@material-ui/data-grid';
 import CodeReivewList from './CodeReviewList';
-import { style } from '@mui/system';
+import CheckIcon from '@material-ui/icons/Check';
+import Tooltip from '@material-ui/core/Tooltip'
 
 const useStyles = makeStyles({
   root: {
@@ -184,31 +186,15 @@ export default function TicketDetails (props) {
   const [canChangeCode1Status, setCanChangeCode1Status] = useState(false);
   const [canChangeCode2Status, setCanChangeCode2Status] = useState(false);
   const [modifiedTables, setModifiedTables] = useState([]);
-  const [modifiedTable, setModifiedTable] = useState("");
+  const [modifiedTable, setModifiedTable] = useState();
   const [isSending, setIsSending ] = useState(false);
   const [pageAccessTime, setPageAccessTime] = useState();
   const[isSaving, setIsSaving] = useState(false);
   const[isActivateSaving, setIsActivateSaving] = useState(false);
+  const[isApproving, setIsApproving] = useState(false);
+  const[isActivateApproving, setIsActivateApproving] = useState(false);
 
   const modifiedTableColumn = [
-    {
-      field: 'databaseName',
-      headerName: 'Database Name',
-      width: 180,
-      editable: false,
-    },
-    {
-      field: 'tableName',
-      headerName: 'Object Name',
-      width: 180,
-      editable: false,
-    },
-    {
-      field: 'summary',
-      headerName: 'Summary',
-      width: 350,
-      editable: false,
-    },
     {
       field: 'deleteBtn',
       headerName: ' ',
@@ -225,10 +211,23 @@ export default function TicketDetails (props) {
           </Button>
         );
       }
-    }
+    },
+    {
+      field: 'tableName',
+      headerName: 'Object Name',
+      width: 350,
+      editable: false,
+    },
+    {
+      field: 'summary',
+      headerName: 'Summary',
+      width: 800,
+      editable: false,
+    }   
     ];
   
   var user =jwtDecode(token);
+
 
   const handleChange = (event) => {
     event.preventDefault();
@@ -296,10 +295,12 @@ export default function TicketDetails (props) {
 
   const handleApprovalChange =(e) =>{
     e.preventDefault();
+    setIsApproving(true);
+    setIsActivateApproving(true);
     
     const approval ={ApprovalType: e.target.name,ApprovalStatus:e.target.value};
 
-    fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
+     fetch(`${process.env.REACT_APP_API_URL}Tickets/`+ id, {
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -312,6 +313,7 @@ export default function TicketDetails (props) {
               res.text().then(text => {setErrorMsg(text)})
             }else
             {
+              setIsActivateApproving(false);
               var now = new Date();
               var timeNow = now.toISOString()
               setTicket({
@@ -453,6 +455,17 @@ export default function TicketDetails (props) {
 
   },[isActivateSaving])
 
+  useEffect(()=>{
+    if(isActivateApproving)
+    {
+      setIsApproving(true);
+    }else{
+      setIsApproving(false);
+    }
+
+  },[isActivateApproving])
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsActivateSaving(true);   
@@ -581,7 +594,7 @@ export default function TicketDetails (props) {
             }
         })
         .then(data =>{
-            setTasks(data);
+            setTasks(data.filter(e=>e.status!=='Done'&&!e.isDeleted));
         })
         .catch(err => {
             setErrorMsg(err.message);
@@ -692,6 +705,12 @@ export default function TicketDetails (props) {
      })
      .then(data =>{
          setModifiedTables(data);
+         if(data.length!==0)
+         {
+           setModifiedTable({...modifiedTable, databaseName: data[0].databaseName, tableName:'', summary:''});
+         }else{
+          setModifiedTable(" ");
+         }
      })
      .catch(err => {
          setErrorMsg(err.message);
@@ -1079,10 +1098,10 @@ function handleDeleteTable(e, id) {
                   />
               </Grid>
             </Grid> */}
-            <Grid item
+            {modifiedTable&&dbControlList&&<Grid item
                 md={5}
                 xs={12} >
-                    {dbControlList&&<TextField
+                    <TextField
                     fullWidth
                     type="text"
                     label="Modified Database"
@@ -1101,7 +1120,7 @@ function handleDeleteTable(e, id) {
                     >
                       {option.database}
                     </option>
-                  ))}</TextField>}
+                  ))}</TextField>
                   <TextField style={{marginTop:10}}
                     fullWidth
                     type="text"
@@ -1132,7 +1151,7 @@ function handleDeleteTable(e, id) {
                       Add object
                     </Button>
                   </div>                  
-            </Grid>
+            </Grid>}
             <Grid md={12}>
                 <CardHeader
                   title="Modified Objects"
@@ -1175,7 +1194,9 @@ function handleDeleteTable(e, id) {
                   {option.name}
                 </option>
               ))}</TextField>
-              <div style={{ alignContent:"flex-start", display : "flex" , marginTop:10}}>
+              <div >
+              
+                <div style={{ alignContent:"flex-start", display : "flex" , marginTop:10}}>
                 <Button 
                     variant="contained" 
                     onClick={handleFirstOpen} 
@@ -1184,18 +1205,22 @@ function handleDeleteTable(e, id) {
                     >                    
                     Approval
                 </Button>
-                <Button style ={{color:'black'}}
+                {ticket.primaryCodeApproval==="Approved"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
                     > 
                     {ticket.primaryCodeApproval}
-                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
-                    {ticket.primaryCodeApprovalTime}
-                    </Moment>
-                </Button>
-
+                </Button>}
+                </div>
+                <div>
+                {ticket.primaryCodeApproval==="Approved"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+              {ticket.primaryCodeApprovalTime}
+              </Moment></p>}
+              </div>                
               </div>
+
             </Grid>
             <Grid
               item
@@ -1229,17 +1254,18 @@ function handleDeleteTable(e, id) {
                     > 
                     Approval
                 </Button>
-                <Button style ={{color:'black'}}
+                {ticket.secondaryCodeApproval==="Approved"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
                     > 
-                    {ticket.secondaryCodeApproval} 
-                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
-                    {ticket.secondaryCodeApprovalTime}
-                    </Moment>
-                </Button>
+                    {ticket.secondaryCodeApproval}                    
+                </Button>}
               </div>
+              {ticket.secondaryCodeApproval==="Approved"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.secondaryCodeApprovalTime}
+                    </Moment></p>}
             </Grid>
             <Grid
               item
@@ -1274,17 +1300,18 @@ function handleDeleteTable(e, id) {
                     
                     Approval
                 </Button>
-                <Button style ={{color:'black'}}
+                {ticket.businessApproval==="Approved"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
                     > 
                     {ticket.businessApproval}  
-                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
-                    {ticket.businessApprovalTime}
-                    </Moment>
-                </Button>
+                </Button>}
               </div>
+              {ticket.businessApproval==="Approved"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.businessApprovalTime}
+                    </Moment></p>}
             </Grid>            
             <Grid
               item
@@ -1299,7 +1326,7 @@ function handleDeleteTable(e, id) {
                 value={ticket.saLeaderApproval}
                 required
                 select
-                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086") }
+                disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086"||user.EmployeeId ==="057533") }
                 SelectProps={{ native: true }}
                 variant="outlined"
               >
@@ -1313,16 +1340,19 @@ function handleDeleteTable(e, id) {
                 ))}
               </TextField>
               <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
-                <Button style ={{color:'black'}}
+                {ticket.saLeaderApproval==="Approved"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
                     > 
-                    <Moment format="YYYY/MM/DD HH:mm:ss">
+                    {ticket.saLeaderApproval}
+                </Button>}
+              </div>
+              {ticket.saLeaderApproval==="Approved"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss">
                     {ticket.saLeaderApprovalTime}
                     </Moment>
-                </Button>
-              </div>             
+                </p>}             
             </Grid>
               <Grid
               item
@@ -1336,7 +1366,7 @@ function handleDeleteTable(e, id) {
                 onChange={(e)=>handleApprovalChange(e)}
                 required
                 select
-                disabled = {user.EmployeeId !== "904218" }
+                disabled = {user.EmployeeId !== "904218"&& user.EmployeeId !=="902128"}
                 SelectProps={{ native: true }}
                 value={ticket.directorApproval}
                 variant="outlined"
@@ -1349,16 +1379,17 @@ function handleDeleteTable(e, id) {
                   </option>
                 ))}</TextField>
               <div style={{ alignContent:"flex-start", display : "flex", marginTop:10 }}>
-                <Button style ={{color:'black'}}
+                {ticket.directorApproval==="Approved"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
-                    > 
-                    <Moment format="YYYY/MM/DD HH:mm:ss">
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
+                    >{ticket.directorApproval} 
+                </Button>}
+              </div>
+              {ticket.directorApproval==="Approved"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss">
                     {ticket.directorApprovalTime}
-                    </Moment>
-                </Button>
-              </div>               
+                    </Moment></p>}               
             </Grid>
             <Grid
               item
@@ -1372,7 +1403,7 @@ function handleDeleteTable(e, id) {
               value={ticket.dbmaster}
               variant="outlined"
               select
-              disabled = {!(isRPA||ticket.assignee!==user.EmployeeId||user.EmployeeId === "043138" || user.EmployeeId === "041086")}
+              disabled = {!(user.EmployeeId === "043138" || user.EmployeeId === "041086"||user.EmployeeId==="057533")}
               SelectProps={{ native: true }}
             ><option></option>{saUsers.map((option) => (
               <option
@@ -1391,18 +1422,18 @@ function handleDeleteTable(e, id) {
                     >                    
                     Status
                 </Button>
-                <Button style ={{color:'black'}}
+                {ticket.dbMasterApproval==="Completed"&&<Button style ={{color:'black'}}
                     disabled
                     variant="outlined" 
                     color ="primary"
+                    startIcon = {<CheckIcon style={{ color: 'green' }}/>}
                     > 
-                    {ticket.dbMasterApproval}  
-                    <Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
-                    {ticket.dbMasterApprovalTime}
-                    </Moment>
-                    {ticket.dbChanger}
-                </Button>
+                    {ticket.dbMasterApproval}                
+                </Button>}
               </div>
+              {ticket.dbMasterApproval==="Completed"&&<p style={{display:'flex'}}><Moment format="YYYY/MM/DD HH:mm:ss" className={classes.approveTime}>
+                    {ticket.dbMasterApprovalTime}
+                    </Moment></p>}
             </Grid>              
           </Grid>}
           
@@ -1527,7 +1558,7 @@ function handleDeleteTable(e, id) {
             onChange={(e)=>handleApprovalChange(e)}
             required
             select
-            disabled = {!canChangeCode1Status}
+            disabled = {!canChangeCode1Status||isApproving}
             SelectProps={{ native: true }}
             value={ticket.primaryCodeApproval}
             variant="outlined"
@@ -1539,8 +1570,8 @@ function handleDeleteTable(e, id) {
                 >
                   {option.label}
                 </option>
-              ))}
-            </TextField>
+              ))}             
+        </TextField>
         </DialogContent>
           <DialogContentText>
           {errorMsg}
@@ -1562,7 +1593,7 @@ function handleDeleteTable(e, id) {
                 onChange={(e)=>handleApprovalChange(e)}             
                 required
                 select
-                disabled = {!canChangeCode2Status}
+                disabled = {!canChangeCode2Status||isApproving}
                 SelectProps={{ native: true }}
                 value={ticket.secondaryCodeApproval}
                 variant="outlined"
@@ -1597,7 +1628,7 @@ function handleDeleteTable(e, id) {
               onChange={(e)=>handleApprovalChange(e)}
               required
               select
-              disabled = {!canChangeStatus}
+              disabled = {(!canChangeStatus)||isApproving}
               SelectProps={{ native: true }}
               value={ticket.codeApproval}
               variant="outlined"

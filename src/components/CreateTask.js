@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
+import { useEffect } from 'react';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -149,7 +150,7 @@ const useStyles = makeStyles((theme) => ({
     const[errorMsg, setErrorMsg] = useState(null);
     const[priority, setPriority] = useState('Low');
     var user =jwtDecode(token);
-    
+
     const handleSubmit =(e) => {
         e.preventDefault();
         let functions = selectedFunctions.toString();
@@ -167,7 +168,8 @@ const useStyles = makeStyles((theme) => ({
         }).then(res => {
           if(!res.ok)
           {
-            throw Error('Woops! Something goes wrong. Make sure your task name is not duplicated');
+            setIsPending(false);
+            throw Error('Woops! Something goes wrong. Make sure your task name is not duplicated');           
           }else{
             setIsPending(false);
             history.push('/tasks/updated');

@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft:5
     },
     submitBtn:{
+        marginTop:10,
         maxWidth:100
     }
   }));

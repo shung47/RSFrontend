@@ -18,6 +18,23 @@ import TaskUpdated from './components/TaskUpdated';
 import PendingTickets  from './components/PendingTickets';
 import ResetPassword from './components/ResetPassword';
 import PasswordUpdated from './components/PasswordUpdated';
+import { ThemeProvider, createTheme } from '@material-ui/core';
+
+const FirstTheme = createTheme({
+  palette: {
+    primary: {
+      main: 'rgb(65, 195, 99)',
+    },
+  },
+});
+
+const SecondTheme = createTheme({
+  palette: {
+    primary: {
+      main: 'rgb(0, 0, 0)',
+    },
+  },
+});
 
 function App() {
 
@@ -25,11 +42,14 @@ function App() {
 
 
   return (
-    <Router>
+    <Router >
+      <ThemeProvider theme={FirstTheme}>
     <div className="App">
+    <ThemeProvider theme={SecondTheme}>
       <div className="Navbar">
         {token && <NevBar/>}
-      </div>        
+      </div>
+      </ThemeProvider>        
       <div className ="Content">
         <Switch>
           <Route exact path="/Login">
@@ -92,7 +112,9 @@ function App() {
         </Switch>
       </div>
     </div>
+    </ThemeProvider>
     </Router>
+    
   );
 }
 

@@ -27,7 +27,7 @@ export default function DataTable(props) {
         .then(data =>{
             if(props.status==='MyTickets')
             {
-              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId || e.primaryCodeReviewer === user.EmployeeId || e.secondaryCodeReviewer === user.EmployeeId || e.businessReviewer === user.EmployeeId || e.dbmaster === user.EmployeeId));
+              setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId || e.primaryCodeReviewer === user.EmployeeId || e.secondaryCodeReviewer === user.EmployeeId || e.businessReviewer === user.EmployeeId || e.dbmaster === user.EmployeeId|| e.creator===user.EmployeeId));
             }
             else 
             {
@@ -64,19 +64,13 @@ const columns = [
     {
       field: 'taskName',
       headerName: 'Task Name',
-      width: 150,
+      width: 250,
       editable: false,
     },
     {
       field: 'title',
       headerName: 'Ticket Name',
-      width: 160,
-      editable: false,
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      width: 200,
+      width: 250,
       editable: false,
     },
     {
@@ -99,10 +93,17 @@ const columns = [
       editable: false,
     },
     {
+      field: 'creatorName',
+      headerName: 'Creator',
+      sortable: true,
+      width: 180,
+      editable: false,
+    },
+    {
       field: 'developerName',
       headerName: 'Developer',
       sortable: true,
-      width: 150,
+      width: 180,
       editable: false,
     },
     {
@@ -152,13 +153,13 @@ const columns = [
 
 
   return (
-    <div style={{ height: 600, width: '100%' }}>
+    <div style={{ height: 800, width: '100%' }}>
         {isPending && <div>Loading...</div>}
         {tickets && <DataGrid
 
         rows={tickets}
         columns={columns}
-        pageSize={10}
+        pageSize={20}
         
       />}
     </div>

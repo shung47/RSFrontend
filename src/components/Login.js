@@ -115,7 +115,7 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-      <Typography component="h1" variant="h4" style = {{marginBottom:"20px", color:'#3f51b5'}}>
+      <Typography component="h1" variant="h4" style = {{marginBottom:"20px"}}>
           CDBA LOG
       </Typography>
         <Avatar className={classes.avatar}>
@@ -150,10 +150,6 @@ export default function Login() {
             autoComplete="current-password"
             value={password}
             onChange = {(e) => setPassword(e.target.value)}
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
           />
           <Button
             type="submit"

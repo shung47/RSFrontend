@@ -96,6 +96,7 @@ export default function CreateTicket(){
         }).then(res => {
           if(!res.ok)
           {
+            setIsPending(false);
             throw Error('Woops! Something goes wrong. Make sure your ticket name is not duplicated');
           }else{
             setIsPending(false);
