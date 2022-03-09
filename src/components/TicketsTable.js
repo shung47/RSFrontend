@@ -5,11 +5,20 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
+import { useHistory, useParams } from 'react-router-dom';
 
 export default function DataTable(props) {
     const [tickets, setTickets] = useState(null);
     const [isPending, setIsPending] = useState(true);
+    const history =useHistory();
     const { token } = useToken();
+
+    if(!token)
+    {
+      history.push('/login');
+      window.location.reload();
+    }
+
     var user =jwtDecode(token);
 
     useEffect(() => {

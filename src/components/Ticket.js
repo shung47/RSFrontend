@@ -37,7 +37,6 @@ import BusinessReivewList from './BusinessReviewList';
 import { DataGrid } from '@material-ui/data-grid';
 import CodeReivewList from './CodeReviewList';
 import CheckIcon from '@material-ui/icons/Check';
-import Tooltip from '@material-ui/core/Tooltip'
 
 const useStyles = makeStyles({
   root: {
@@ -193,6 +192,7 @@ export default function TicketDetails (props) {
   const[isActivateSaving, setIsActivateSaving] = useState(false);
   const[isApproving, setIsApproving] = useState(false);
   const[isActivateApproving, setIsActivateApproving] = useState(false);
+  
 
   const modifiedTableColumn = [
     {
@@ -225,9 +225,16 @@ export default function TicketDetails (props) {
       editable: false,
     }   
     ];
-  
+
+    if(!token)
+    {
+      history.push('/login');
+      window.location.reload();
+    }
+
   var user =jwtDecode(token);
 
+    
 
   const handleChange = (event) => {
     event.preventDefault();
@@ -1418,7 +1425,7 @@ function handleDeleteTable(e, id) {
                     variant="contained" 
                     onClick={handleDbOpen} 
                     color ="primary"
-                    disabled = {!(user.EmployeeId === ticket.dbmaster||user.EmployeeId==="043138"||user.EmployeeId==="041086"||user.EmployeeId==="057533")}
+                    disabled = {!(user.EmployeeId === ticket.dbmaster||user.EmployeeId==="043138"||user.EmployeeId==="041086")||(ticket.type!=="CYSpecialApproval"&&ticket.saLeaderApproval!="Approved")}
                     >                    
                     Status
                 </Button>

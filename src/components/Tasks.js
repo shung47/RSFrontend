@@ -5,11 +5,20 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import useToken from './useToken';
 import jwtDecode from 'jwt-decode';
+import { useHistory } from 'react-router-dom';
 
 export default function Tasks() {
     const [tasks, setTasks] = useState(null);
     const [isPending, setIsPending] = useState(true);
     const { token } = useToken();
+    const history =useHistory();
+
+    if(!token)
+    {
+      history.push('/login');
+      window.location.reload();
+    }
+    
     var user =jwtDecode(token);
 
     useEffect(() => {

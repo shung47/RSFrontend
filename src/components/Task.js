@@ -200,9 +200,24 @@ function getStyles(name, personName, theme) {
 }
 
 export default function TaskDetails(props){
-    //const [values, setValues] = useState();
+
+    const { id } = useParams();
+    const [task, setTask] = useState(null);
+    const history =useHistory();
+    const[errorMsg, setErrorMsg] = useState(null);
+    const [isPending, setIsPending] = useState(true);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [tickets, setTickets] =useState(null);
+    const [pageAccessTime, setPageAccessTime] = useState();
+    const [openErrorMsg, setErrorMsgOpen] = useState(false);
     const { token } = useToken();
-    
+
+    if(!token)
+    {
+      history.push('/login');
+      window.location.reload();
+    }
+
     var user =jwtDecode(token);
   
     const handleChange = (event) => {
@@ -233,17 +248,7 @@ export default function TaskDetails(props){
             setErrorMsg(err.message);
         })
     }
-  
-  
-    const { id } = useParams();
-    const [task, setTask] = useState(null);
-    const history =useHistory();
-    const[errorMsg, setErrorMsg] = useState(null);
-    const [isPending, setIsPending] = useState(true);
-    const [openDelete, setOpenDelete] = useState(false);
-    const [tickets, setTickets] =useState(null);
-    const [pageAccessTime, setPageAccessTime] = useState();
-    const [openErrorMsg, setErrorMsgOpen] = useState(false);
+
 
     function Alert(props) {
       return <MuiAlert elevation={6} variant="filled" {...props} />;
