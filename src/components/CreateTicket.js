@@ -97,7 +97,8 @@ export default function CreateTicket(){
           if(!res.ok)
           {
             setIsPending(false);
-            throw Error('Woops! Something goes wrong. Make sure your ticket name is not duplicated');
+            res.text().then(text => {setErrorMsg(text)});
+            //throw Error('Woops! Something goes wrong. Make sure your ticket name is not duplicated');
           }else{
             setIsPending(false);
             history.push('/tickets/updated');

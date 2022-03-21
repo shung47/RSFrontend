@@ -8,9 +8,13 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TicketsTable from '../components/TicketsTable';
 import Button from '@material-ui/core/Button';
+import jwtDecode from 'jwt-decode';
+import useToken from './useToken';
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
+
 
   return (
     <div
@@ -52,6 +56,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SimpleTabs() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const { token } = useToken();
+  var user =jwtDecode(token);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -62,7 +68,9 @@ export default function SimpleTabs() {
       <AppBar position="relative" >
         <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
           <Tab label="My Tickets" {...a11yProps(0)} />
-          <Tab label="All Tickets" {...a11yProps(0)} />          
+          <Tab label="All Tickets" {...a11yProps(0)} />
+          {( user.EmployeeId === "043138" || user.EmployeeId === "041086")&&<Tab label="SA Leader Tickets" {...a11yProps(0)} />}
+          {(user.EmployeeId === "904218"|| user.EmployeeId ==="902128")&&<Tab label="Director Tickets" {...a11yProps(0)} />}                         
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -70,6 +78,12 @@ export default function SimpleTabs() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <TicketsTable status='AllTickets'/>
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <TicketsTable status='SALeaderTickets'/>
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <TicketsTable status='DirectorTickets'/>
       </TabPanel>
       <div>
         <Button variant="contained" color="primary" href='Tickets/Create'>Create</Button>

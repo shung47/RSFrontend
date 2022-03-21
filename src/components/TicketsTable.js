@@ -37,6 +37,12 @@ export default function DataTable(props) {
             if(props.status==='MyTickets')
             {
               setTickets(data.filter(e=>e.assignee===user.EmployeeId||e.developer===user.EmployeeId|| e.secondaryDeveloper === user.EmployeeId || e.primaryCodeReviewer === user.EmployeeId || e.secondaryCodeReviewer === user.EmployeeId || e.businessReviewer === user.EmployeeId || e.dbmaster === user.EmployeeId|| e.creator===user.EmployeeId));
+            }else if(props.status==="SALeaderTickets")
+            {
+              setTickets(data.filter(e=>e.saleaderRequired===true))
+            }else if(props.status==="DirectorTickets")
+            {
+              setTickets(data.filter(e=>e.directorRequired===true))
             }
             else 
             {
