@@ -903,6 +903,7 @@ function handleDeleteTable(e, id) {
                 required
                 value={ticket.title}
                 variant="outlined"
+                inputProps={{ maxLength: 80 }}
               />
             </Grid>
             <Grid
@@ -1083,6 +1084,7 @@ function handleDeleteTable(e, id) {
                 required
                 value={ticket.description}
                 variant="outlined"
+                inputProps={{ maxLength: 999 }}
               />
             </Grid>
             {/* <Grid item
@@ -1147,6 +1149,7 @@ function handleDeleteTable(e, id) {
                     id="summary"
                     variant="outlined"
                     value={modifiedTable.summary}
+                    inputProps={{ maxLength: 400 }}
                   />
                   <div style={{ alignContent:"flex-start", display : "flex", marginTop:8 }}>
                     <Button
@@ -1164,12 +1167,12 @@ function handleDeleteTable(e, id) {
                   title="Modified Objects"
                 />
                 </Grid>
-              <div style={{ height:250, width: '95%', position:'center',margin: '0 auto', marginBottom:20 }}>
+              <div style={{ height:400, width: '95%', position:'center',margin: '0 auto', marginBottom:20 }}>
               {modifiedTables && <DataGrid
               rows={modifiedTables}
               columns={modifiedTableColumn}
               rowHeight={40}
-              pageSize={10}           
+              pageSize={20}           
               />}
               </div>
             </Grid>

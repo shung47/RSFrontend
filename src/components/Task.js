@@ -391,6 +391,7 @@ export default function TaskDetails(props){
                   required
                   value={task.taskName}
                   variant="outlined"
+                  inputProps={{ maxLength: 80 }}
                 />
               </Grid>
               <Grid
@@ -473,6 +474,7 @@ export default function TaskDetails(props){
                   onChange={handleChange}
                   value={task.referenceNumber}
                   variant="outlined"
+                  inputProps={{ maxLength: 50 }}
                 >
                 </TextField>
               </Grid>
@@ -489,6 +491,7 @@ export default function TaskDetails(props){
                   required
                   value={task.summary}
                   variant="outlined"
+                  inputProps={{ maxLength: 255 }}
                 >
                 </TextField>
               </Grid>

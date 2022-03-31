@@ -207,6 +207,7 @@ const useStyles = makeStyles((theme) => ({
                     label="Name"
                     value ={taskName}
                     onChange = {(e) => setTaskName(e.target.value)}
+                    inputProps={{ maxLength: 80 }}
                 />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -284,6 +285,8 @@ const useStyles = makeStyles((theme) => ({
                     multiline
                     value={summary}
                     onChange = {(e) => setSummary(e.target.value)}
+                    inputProps={{ maxLength: 255 }}
+
                 >
                 </TextField>
                 </Grid>
@@ -318,6 +321,7 @@ const useStyles = makeStyles((theme) => ({
                     name="referenceNumber"
                     value ={referenceNumber}
                     onChange = {(e) => setReferenceNumber(e.target.value)}
+                    inputProps={{ maxLength: 50 }}
                 />
                 </Grid>                
             </Grid>

@@ -208,6 +208,7 @@ export default function CreateTicket(){
                         label="Ticket Name"
                         value ={title}
                         onChange = {(e) => setTitle(e.target.value)}
+                        inputProps={{ maxLength: 80 }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -311,6 +312,7 @@ export default function CreateTicket(){
                       autoComplete="Description"
                       value ={description}
                       onChange = {(e) => setDescription(e.target.value)}
+                      inputProps={{ maxLength: 999 }}
                   />
                   </Grid>
 {/*                   <Grid item xs={6} className="CheckBox">
