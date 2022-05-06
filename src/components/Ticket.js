@@ -221,7 +221,7 @@ export default function TicketDetails (props) {
     {
       field: 'summary',
       headerName: 'Summary',
-      width: 800,
+      width: 1500,
       editable: false,
     }   
     ];
@@ -996,6 +996,7 @@ function handleDeleteTable(e, id) {
                 SelectProps={{ native: true }}
               >{users.map((option) => (
                 <option
+                  disabled ={option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >
@@ -1020,8 +1021,10 @@ function handleDeleteTable(e, id) {
                 select
                 SelectProps={{ native: true }}
               >
-                {users.map((option) => (               
-                <option
+                {users.map((option) => (
+
+                <option 
+                  disabled = {option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >
@@ -1046,6 +1049,7 @@ function handleDeleteTable(e, id) {
               ><option></option>
               {users.map((option) => (
                 <option
+                 disabled = {option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >
@@ -1198,6 +1202,7 @@ function handleDeleteTable(e, id) {
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
+                disabled = {option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >
@@ -1249,6 +1254,7 @@ function handleDeleteTable(e, id) {
                 SelectProps={{ native: true, default: ""}}
               ><option></option>{users.map((option) => (
                 <option
+                  disabled = {option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >
@@ -1294,6 +1300,7 @@ function handleDeleteTable(e, id) {
                 SelectProps={{ native: true }}
               ><option></option>{users.map((option) => (
                 <option
+                  disabled = {option.inActive}
                   key={option.employeeId}
                   value={option.employeeId}
                 >

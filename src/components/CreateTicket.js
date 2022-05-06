@@ -249,6 +249,7 @@ export default function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (
                     <option
+                      disabled = {option.inActive}
                       key={option.employeeId}
                       value={option.employeeId}
                     >
@@ -272,6 +273,7 @@ export default function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (                    
                     <option
+                    disabled = {option.inActive}
                     key={option.employeeId}
                     value={option.employeeId}
                   >
@@ -293,6 +295,7 @@ export default function CreateTicket(){
                   ><option></option>
                   {users.map((option) => (                    
                     <option
+                    disabled = {option.inActive}
                     key={option.employeeId}
                     value={option.employeeId}
                   >

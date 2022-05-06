@@ -165,7 +165,7 @@ const columns = [
     {
       field: 'title',
       headerName: 'Title',
-      width: 150,
+      width: 300,
       editable: false,
     },
     {
@@ -185,7 +185,7 @@ const columns = [
       field: 'status',
       headerName: 'Status',
       sortable: true,
-      width: 200,
+      width: 120,
       editable: false,
     }
   ];
@@ -385,7 +385,7 @@ export default function TaskDetails(props){
               >
                 <TextField
                   fullWidth
-                  label="Name"
+                  label="Task Name"
                   name="taskName"
                   onChange={handleChange}
                   required

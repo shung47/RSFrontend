@@ -204,7 +204,7 @@ const useStyles = makeStyles((theme) => ({
                     required
                     fullWidth
                     id="taskName"
-                    label="Name"
+                    label="Task Name"
                     value ={taskName}
                     onChange = {(e) => setTaskName(e.target.value)}
                     inputProps={{ maxLength: 80 }}
