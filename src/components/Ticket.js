@@ -879,7 +879,7 @@ function handleDeleteTable(e, id) {
       autoComplete="off"
       {...props}
     >
-      <Card style={{marginBottom:20}}>
+      <Card style={{marginBottom:20, overflow:"scroll",maxHeight:800}}>
         <CardHeader
           title="Ticket Details"
         />
@@ -1707,7 +1707,8 @@ function handleDeleteTable(e, id) {
     </Grid>
         <Grid item
               md={4}
-              xs={12}               >
+              xs={12}
+            >
               <Card>
               <div style={{maxHeight:600, overflow: "auto"}}>
                 <CardHeader title="Comments" />

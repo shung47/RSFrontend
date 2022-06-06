@@ -577,8 +577,7 @@ export default function TaskDetails(props){
             <Button
               color="primary"
               variant="contained"
-              type="submit"
-              disabled={user.CanCreateTask==='N'}               
+              type="submit"               
             >
               Save
             </Button>
