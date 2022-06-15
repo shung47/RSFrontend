@@ -37,6 +37,14 @@ import BusinessReivewList from './BusinessReviewList';
 import { DataGrid } from '@material-ui/data-grid';
 import CodeReivewList from './CodeReviewList';
 import CheckIcon from '@material-ui/icons/Check';
+import NewBox from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import { useTheme } from '@mui/material/styles';
 
 const useStyles = makeStyles({
   root: {
@@ -530,6 +538,8 @@ export default function TicketDetails (props) {
             var now = new Date();
             var timeNow = now.toISOString();
             setPageAccessTime(timeNow);
+            const NotifiedUsersArray = data.notificationList.split(",")
+            setNotifiedUsers(NotifiedUsersArray);
         })
         .catch(err => {
             setErrorMsg(err.message);
@@ -789,6 +799,18 @@ function handleDeleteTable(e, id) {
   const [selectedFile, setSelectedFile] = useState();
 	const [isFilePicked, setIsFilePicked] = useState(false);
   const [files, setFiles] = useState([]);
+  const [notifiedUsers, setNotifiedUsers] = useState([]);
+  const theme = useTheme();
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
 
   const fileChangeHandler = (event) => {
 		setSelectedFile(event.target.files[0]);
@@ -866,6 +888,26 @@ function handleDeleteTable(e, id) {
       e.preventDefault();
       window.open(`${process.env.REACT_APP_API_URL}Tickets/Downloadfile/`+ id +'/'+e.target.outerText);
       };
+    
+    const handleNotifiedUsersChange = (event) => {
+      const {
+        target: { value },
+      } = event;
+      setNotifiedUsers(
+        // On autofill we get a the stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+      );
+      ticket.notificationList = value.toString();
+    };
+
+    function getStyles(name, notifiedUsers, theme) {
+      return {
+        fontWeight:
+          notifiedUsers.indexOf(name) === -1
+            ? theme.typography.fontWeightRegular
+            : theme.typography.fontWeightMedium,
+      };
+    }
 
   return (
     <Grid className = {classes.parentFrid}>
@@ -1073,6 +1115,42 @@ function handleDeleteTable(e, id) {
                 disabled
               />
             </Grid>
+            <Grid
+                item
+                md={6}
+                xs={12}
+              >
+                 {users &&<FormControl sx={{ m: 0, width: 430 }}>
+                  <InputLabel id="notifiedUsers">Notification List</InputLabel>
+                  <Select
+                    labelId="notifiedUsers"
+                    id="notifiedUsers"
+                    multiple
+                    value={notifiedUsers}
+                    onChange={handleNotifiedUsersChange}
+                    input={<OutlinedInput id="select-multiple-users" label="Chip" />}
+                    renderValue={(selected) => (
+                      <NewBox sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </NewBox>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {users.map((option) => (
+                      <MenuItem
+                        disabled = {option.inActive}
+                        key={option.employeeId}
+                        value={option.employeeId}
+                        style={getStyles(option.name, notifiedUsers, theme)}
+                      >
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>}
+              </Grid>
             <Grid
               item
               md={12}
