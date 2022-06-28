@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: 20,
     [theme.breakpoints.up('md')]: {
-      display: 'flex',   
+      display: 'flex',
     },
   },
 }));
@@ -106,7 +106,7 @@ export default function PersistentDrawerLeft() {
   const handleNotificationClose =( event) => {
     setAnchorEl(null);
   }
-  
+
   var user =jwtDecode(token);
 
   const handleDrawerOpen = () => {
@@ -126,7 +126,7 @@ export default function PersistentDrawerLeft() {
 
   return (
     <ClickAwayListener onClickAway={handleDrawerClose}>
-    <div className={classes.root}>    
+    <div className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -186,14 +186,14 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
-            {/* <ListItem button component={Link} to="/Dashboard">
+            {/* <ListItem button component={Link} to="/Instant">
               <ListItemIcon><InboxIcon /></ListItemIcon>
-              <ListItemText primary="Dashboard"/>
+              <ListItemText primary="Instant"/>
             </ListItem>  */}
             <ListItem button component={Link} to="/Tasks">
               <ListItemIcon><AssignmentIcon /></ListItemIcon>
               <ListItemText primary="Tasks"/>
-            </ListItem> 
+            </ListItem>
             <ListItem button component={Link} to="/Tickets">
               <ListItemIcon><Subject /></ListItemIcon>
               <ListItemText primary="Tickets"/>
@@ -210,7 +210,7 @@ export default function PersistentDrawerLeft() {
         })}
       >
         <div className={classes.drawerHeader} />
-      </main>    
+      </main>
     </div>
     </ClickAwayListener>
   );
