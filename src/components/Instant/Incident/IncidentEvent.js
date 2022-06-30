@@ -28,12 +28,13 @@ interface incidentEventProps {
     eventType: string;
     description: JSX.Element;
     createdAt: string;
+    createdBy: string;
     detailedCreatedAt: string;
     children?: JSX.Element;
     ableToUndo?: boolean;
 }
 
-export default function(props: incidentEventProps) {
+export default function (props: incidentEventProps) {
     interface ExpandMoreProps extends IconButtonProps {
         expand: boolean;
     }
@@ -79,7 +80,7 @@ export default function(props: incidentEventProps) {
                                                         popupText={props.detailedCreatedAt}
                                                         align={"right"}
                                                         variant={"body2"}
-                                                        color={"disabled"}
+                                                        color={"textSecondary"}
                                                     />
                                                 </Box>
                                             }
@@ -89,12 +90,12 @@ export default function(props: incidentEventProps) {
                                 secondary={
                                     <>
 
-                                        <Typography variant="body2">
+                                        <Typography variant="body2" color={"textSecondary"}>
                                             {!expanded &&
                                                 props.description
                                             }
                                             {expanded &&
-                                                <Box sx={{ fontStyle: 'italic' }}>Click to collapse</Box>
+                                                <Box sx={{fontStyle: 'italic'}}>Click to collapse</Box>
                                             }
                                         </Typography>
                                         {!expanded &&

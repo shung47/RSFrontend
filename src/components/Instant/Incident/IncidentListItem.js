@@ -25,21 +25,21 @@ export default function(props: IncidentListItemProps) {
                             </Typography>
                         </Grid>
                         <Grid item md>
-                            <Typography variant="body2" align={"right"}>
+                            <Typography variant="body2" align={"right"} color="textSecondary">
                                 {props.friendlyTime}
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="textSecondary">
                         {props.dependency}
                     </Typography>
                     {props.affectedTaskCount &&
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="textSecondary">
                             {props.affectedTaskCount} tasks affected
                         </Typography>
                     }
                     {props.affectedUserCount &&
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="textSecondary">
                             {props.affectedUserCount} users affected
                         </Typography>
                     }
