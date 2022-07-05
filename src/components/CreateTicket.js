@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
     //   label: 'RPA'
     // },
     {
+      value: '',
+      label:''
+    },
+    {
       value: 'Project',
       label: 'Project'
     },
@@ -63,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateTicket(){
     const classes = useStyles();
     const[title,  setTitle] = useState('');
-    const[type,  setType] = useState('Project');
+    const[type,  setType] = useState('');
     const[description,  setDescription] = useState('');
     const[assignee, setAssignee] = useState('');
     const[developer, setDeveloper] = useState('');

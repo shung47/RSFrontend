@@ -425,6 +425,7 @@ export default function TicketDetails (props) {
     setDbWindow(false);
   };
   const handleDbOpen = () => {
+    setErrorMsg('');
     setDbWindow(true);
   };
 
