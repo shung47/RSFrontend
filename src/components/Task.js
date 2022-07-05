@@ -81,7 +81,7 @@ const allFunctions = [
   'AA',
   'APEX',
   'APM',
-  'Asset Managemnet',
+  'Asset Management',
   'BOM',
   'CDBA',
   'CS',
